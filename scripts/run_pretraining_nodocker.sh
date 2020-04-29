@@ -28,7 +28,7 @@ gradient_accumulation_steps=256
 gradient_accumulation_steps_phase2=512
 resume_training="true"
 
-while getopts g:p:c:n:d:e:x:y:a:b:w:z option 
+while getopts g:p:c:n:d:e:x:y:a:b:w:z:r option 
 do 
  case "${option}" 
  in 
