@@ -31,7 +31,7 @@ do
  p) master_port=${OPTARG};;
  n) num_gpus=${OPTARG};;
  d) DATASET=${OPTARG};;
- b) train_batch_size=${OPTARG};;
+ b) eval_batch_size=${OPTARG};;
  esac 
 done
 echo $DATASET
