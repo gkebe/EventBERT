@@ -281,12 +281,12 @@ class BertConfig(object):
         return json.dumps(self.to_dict(), indent=2, sort_keys=True) + "\n"
 
 try:
-    import apex
-    #apex.amp.register_half_function(apex.normalization.fused_layer_norm, 'FusedLayerNorm')
-    import apex.normalization
-    #apex.amp.register_float_function(apex.normalization.FusedLayerNorm, 'forward')
-    BertLayerNorm = apex.normalization.FusedLayerNorm
-except ImportError:
+    # import apex
+    # #apex.amp.register_half_function(apex.normalization.fused_layer_norm, 'FusedLayerNorm')
+    # import apex.normalization
+    # #apex.amp.register_float_function(apex.normalization.FusedLayerNorm, 'forward')
+    # BertLayerNorm = apex.normalization.FusedLayerNorm
+# except ImportError:
     print("Better speed can be achieved with apex installed from https://www.github.com/nvidia/apex.")
     class BertLayerNorm(nn.Module):
         def __init__(self, hidden_size, eps=1e-12):
