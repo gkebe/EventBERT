@@ -393,8 +393,9 @@ def main():
                 nsp_precision_macro=precision_score(nsp_labels, nsp_predictions, average = "macro")
                 nsp_f1_micro=f1_score(nsp_labels, nsp_predictions, average = "micro")
                 nsp_f1_macro=f1_score(nsp_labels, nsp_predictions, average = "macro")
-                nsp_model_metrics={"F1 score":nsp_f1_micro}
                 nsp_target_names = ["False", "True"]
+                nsp_model_metrics=classification_report(nsp_labels, nsp_predictions, target_names=nsp_target_names, output_dict=True)["True"]
+
                 
                 mlm_labels=np.array(mlm_labels)
                 mlm_predictions=np.array(mlm_predictions)
@@ -407,12 +408,12 @@ def main():
                 
                 mlm_model_metrics={"F1 score":mlm_f1_micro}
                 print("Next Sentence Prediction:")
-                # for key, value in nsp_model_metrics.items():
-                    # print(key, ' : ', value)
-                # print()
+                for key, value in nsp_model_metrics.items():
+                    print(key, ' : ', value)
+                print()
                 
                 print("Classification Report:")
-                print(classification_report(nsp_labels, nsp_predictions, target_names=nsp_target_names)["True"])
+                print()
                 
                 print("Masked Language Modeling:")
                 for key, value in mlm_model_metrics.items():
