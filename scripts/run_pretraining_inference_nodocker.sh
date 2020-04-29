@@ -20,10 +20,10 @@ DATASET="model/wiki_70k" # change this for other datasets
 echo $DATASET
 gpu="2,3"
 num_gpus=2
-eval_batch_size=56
+eval_batch_size=14
 master_port="8595"
 
-while getopts g:p:n:d:b option 
+while getopts g:p:n:d:b: option 
 do 
  case "${option}" 
  in 
