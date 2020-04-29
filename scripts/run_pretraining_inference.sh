@@ -47,7 +47,7 @@ model_checkpoint=${5:-"-1"}
 inference_steps=${6:-"-1"}
 create_logfile=${7:-"true"}
 seed=${8:-42}
-gpu=${9:-"2,3"}
+gpu=${9:-"0,1"}
 
 PREC=""
 if [ "$precision" = "fp16" ] ; then
