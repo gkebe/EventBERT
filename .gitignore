@@ -8,7 +8,8 @@ __pycache__/
 # C extensions
 *.so
 
-#Data checkpoints and results       
+#Data checkpoints and results
+data/*.sh
 data/*/*/   
 data/*/*.zip
 checkpoints/

@@ -14,9 +14,27 @@
 # limitations under the License.
 
 echo "Container nvidia build = " $NVIDIA_BUILD_ID
-CODEDIR=${24:-"${PWD}"}
+CODEDIR="${PWD}"
+DATA_DIR=$CODEDIR/${DATASET}/
+
 DATASET=model/wiki_70k # change this for other datasets
-DATA_DIR=${22:-$CODEDIR/${DATASET}/}
+gpu="2,3"
+num_gpus=2
+eval_batch_size=14
+master_port="8595"
+
+while getopts g:p:c:n:d:e:x:y:a:b:w:z option 
+do 
+ case "${option}" 
+ in 
+ g) gpu=${OPTARG};; 
+ p) master_port=${OPTARG};;
+ n) num_gpus=${OPTARG};;
+ d) DATASET=${OPTARG};;
+ b) train_batch_size=${OPTARG};;
+ esac 
+done
+
 
 BERT_CONFIG=bert_config.json
 RESULTS_DIR=$CODEDIR/results
@@ -39,15 +57,12 @@ if [ ! -f "$BERT_CONFIG" ] ; then
    exit -1
 fi
 
-eval_batch_size=${1:-14}
-precision=${2:-"fp16"}
-num_gpus=${3:-2}
-inference_mode=${4:-"prediction"}
-model_checkpoint=${5:-"-1"}
-inference_steps=${6:-"-1"}
-create_logfile=${7:-"true"}
-seed=${8:-42}
-gpu=${9:-"2,3"}
+precision="fp16"
+inference_mode="prediction"
+model_checkpoint="-1"
+inference_steps="-1"
+create_logfile="true"
+seed=42
 
 PREC=""
 if [ "$precision" = "fp16" ] ; then
@@ -89,7 +104,7 @@ CMD+=" $PREC"
 CMD+=" $MODE"
 
 if [ "$num_gpus" -gt 1 ] ; then
-   CMD="python3 -m torch.distributed.launch --master_port 8998 --nproc_per_node=$num_gpus $CMD"
+   CMD="python3 -m torch.distributed.launch --master_port $master_port --nproc_per_node=$num_gpus $CMD"
 else
    CMD="python3  $CMD"
 fi
