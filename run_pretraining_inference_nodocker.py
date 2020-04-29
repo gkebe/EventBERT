@@ -407,12 +407,12 @@ def main():
                 
                 mlm_model_metrics={"F1 score":mlm_f1_micro}
                 print("Next Sentence Prediction:")
-                for key, value in nsp_model_metrics.items():
-                    print(key, ' : ', value)
-                print()
+                # for key, value in nsp_model_metrics.items():
+                    # print(key, ' : ', value)
+                # print()
                 
                 print("Classification Report:")
-                print(classification_report(nsp_labels, nsp_predictions, target_names=nsp_target_names))
+                print(classification_report(nsp_labels, nsp_predictions, target_names=nsp_target_names)["True"])
                 
                 print("Masked Language Modeling:")
                 for key, value in mlm_model_metrics.items():
