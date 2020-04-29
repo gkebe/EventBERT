@@ -34,12 +34,13 @@ learning_rate_phase2=${18:-"4e-3"}
 warmup_proportion_phase2=${19:-"0.128"}
 train_steps_phase2=${20:-1563}
 gradient_accumulation_steps_phase2=${21:-512}
-DATASET=hdf5_lower_case_1_seq_len_128_max_pred_20_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/wiki_70k # change this for other datasets
-DATA_DIR_PHASE1=${22:-${PWD}/data/${DATASET}/}
+DATASET=${22:-hdf5_lower_case_1_seq_len_128_max_pred_20_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/wiki_70k} # change this for other datasets
+DATA_DIR_PHASE1=${23:-${PWD}/data/${DATASET}/}
 BERT_CONFIG=bert_config.json
 CODEDIR=${24:-"${PWD}"}
 init_checkpoint=${25:-""}
 gpu=${26:-"2,3"}
+port=${27:-"8595"}
 RESULTS_DIR=$CODEDIR/results
 CHECKPOINTS_DIR=$RESULTS_DIR/checkpoints
 
@@ -122,7 +123,7 @@ CMD+=" $ALL_REDUCE_POST_ACCUMULATION_FP16"
 CMD+=" $INIT_CHECKPOINT"
 CMD+=" --do_train"
 
-CMD="python3 -m torch.distributed.launch --master_port 8998 --nproc_per_node=$num_gpus $CMD"
+CMD="python3 -m torch.distributed.launch --master_port $port --nproc_per_node=$num_gpus $CMD"
 
 
 if [ "$create_logfile" = "true" ] ; then
@@ -148,8 +149,8 @@ echo "finished pretraining"
 
 #Start Phase2
 
-DATASET=hdf5_lower_case_1_seq_len_512_max_pred_80_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/wiki_70k # change this for other datasets
-DATA_DIR_PHASE2=${23:-${PWD}/data/${DATASET}/}
+DATASET=${28:-hdf5_lower_case_1_seq_len_512_max_pred_80_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/wiki_70k} # change this for other datasets
+DATA_DIR_PHASE2=${29:-${PWD}/data/${DATASET}/}
 
 PREC=""
 if [ "$precision" = "fp16" ] ; then
@@ -198,7 +199,7 @@ CMD+=" $ALL_REDUCE_POST_ACCUMULATION"
 CMD+=" $ALL_REDUCE_POST_ACCUMULATION_FP16"
 CMD+=" --do_train --phase2 --resume_from_checkpoint --phase1_end_step=$train_steps"
 
-CMD="python3 -m torch.distributed.launch --master_port 8998 --nproc_per_node=$num_gpus $CMD"
+CMD="python3 -m torch.distributed.launch --master_port $port --nproc_per_node=$num_gpus $CMD"
 
 if [ "$create_logfile" = "true" ] ; then
   export GBS=$(expr $train_batch_size_phase2 \* $num_gpus)
