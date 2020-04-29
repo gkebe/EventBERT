@@ -4,32 +4,25 @@ This repository provides a modified version of the NVIDIA BERT Code for PyTorch.
 
 ## Bash Scripts
 
-### Scripts for pre-training and parameters
-`bash scripts/run_pretraining_nodocker.sh -n <number_GPUs> -g <gpu_choices> -p <master_port> -c <initial_checkpoint> -r <resume_training> -d <dataset_phase1> -e <dataset_phase2> -a <batch_size_phase1> -b <batch_size_phase_2> -x <gradient_accumulation_steps_phase_1> -y <gradient_accumulation_steps_phase_2> -w <training_steps_phase_1> -z <training_steps_phase_2>`
+### Script for pre-training
+`bash scripts/run_pretraining_nodocker.sh -n <num_gpus> -g <gpu_choices> -p <master_port> -c <initial_checkpoint> -r <resume_training> -d <dataset_phase1> -e <dataset_phase2> -a <batch_size_phase1> -b <batch_size_phase_2> -x <gradient_accumulation_steps_phase1> -y <gradient_accumulation_steps_phase2> -w <training_steps_phase1> -z <training_steps_phase2>`
 
 Where:
 -   `<num_gpus>` is the number of GPUs to use for training. Must be equal to or smaller than the number of GPUs attached to your node.
 -   `<gpu_choices>` is a list of the GPUs used for training. e.g: "0,1" to use GPU 0 and GPU 1.
 -   `<master_port>` is the port.
--   `<batch_size_phase2>` is per-GPU batch size used for phase 2 training. Larger batch sizes run more efficiently, but require more memory.
+-   `<init_checkpoint>` is the initial checkpoint to start pretraining from (Usually a BERT pretrained checkpoint)
+-   `<resume_training>` if set to `true` and `<init_checkpoint>` is not set, training should resume from latest model in `/results/checkpoints`. if `<init_checkpoint>` is set, pretraining starts from there.  
+-	`<dataset_phase1>` is the path to the hdf5 files used for pretraining phase 1.
+-	`<dataset_phase2>` is the path to the hdf5 files used for pretraining phase 2.
 -   `<batch_size_phase1>` is per-GPU batch size used for phase 1 training. Larger batch sizes run more efficiently, but require more memory.
 -   `<batch_size_phase2>` is per-GPU batch size used for phase 2 training. Larger batch sizes run more efficiently, but require more memory.
--   `<learning_rate>` is the base learning rate for training
--   `<precision>` is the type of math in your model, can be either `fp32` or `fp16`. The options mean:
-    -   FP32: 32-bit IEEE single precision floats.
-    -   FP16: Mixed precision 16 and 32 bit floats.
--   `<warmup_proportion>` is the percentage of training steps used for warm-up at the start of training.
--   `<training_steps>` is the total number of training steps.
--   `<save_checkpoint_steps>` controls how often checkpoints are saved.
--   `<resume_training>` if set to `true`, training should resume from latest model in `/results/checkpoints`. Default is `false`.
--   `<create_logfile>` a flag indicating if output should be written to a log file or not (acceptable values are `true` or 'false`. `true` indicates output should be saved to a log file.)
--   `<accumulate_gradient>` a flag indicating whether a larger batch should be simulated with gradient accumulation.
--   `<gradient_accumulation_steps>` an integer indicating the number of steps to accumulate gradients over. Effective batch size = `training_batch_size` / `gradient_accumulation_steps`.
--   `<seed>` random seed for the run.
-- `<allreduce_post_accumulation>` - If set to `true`, performs allreduce only after the defined number of gradient accumulation steps.
-- `<allreduce_post_accumulation_fp16>` -  If set to `true`, performs allreduce after gradient accumulation steps in FP16.
+-   `<gradient_accumulation_steps_phase1>` is an integer indicating the number of steps to accumulate gradients over for phase 1. Effective batch size = `training_batch_size` / `gradient_accumulation_steps`.
+-   `<gradient_accumulation_steps_phase2>` is an integer indicating the number of steps to accumulate gradients over during phase 2.
+-   `<training_steps_phase1>` is the total number of training steps .
+-   `<training_steps_phase2>` is the total number of training steps.
 	
--	Scripts for F1-score evaluation of NSP and MLM
+### Script for F1-score evaluation of NSP and MLM
 
 ======
 
