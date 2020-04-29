@@ -1,0 +1,159 @@
+Container nvidia build =  8472689
+/workspace/bert/data/hdf5_lower_case_1_seq_len_128_max_pred_20_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/bookscorpus/
+Logs written to /workspace/bert/results/bert_lamb_pretraining.pyt_bert_pretraining_phase1_fp16_gbs16384.200407164237.log
++ '[' -z /workspace/bert/results/bert_lamb_pretraining.pyt_bert_pretraining_phase1_fp16_gbs16384.200407164237.log ']'
++ tee /workspace/bert/results/bert_lamb_pretraining.pyt_bert_pretraining_phase1_fp16_gbs16384.200407164237.log
++ python3 -m torch.distributed.launch --nproc_per_node=2 /workspace/bert/run_pretraining.py --input_dir=/workspace/bert/data/hdf5_lower_case_1_seq_len_128_max_pred_20_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/bookscorpus/ --output_dir=/workspace/bert/results/checkpoints --config_file=bert_config.json --bert_model=bert-base-uncased --train_batch_size=8192 --max_seq_length=128 --max_predictions_per_seq=20 --max_steps=7038 --warmup_proportion=0.2843 --num_steps_per_checkpoint=200 --learning_rate=6e-3 --seed=19857 --fp16 --gradient_accumulation_steps=256 --allreduce_post_accumulation --allreduce_post_accumulation_fp16 --init_checkpoint=bert-base-uncased.pt --do_train
+device: cuda:1 n_gpu: 1, distributed training: True, 16-bits training: True
+Traceback (most recent call last):
+  File "/workspace/bert/run_pretraining.py", line 599, in <module>
+    args, final_loss, train_time_raw = main()
+  File "/workspace/bert/run_pretraining.py", line 436, in main
+    device, args = setup_training(args)
+  File "/workspace/bert/run_pretraining.py", line 275, in setup_training
+    raise ValueError("Output directory ({}) already exists and is not empty.".format(args.output_dir))
+ValueError: Output directory (/workspace/bert/results/checkpoints) already exists and is not empty.
+device: cuda:0 n_gpu: 1, distributed training: True, 16-bits training: True
+Traceback (most recent call last):
+  File "/workspace/bert/run_pretraining.py", line 599, in <module>
+    args, final_loss, train_time_raw = main()
+  File "/workspace/bert/run_pretraining.py", line 436, in main
+    device, args = setup_training(args)
+  File "/workspace/bert/run_pretraining.py", line 275, in setup_training
+    raise ValueError("Output directory ({}) already exists and is not empty.".format(args.output_dir))
+ValueError: Output directory (/workspace/bert/results/checkpoints) already exists and is not empty.
+Traceback (most recent call last):
+  File "/opt/conda/lib/python3.6/runpy.py", line 193, in _run_module_as_main
+    "__main__", mod_spec)
+  File "/opt/conda/lib/python3.6/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "/opt/conda/lib/python3.6/site-packages/torch/distributed/launch.py", line 253, in <module>
+    main()
+  File "/opt/conda/lib/python3.6/site-packages/torch/distributed/launch.py", line 249, in main
+    cmd=cmd)
+subprocess.CalledProcessError: Command '['/opt/conda/bin/python3', '-u', '/workspace/bert/run_pretraining.py', '--local_rank=1', '--input_dir=/workspace/bert/data/hdf5_lower_case_1_seq_len_128_max_pred_20_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/bookscorpus/', '--output_dir=/workspace/bert/results/checkpoints', '--config_file=bert_config.json', '--bert_model=bert-base-uncased', '--train_batch_size=8192', '--max_seq_length=128', '--max_predictions_per_seq=20', '--max_steps=7038', '--warmup_proportion=0.2843', '--num_steps_per_checkpoint=200', '--learning_rate=6e-3', '--seed=19857', '--fp16', '--gradient_accumulation_steps=256', '--allreduce_post_accumulation', '--allreduce_post_accumulation_fp16', '--init_checkpoint=bert-base-uncased.pt', '--do_train']' returned non-zero exit status 1.
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
++ set +x
+finished pretraining
+/workspace/bert/data/hdf5_lower_case_1_seq_len_512_max_pred_80_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/bookscorpus/
+Logs written to /workspace/bert/results/bert_lamb_pretraining.pyt_bert_pretraining_phase2_fp16_gbs8192.200407164240.log
++ '[' -z /workspace/bert/results/bert_lamb_pretraining.pyt_bert_pretraining_phase2_fp16_gbs8192.200407164240.log ']'
++ tee /workspace/bert/results/bert_lamb_pretraining.pyt_bert_pretraining_phase2_fp16_gbs8192.200407164240.log
++ python3 -m torch.distributed.launch --nproc_per_node=2 /workspace/bert/run_pretraining.py --input_dir=/workspace/bert/data/hdf5_lower_case_1_seq_len_512_max_pred_80_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/bookscorpus/ --output_dir=/workspace/bert/results/checkpoints --config_file=bert_config.json --bert_model=bert-base-uncased --train_batch_size=4096 --max_seq_length=512 --max_predictions_per_seq=80 --max_steps=1563 --warmup_proportion=0.256 --num_steps_per_checkpoint=200 --learning_rate=4e-3 --seed=19857 --fp16 --gradient_accumulation_steps=512 --allreduce_post_accumulation --allreduce_post_accumulation_fp16 --do_train --phase2 --resume_from_checkpoint --phase1_end_step=7038
+device: cuda:1 n_gpu: 1, distributed training: True, 16-bits training: True
+device: cuda:0 n_gpu: 1, distributed training: True, 16-bits training: True
+DLL 2020-04-07 16:42:42.658219 - PARAMETER Config : ["Namespace(allreduce_post_accumulation=True, allreduce_post_accumulation_fp16=True, bert_model='bert-base-uncased', checkpoint_activations=False, config_file='bert_config.json', do_train=True, fp16=True, gradient_accumulation_steps=512, init_checkpoint=None, input_dir='/workspace/bert/data/hdf5_lower_case_1_seq_len_512_max_pred_80_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/bookscorpus/', json_summary='dllogger.json', learning_rate=0.004, local_rank=0, log_freq=1.0, loss_scale=0.0, max_predictions_per_seq=80, max_seq_length=512, max_steps=1563.0, n_gpu=1, num_steps_per_checkpoint=200, num_train_epochs=3.0, output_dir='/workspace/bert/results/checkpoints', phase1_end_step=7038, phase2=True, resume_from_checkpoint=True, resume_step=-1, seed=19857, skip_checkpoint=False, train_batch_size=8, use_env=False, warmup_proportion=0.256)"] 
+resume step from  793
+Selected optimization level O2:  FP16 training with FP32 batchnorm and FP32 master weights.
+
+Defaults for this optimization level are:
+enabled                : True
+opt_level              : O2
+cast_model_type        : torch.float16
+patch_torch_functions  : False
+keep_batchnorm_fp32    : True
+master_weights         : True
+loss_scale             : dynamic
+Processing user overrides (additional kwargs that are not None)...
+After processing overrides, optimization options are:
+enabled                : True
+opt_level              : O2
+cast_model_type        : torch.float16
+patch_torch_functions  : False
+keep_batchnorm_fp32    : True
+master_weights         : True
+loss_scale             : dynamic
+DLL 2020-04-07 16:42:53.048121 - PARAMETER SEED : 19857 
+DLL 2020-04-07 16:42:53.048379 - PARAMETER train_start : True 
+DLL 2020-04-07 16:42:53.048428 - PARAMETER batch_size_per_gpu : 8 
+DLL 2020-04-07 16:42:53.048462 - PARAMETER learning_rate : 0.004 
+Iteration:   0%|          | 0/237 [00:00<?, ?it/s]Traceback (most recent call last):
+  File "/workspace/bert/run_pretraining.py", line 599, in <module>
+    args, final_loss, train_time_raw = main()
+  File "/workspace/bert/run_pretraining.py", line 520, in main
+    checkpoint_activations=args.checkpoint_activations)
+  File "/opt/conda/lib/python3.6/site-packages/torch/nn/modules/module.py", line 545, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/opt/conda/lib/python3.6/site-packages/apex/amp/_initialize.py", line 194, in new_fwd
+    **applier(kwargs, input_caster))
+  File "/workspace/bert/modeling.py", line 890, in forward
+    output_all_encoded_layers=False, checkpoint_activations=checkpoint_activations)
+  File "/opt/conda/lib/python3.6/site-packages/torch/nn/modules/module.py", line 545, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/workspace/bert/modeling.py", line 824, in forward
+    output_all_encoded_layers=output_all_encoded_layers, checkpoint_activations=checkpoint_activations)
+  File "/opt/conda/lib/python3.6/site-packages/torch/nn/modules/module.py", line 545, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/workspace/bert/modeling.py", line 493, in forward
+    hidden_states = layer_module(hidden_states, attention_mask)
+  File "/opt/conda/lib/python3.6/site-packages/torch/nn/modules/module.py", line 545, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/workspace/bert/modeling.py", line 453, in forward
+    intermediate_output = self.intermediate(attention_output)
+  File "/opt/conda/lib/python3.6/site-packages/torch/nn/modules/module.py", line 545, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/workspace/bert/modeling.py", line 426, in forward
+    hidden_states = self.dense_act(hidden_states)
+  File "/opt/conda/lib/python3.6/site-packages/torch/nn/modules/module.py", line 545, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/workspace/bert/modeling.py", line 183, in forward
+    return bias_gelu(self.bias, F.linear(input, self.weight, None))
+RuntimeError: CUDA out of memory. Tried to allocate 24.00 MiB (GPU 0; 10.76 GiB total capacity; 3.01 GiB already allocated; 8.56 MiB free; 122.06 MiB cached)
+The above operation failed in interpreter, with the following stack trace:
+
+The above operation failed in interpreter, with the following stack trace:
+
+Traceback (most recent call last):
+  File "/workspace/bert/run_pretraining.py", line 599, in <module>
+    args, final_loss, train_time_raw = main()
+  File "/workspace/bert/run_pretraining.py", line 520, in main
+    checkpoint_activations=args.checkpoint_activations)
+  File "/opt/conda/lib/python3.6/site-packages/torch/nn/modules/module.py", line 545, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/opt/conda/lib/python3.6/site-packages/apex/amp/_initialize.py", line 194, in new_fwd
+    **applier(kwargs, input_caster))
+  File "/workspace/bert/modeling.py", line 890, in forward
+    output_all_encoded_layers=False, checkpoint_activations=checkpoint_activations)
+  File "/opt/conda/lib/python3.6/site-packages/torch/nn/modules/module.py", line 545, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/workspace/bert/modeling.py", line 824, in forward
+    output_all_encoded_layers=output_all_encoded_layers, checkpoint_activations=checkpoint_activations)
+  File "/opt/conda/lib/python3.6/site-packages/torch/nn/modules/module.py", line 545, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/workspace/bert/modeling.py", line 493, in forward
+    hidden_states = layer_module(hidden_states, attention_mask)
+  File "/opt/conda/lib/python3.6/site-packages/torch/nn/modules/module.py", line 545, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/workspace/bert/modeling.py", line 453, in forward
+    intermediate_output = self.intermediate(attention_output)
+  File "/opt/conda/lib/python3.6/site-packages/torch/nn/modules/module.py", line 545, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/workspace/bert/modeling.py", line 426, in forward
+    hidden_states = self.dense_act(hidden_states)
+  File "/opt/conda/lib/python3.6/site-packages/torch/nn/modules/module.py", line 545, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/workspace/bert/modeling.py", line 183, in forward
+    return bias_gelu(self.bias, F.linear(input, self.weight, None))
+RuntimeError: CUDA out of memory. Tried to allocate 24.00 MiB (GPU 1; 10.76 GiB total capacity; 2.98 GiB already allocated; 20.56 MiB free; 122.94 MiB cached)
+The above operation failed in interpreter, with the following stack trace:
+
+The above operation failed in interpreter, with the following stack trace:
+
+
+Traceback (most recent call last):
+  File "/opt/conda/lib/python3.6/runpy.py", line 193, in _run_module_as_main
+    "__main__", mod_spec)
+  File "/opt/conda/lib/python3.6/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "/opt/conda/lib/python3.6/site-packages/torch/distributed/launch.py", line 253, in <module>
+    main()
+  File "/opt/conda/lib/python3.6/site-packages/torch/distributed/launch.py", line 249, in main
+    cmd=cmd)
+subprocess.CalledProcessError: Command '['/opt/conda/bin/python3', '-u', '/workspace/bert/run_pretraining.py', '--local_rank=1', '--input_dir=/workspace/bert/data/hdf5_lower_case_1_seq_len_512_max_pred_80_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/bookscorpus/', '--output_dir=/workspace/bert/results/checkpoints', '--config_file=bert_config.json', '--bert_model=bert-base-uncased', '--train_batch_size=4096', '--max_seq_length=512', '--max_predictions_per_seq=80', '--max_steps=1563', '--warmup_proportion=0.256', '--num_steps_per_checkpoint=200', '--learning_rate=4e-3', '--seed=19857', '--fp16', '--gradient_accumulation_steps=512', '--allreduce_post_accumulation', '--allreduce_post_accumulation_fp16', '--do_train', '--phase2', '--resume_from_checkpoint', '--phase1_end_step=7038']' returned non-zero exit status 1.
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
++ set +x
+finished phase2
