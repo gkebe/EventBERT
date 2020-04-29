@@ -15,7 +15,6 @@
 
 echo "Container nvidia build = " $NVIDIA_BUILD_ID
 CODEDIR="${PWD}"
-DATA_DIR=$CODEDIR/${DATASET}/
 
 DATASET=model/wiki_70k # change this for other datasets
 gpu="2,3"
@@ -36,6 +35,7 @@ do
 done
 
 
+DATA_DIR=$CODEDIR/${DATASET}/
 BERT_CONFIG=bert_config.json
 RESULTS_DIR=$CODEDIR/results
 CHECKPOINTS_DIR=$CODEDIR/model
