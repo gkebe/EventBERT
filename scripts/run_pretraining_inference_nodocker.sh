@@ -16,7 +16,7 @@
 echo "Container nvidia build = " $NVIDIA_BUILD_ID
 CODEDIR="${PWD}"
 
-DATASET=model/wiki_70k # change this for other datasets
+DATASET="model/wiki_70k" # change this for other datasets
 gpu="2,3"
 num_gpus=2
 eval_batch_size=14
