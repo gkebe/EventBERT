@@ -17,6 +17,7 @@ echo "Container nvidia build = " $NVIDIA_BUILD_ID
 CODEDIR="${PWD}"
 
 DATASET="model/wiki_70k" # change this for other datasets
+echo $DATASET
 gpu="2,3"
 num_gpus=2
 eval_batch_size=14
@@ -33,9 +34,10 @@ do
  b) train_batch_size=${OPTARG};;
  esac 
 done
-
+echo $DATASET
 
 DATA_DIR=$CODEDIR/${DATASET}/
+echo $DATA_DIR
 BERT_CONFIG=bert_config.json
 RESULTS_DIR=$CODEDIR/results
 CHECKPOINTS_DIR=$CODEDIR/model
