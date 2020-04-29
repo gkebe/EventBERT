@@ -23,7 +23,7 @@ num_gpus=2
 eval_batch_size=14
 master_port="8595"
 
-while getopts g:p:c:n:d:e:x:y:a:b:w:z option 
+while getopts g:p:n:d:b option 
 do 
  case "${option}" 
  in 
