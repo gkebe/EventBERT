@@ -17,7 +17,7 @@
 
 # python3 /workspace/bert/data/eventPrep.py --input_file wiki_70k/step1/valid.txt --output_file wiki_70k/step2/valid.txt
 
-python3 /workspace/bert/data/eventPrep.py --input_file wiki_70k/step1/test.txt --output_file wiki_70k/step2/test_with_labels.txt --keep_label True
+python3 ${PWD}/eventPrep.py --input_file wiki_70k/step1/test.txt --output_file wiki_70k/step2/test_with_labels.txt --keep_label True
 
 # awk '{filename = "wiki_70k/step3/wiki_70k_training_" int((NR-1)/80000) ".txt"; print >> filename}' wiki_70k/step2/train.txt
 
