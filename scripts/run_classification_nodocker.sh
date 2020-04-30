@@ -20,16 +20,16 @@ mkdir -p $OUT_DIR
 
 echo "Container nvidia build = " $NVIDIA_BUILD_ID
 
-init_checkpoint="${PWD}/results/checkpoints/ckpt_4179.pt"
+init_checkpoint="${PWD}/results/checkpoints/ckpt_3985.pt"
 mode="train eval"
 max_steps="-1.0" # if < 0, has no effect
-batch_size="32"
+batch_size="56"
 learning_rate="2e-5"
 precision="fp16"
 num_gpu=2
 gpu="2,3"
 master_port="8599"
-epochs="4"
+epochs="1"
 warmup_proportion="0.01"
 seed=2
 vocab_file="${PWD}/data/download/google_pretrained_weights/uncased_L-24_H-1024_A-16/vocab.txt"
