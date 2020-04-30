@@ -13,7 +13,7 @@ def wiki70k_preprocess(filename, tuple_to_sen = False, keep_label = False):
   if tuple_to_sen:
     paragraph_lst_sentences = '\n'.join([''.join([''.join([' '.join(v[i:i+5][:4]) + ".\n" for i in range(0, len(v), 5)][:-1]) for v in j]) for j in paragraphs_lst_words]) 
     if keep_label:
-        paragraph_lst_labels = '\n'.join([''.join([''.join([' '.join(v[i:i+5][4:5]) + ".\n" for i in range(0, len(v), 5)][:-1]) for v in j]) for j in paragraphs_lst_words])
+        paragraph_lst_labels = '\n'.join([''.join([''.join([' '.join(v[i:i+5][4:5]) + "\n" for i in range(0, len(v), 5)][:-1]) for v in j]) for j in paragraphs_lst_words])
   f.close()
   print("Articles: "+ str(sum([len(i) for i in paragraphs_lst_words])))
   print("Sentences: "+ str(sum([sum([len(j) for j in i]) for i in paragraphs_lst_words])))
