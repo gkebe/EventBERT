@@ -729,7 +729,7 @@ def main():
                     global_step += 1
 
     if args.do_eval and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
-        eval_examples = processor.get_dev_examples(args.data_dir)
+        eval_examples = processor.get_test_examples(args.data_dir)
         eval_features = convert_examples_to_features(
             eval_examples, label_list, args.max_seq_length, tokenizer)
         logger.info("***** Running evaluation *****")
