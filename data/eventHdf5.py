@@ -115,10 +115,10 @@ if __name__ == "__main__":
         help='Specify the max number of processes to allow at one time',
         default=4
     )
-    parser.add_argument("--keep_label",
-                    default=False,
-                    type=bool,
-                    required=False,
-                    help="Specify a output filename!")
+        parser.add_argument("--keep_label",
+                        default=False,
+                        type=bool,
+                        required=False,
+                        help="Specify a output filename!")
     args = parser.parse_args()
     main(args)
