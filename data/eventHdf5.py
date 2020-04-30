@@ -33,6 +33,7 @@ def main(args):
 
     for i in range(args.n_test_shards):
         last_process = create_record_worker(output_file_prefix + '_test', i)
+        if args.keep_label:
 
     last_process.wait()
 if __name__ == "__main__":
@@ -114,5 +115,10 @@ if __name__ == "__main__":
         help='Specify the max number of processes to allow at one time',
         default=4
     )
+    parser.add_argument("--keep_label",
+                    default=False,
+                    type=bool,
+                    required=False,
+                    help="Specify a output filename!")
     args = parser.parse_args()
     main(args)
