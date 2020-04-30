@@ -33,7 +33,7 @@ epochs="4"
 warmup_proportion="0.01"
 seed=2
 vocab_file="${PWD}/data/download/google_pretrained_weights/uncased_L-24_H-1024_A-16/vocab.txt"
-CONFIG_FILE=1
+CONFIG_FILE="${PWD}/bert_config.json"
 
 while getopts g:p:n:d:b:e:l:o: option
 do
