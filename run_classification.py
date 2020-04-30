@@ -584,7 +584,10 @@ def main():
         raise ValueError("Task not found: %s" % (task_name))
 
     processor = processors[task_name]()
-    label_list = processor.get_labels()
+    if task_name == "frames":
+        label_list = processor.get_labels(data_dir=args.data_dir)
+    else:
+        label_list = processor.get_labels()
     num_labels = len(label_list)
 
     #tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
