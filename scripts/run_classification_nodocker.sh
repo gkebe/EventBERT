@@ -35,12 +35,13 @@ seed=2
 vocab_file="${PWD}/data/download/google_pretrained_weights/uncased_L-24_H-1024_A-16/vocab.txt"
 CONFIG_FILE="${PWD}/bert_config.json"
 
-while getopts g:p:n:d:b:e:l:o: option
+while getopts g:p:c:n:d:b:e:l:o: option
 do
  case "${option}"
  in
  g) gpu=${OPTARG};;
  p) master_port=${OPTARG};;
+ c) init_checkpoint=${OPTARG};;
  n) num_gpu=${OPTARG};;
  d) DATA_DIR=${OPTARG};;
  b) batch_size=${OPTARG};;
