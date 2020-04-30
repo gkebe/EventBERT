@@ -5,7 +5,7 @@ def main(args):
         hdf5_tfrecord_folder_prefix = "_lower_case_" + str(args.do_lower_case) + "_seq_len_" + str(args.max_seq_length) \
                                       + "_max_pred_" + str(args.max_predictions_per_seq) + "_masked_lm_prob_" + str(args.masked_lm_prob) \
                                       + "_random_seed_" + str(args.random_seed) + "_dupe_factor_" + str(args.dupe_factor)
-        bert_preprocessing_command = 'python ../create_pretraining_events.py'
+        bert_preprocessing_command = 'python /workspace/bert/create_pretraining_data.py'
         bert_preprocessing_command += ' --input_file=' + "wiki_70k/step3/" + filename_prefix + '_' + str(shard_id) + '.txt'
         bert_preprocessing_command += ' --output_file=' + 'hdf5' + hdf5_tfrecord_folder_prefix + '/' + "wiki_70k" + '/' + filename_prefix + '_' + str(shard_id) + '.' + output_format
         bert_preprocessing_command += ' --vocab_file=' + args.vocab_file
@@ -15,9 +15,6 @@ def main(args):
         bert_preprocessing_command += ' --masked_lm_prob=' + str(args.masked_lm_prob)
         bert_preprocessing_command += ' --random_seed=' + str(args.random_seed)
         bert_preprocessing_command += ' --dupe_factor=' + str(args.dupe_factor)
-        bert_preprocessing_command += ' --keep_label=' + str(args.keep_label)
-        if "_test_with_labels" in filename_prefix:
-            bert_preprocessing_command += ' --label_file=' + "wiki_70k/step3/" + filename_prefix + '_labels' + '_' + str(shard_id) + '.txt'
         bert_preprocessing_process = subprocess.Popen(bert_preprocessing_command, shell=True)
 
         last_process = bert_preprocessing_process
@@ -35,10 +32,8 @@ def main(args):
     last_process.wait()
 
     for i in range(args.n_test_shards):
-        if args.keep_label:
-            last_process = create_record_worker(output_file_prefix + '_test_with_labels', i)
-        else:
-            last_process = create_record_worker(output_file_prefix + '_test', i)
+        last_process = create_record_worker(output_file_prefix + '_test', i)
+
     last_process.wait()
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -118,13 +113,6 @@ if __name__ == "__main__":
         type=int,
         help='Specify the max number of processes to allow at one time',
         default=4
-    )
-    parser.add_argument(
-        "--keep_label",
-        default=False,
-        type=bool,
-        required=False,
-        help="Specify a output filename!"
     )
     args = parser.parse_args()
     main(args)
