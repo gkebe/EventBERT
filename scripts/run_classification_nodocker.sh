@@ -20,20 +20,37 @@ mkdir -p $OUT_DIR
 
 echo "Container nvidia build = " $NVIDIA_BUILD_ID
 
-init_checkpoint=${1:-"${PWD}/results/checkpoints/ckpt_4179.pt"}
-mode=${2:-"train eval"}
-max_steps=${3:-"-1.0"} # if < 0, has no effect
-batch_size=${4:-"32"}
-learning_rate=${5:-"2e-5"}
-precision=${6:-"fp16"}
-num_gpu=${7:-2}
+init_checkpoint="${PWD}/results/checkpoints/ckpt_4179.pt"
+mode="train eval"
+max_steps="-1.0" # if < 0, has no effect
+batch_size="32"
+learning_rate="2e-5"
+precision="fp16"
+num_gpu=2
 gpu="2,3"
 master_port="8599"
-epochs=${8:-"4"}
-warmup_proportion=${9:-"0.01"}
-seed=${10:-2}
-vocab_file=${11:-"${PWD}/data/download/google_pretrained_weights/uncased_L-24_H-1024_A-16/vocab.txt"}
-CONFIG_FILE=${12:-"${PWD}/bert_config.json"}
+epochs="4"
+warmup_proportion="0.01"
+seed=2
+vocab_file="${PWD}/data/download/google_pretrained_weights/uncased_L-24_H-1024_A-16/vocab.txt"
+CONFIG_FILE=1
+
+while getopts g:p:n:d:b:e:l:o: option
+do
+ case "${option}"
+ in
+ g) gpu=${OPTARG};;
+ p) master_port=${OPTARG};;
+ n) num_gpu=${OPTARG};;
+ d) DATA_DIR=${OPTARG};;
+ b) batch_size=${OPTARG};;
+ e) epochs=${OPTARG};;
+ l) learning_rate=${OPTARG};;
+ o) OUT_DIR=${OPTARG};;
+ esac
+done
+
+
 
 if [ "$mode" = "eval" ] ; then
   num_gpu=1
