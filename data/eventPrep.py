@@ -9,11 +9,11 @@ def wiki70k_preprocess(filename, tuple_to_sen = False, keep_label = False):
   paragraph_lst_sentences = '\n'.join([''.join([' '.join([' '.join(v[i:i+5][:4]) for i in range(0, len(v), 5)][:-1]) + ".\n" for v in j]) for j in paragraphs_lst_words])
   paragraph_lst_labels = []
   if keep_label:
-    paragraph_lst_labels = '\n'.join([''.join([' '.join([', '.join(v[i:i+5][4]) for i in range(0, len(v), 5)][:-1]) + "\n" for v in j]) for j in paragraphs_lst_words])
+    paragraph_lst_labels = '\n'.join([''.join([', '.join([' '.join(v[i:i+5][4:5]) for i in range(0, len(v), 5)][:-1]) + "\n" for v in j]) for j in paragraphs_lst_words])
   if tuple_to_sen:
-    paragraph_lst_sentences = '\n'.join([' '.join([' '.join([' '.join(v[i:i+5][:4]) + ".\n" for i in range(0, len(v), 5)][:-1]) for v in j]) for j in paragraphs_lst_words]) 
+    paragraph_lst_sentences = '\n'.join([''.join([''.join([' '.join(v[i:i+5][:4]) + ".\n" for i in range(0, len(v), 5)][:-1]) for v in j]) for j in paragraphs_lst_words]) 
     if keep_label:
-        paragraph_lst_labels = '\n'.join([' '.join([' '.join([', '.join(v[i:i+5][4]) + "\n" for i in range(0, len(v), 5)][:-1]) for v in j]) for j in paragraphs_lst_words])
+        paragraph_lst_labels = '\n'.join([''.join([''.join([' '.join(v[i:i+5][4:5]) + ".\n" for i in range(0, len(v), 5)][:-1]) for v in j]) for j in paragraphs_lst_words])
   f.close()
   print("Articles: "+ str(sum([len(i) for i in paragraphs_lst_words])))
   print("Sentences: "+ str(sum([sum([len(j) for j in i]) for i in paragraphs_lst_words])))
@@ -51,7 +51,7 @@ text_file = open(args.output_file, "w", encoding="utf8")
 n = text_file.write(sentences)
 text_file.close()
 if len(labels)>0:
-    idx = my_str.index(".txt")
+    idx = args.output_file.index(".txt")
     labels_title = args.output_file[:idx] + "_labels" + args.output_file[idx:]
     text_file = open(labels_title, "w", encoding="utf8")
     n = text_file.write(labels)
