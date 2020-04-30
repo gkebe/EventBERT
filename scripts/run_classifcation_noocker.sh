@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-MRPC_DIR=${PWD}/data/glue/MRPC
-OUT_DIR=/results/MRPC
+DATA_DIR=${PWD}/model/wiki_70k_frames
+OUT_DIR=${PWD}/results/wiki_70k_frames
 
 mkdir -p $OUT_DIR
 
@@ -72,8 +72,8 @@ if [ "$mode" == "train eval" ] ; then
 fi
 
 CMD+="--do_lower_case "
-CMD+="--data_dir $MRPC_DIR "
-CMD+="--bert_model bert-large-uncased "
+CMD+="--data_dir $DATA_DIR "
+CMD+="--bert_model bert-base-uncased "
 CMD+="--seed $seed "
 CMD+="--init_checkpoint $init_checkpoint "
 CMD+="--warmup_proportion $warmup_proportion "
