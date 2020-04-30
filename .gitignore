@@ -9,7 +9,7 @@ __pycache__/
 *.so
 
 #Data checkpoints and results
-data/*.sh
+data/create_datasets_from_start.sh
 data/*/*/   
 data/*/*.zip
 checkpoints/

@@ -30,7 +30,6 @@ Where:
 -   `<master_port>` is the port.
 -	`<dataset>` is the path to the hdf5 files used for testing.
 -   `<batch_size>` is per-GPU batch size used for testing. Larger batch sizes run more efficiently, but require more memory.
-======
 
 # BERT For PyTorch
 

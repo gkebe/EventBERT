@@ -17,18 +17,18 @@
 
 # python3 /workspace/bert/data/eventPrep.py --input_file wiki_70k/step1/valid.txt --output_file wiki_70k/step2/valid.txt
 
-# python3 /workspace/bert/data/eventPrep.py --input_file wiki_70k/step1/test.txt --output_file wiki_70k/step2/test.txt
+python3 /workspace/bert/data/eventPrep.py --input_file wiki_70k/step1/test.txt --output_file wiki_70k/step2/test_with_labels.txt --keep_label True
 
 # awk '{filename = "wiki_70k/step3/wiki_70k_training_" int((NR-1)/80000) ".txt"; print >> filename}' wiki_70k/step2/train.txt
 
 # awk '{filename = "wiki_70k/step3/wiki_70k_valid_" int((NR-1)/80000) ".txt"; print >> filename}' wiki_70k/step2/valid.txt
 
-# awk '{filename = "wiki_70k/step3/wiki_70k_test_" int((NR-1)/80000) ".txt"; print >> filename}' wiki_70k/step2/test.txt
+awk '{filename = "wiki_70k/step3/wiki_70k_test_with_labels_" int((NR-1)/80000) ".txt"; print >> filename}' wiki_70k/step2/test_labels.txt
 
-python3 /workspace/bert/data/eventHdf5.py --max_seq_length 128  \
+#python3 /workspace/bert/data/eventHdf5.py --max_seq_length 128  \
  --max_predictions_per_seq 20 --vocab_file $BERT_PREP_WORKING_DIR/download/google_pretrained_weights/uncased_L-12_H-768_A-12/vocab.txt --do_lower_case 1 --n_training_shards 210 --n_test_shards 1
 
-python3 /workspace/bert/data/eventHdf5.py --max_seq_length 512  \
+#python3 /workspace/bert/data/eventHdf5.py --max_seq_length 512  \
  --max_predictions_per_seq 80 --vocab_file $BERT_PREP_WORKING_DIR/download/google_pretrained_weights/uncased_L-12_H-768_A-12/vocab.txt --do_lower_case 1 --n_training_shards 210 --n_test_shards 1
 
 

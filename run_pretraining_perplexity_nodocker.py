@@ -95,9 +95,9 @@ def main():
                 yield i
     def get_masked_indices(masked_tensor):
         masked_list = masked_tensor.tolist()
-        for i in masked_list:
-            if i!=-1:
-                yield masked_list.index(i)
+        for i in range(len(masked_list)):
+            if masked_list[i]!=-1:
+                yield i
     parser = argparse.ArgumentParser()
 
     ## Required parameters
@@ -172,10 +172,6 @@ def main():
                         help="Out file for DLLogger",
                         default="dllogger_inference.out",
                         type=str)
-    parser.add_argument("--gpu",
-                        type=str,
-                        default='None',
-                        help="choose gpu device.")
     parser.add_argument("--vocab_file",
                         default=None,
                         type=str,
@@ -188,12 +184,9 @@ def main():
     args = parser.parse_args()
     if 'LOCAL_RANK' in os.environ:
         args.local_rank = int(os.environ['LOCAL_RANK'])
-
     if args.local_rank == -1 or args.no_cuda:
         device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
     else:
-        gpus = args.gpu.split(",")
-        args.local_rank = int(gpus[args.local_rank])
         torch.cuda.set_device(args.local_rank)
         device = torch.device("cuda", args.local_rank)
         # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
@@ -206,6 +199,7 @@ def main():
     # else:
         # dllogger.init(backends=[])
     n_gpu = torch.cuda.device_count()
+
     if n_gpu > 1:
         assert(args.local_rank != -1) # only use torch.distributed for multi-gpu
     
@@ -328,33 +322,59 @@ def main():
                     
                     lm_logits, nsp_logits = model(input_ids=input_ids, token_type_ids=segment_ids, attention_mask=input_mask, masked_lm_labels=None, next_sentence_label=None)
                     
-                    lm_max=torch.argmax(lm_logits, dim=2)
-                    nsp_pred=torch.argmax(nsp_logits, dim=1)
                     
-                    nsp_labels += next_sentence_labels.tolist()
-                    nsp_predictions += nsp_pred.tolist()
-                  
-                    tokenized_text = [tokenizer.convert_ids_to_tokens(i.tolist()) for i in input_ids]
-                    
-                    masked_tokens_ids = [list(get_masked_tokens(i)) for i in masked_lm_labels]
-                    masked_tokens = [tokenizer.convert_ids_to_tokens(i) for i in masked_tokens_ids]
-                    
-                    predicted_tokens_ids = [list(np.array(lm_max[i].tolist())[list(get_masked_indices(masked_lm_labels[i]))]) for i in range(len(masked_lm_labels))]
-                    predicted_tokens = [tokenizer.convert_ids_to_tokens(i) for i in predicted_tokens_ids]
-                    
-                    mlm_labels += list(chain.from_iterable(masked_tokens_ids))
-                    mlm_predictions += list(chain.from_iterable(predicted_tokens_ids))
-                    
-                    for i in range(len(input_ids)):
-                        print("Text:", " ".join([j for j in tokenized_text[i] if j != "[PAD]"]))
-                        print("Actual masked tokens: ", masked_tokens[i])
-                        print("Predicted tokens: ", predicted_tokens[i])
-                        print("Actual NSP: ", str(bool(next_sentence_labels[i].item())))
-                        print("Predicted NSP: ", str(bool(nsp_pred[i].item())))
-                        print()
-                        print()                          
-                    nb_instances += input_ids.size(0)
-                    global_step += 1
+                    if multi_gpu_training:
+                        world_size = torch.distributed.get_world_size()
+                        
+                        input_ids_list, masked_lm_labels_list, next_sentence_labels_list, lm_logits_list, nsp_logits_list = [torch.zeros_like(input_ids)] * world_size,[torch.zeros_like(masked_lm_labels)] * world_size,[torch.zeros_like(next_sentence_labels)] * world_size, [torch.zeros_like(lm_logits)] * world_size, [torch.zeros_like(nsp_logits)] * world_size
+                        
+                        dist.barrier()
+                        
+                        dist.all_gather(input_ids_list, input_ids)
+                        dist.all_gather(masked_lm_labels_list, masked_lm_labels)
+                        dist.all_gather(next_sentence_labels_list, next_sentence_labels)
+                        dist.all_gather(lm_logits_list, lm_logits)
+                        dist.all_gather(nsp_logits_list, nsp_logits)
+                        
+                        input_ids = torch.cat(input_ids_list, dim=0)
+                        masked_lm_labels = torch.cat(masked_lm_labels_list, dim=0)
+                        next_sentence_labels = torch.cat(next_sentence_labels_list, dim=0)
+                        lm_logits = torch.cat(lm_logits_list, dim=0)
+                        nsp_logits = torch.cat(nsp_logits_list, dim=0)
+                    if (not multi_gpu_training) or is_main_process():
+                        lm_max=torch.argmax(lm_logits, dim=2)
+                        nsp_pred=torch.argmax(nsp_logits, dim=1)
+                      
+                        tokenized_text = [tokenizer.convert_ids_to_tokens(i.tolist()) for i in input_ids]
+                        
+                        masked_tokens_ids = [list(get_masked_tokens(i)) for i in masked_lm_labels]
+                        masked_tokens = [tokenizer.convert_ids_to_tokens(i) for i in masked_tokens_ids]
+                        
+                        predicted_tokens_ids = [list(np.array(lm_max[i].tolist())[list(get_masked_indices(masked_lm_labels[i]))]) for i in range(len(masked_lm_labels))]
+                        predicted_tokens = [tokenizer.convert_ids_to_tokens(i) for i in predicted_tokens_ids]
+                        
+                        
+                        nsp_labels_batch = next_sentence_labels.cpu().tolist()
+                        nsp_predictions_batch = nsp_pred.cpu().tolist()
+                        mlm_labels_batch = list(chain.from_iterable(masked_tokens_ids))
+                        mlm_predictions_batch = list(chain.from_iterable(predicted_tokens_ids))
+                        
+                        
+                        nsp_labels.extend(nsp_labels_batch)
+                        nsp_predictions.extend(nsp_predictions_batch)
+                        mlm_labels.extend(mlm_labels_batch)
+                        mlm_predictions.extend(mlm_predictions_batch)
+                        
+                        for i in range(len(input_ids)):
+                            print("Text:", " ".join([j for j in tokenized_text[i] if j != "[PAD]"]))
+                            print("Actual masked tokens: ", masked_tokens[i])
+                            print("Predicted tokens: ", predicted_tokens[i])
+                            print("Actual NSP: ", str(bool(next_sentence_labels[i].item())))
+                            print("Predicted NSP: ", str(bool(nsp_pred[i].item())))
+                            print()
+                            print()                          
+                        nb_instances += input_ids.size(0)
+                        global_step += 1
                     
                 total_samples += len(datasetloader)
                 torch.cuda.empty_cache()
@@ -364,40 +384,40 @@ def main():
             #     torch.distributed.barrier()
             # if (not multi_gpu_training or (multi_gpu_training and torch.distributed.get_rank() == 0)):       
                 # dllogger.log(step="Done Inferring on samples", data={})
+            if (not multi_gpu_training) or is_main_process():
+                nsp_labels=np.array(nsp_labels)
+                nsp_predictions=np.array(nsp_predictions)
+                nsp_recall_micro=recall_score(nsp_labels, nsp_predictions, average = "micro")
+                nsp_recall_macro=recall_score(nsp_labels, nsp_predictions, average = "macro")
+                nsp_precision_micro=precision_score(nsp_labels, nsp_predictions, average = "micro")
+                nsp_precision_macro=precision_score(nsp_labels, nsp_predictions, average = "macro")
+                nsp_f1_micro=f1_score(nsp_labels, nsp_predictions, average = "micro")
+                nsp_f1_macro=f1_score(nsp_labels, nsp_predictions, average = "macro")
+                nsp_target_names = ["False", "True"]
+                nsp_model_metrics=classification_report(nsp_labels, nsp_predictions, target_names=nsp_target_names, output_dict=True)["True"]
 
-            
-            nsp_labels=np.array(nsp_labels)
-            nsp_predictions=np.array(nsp_predictions)
-            nsp_recall_micro=recall_score(nsp_labels, nsp_predictions, average = "micro")
-            nsp_recall_macro=recall_score(nsp_labels, nsp_predictions, average = "macro")
-            nsp_precision_micro=precision_score(nsp_labels, nsp_predictions, average = "micro")
-            nsp_precision_macro=precision_score(nsp_labels, nsp_predictions, average = "macro")
-            nsp_f1_micro=f1_score(nsp_labels, nsp_predictions, average = "micro")
-            nsp_f1_macro=f1_score(nsp_labels, nsp_predictions, average = "macro")
-            nsp_model_metrics={"F1 score":nsp_f1_micro}
-            nsp_target_names = ["False", "True"]
-            
-            mlm_labels=np.array(mlm_labels)
-            mlm_predictions=np.array(mlm_predictions)
-            mlm_recall_micro=recall_score(mlm_labels, mlm_predictions, average = "micro")
-            mlm_precision_micro=precision_score(mlm_labels, mlm_predictions, average = "micro")
-            mlm_f1_micro=f1_score(mlm_labels, mlm_predictions, average = "micro")
-            #precision recall and f1_score for yes class mainly
-            
-            #perplexity for mlm
-            
-            mlm_model_metrics={"F1 score":mlm_f1_micro}
-            print("Next Sentence Prediction:")
-            for key, value in nsp_model_metrics.items():
-                print(key, ' : ', value)
-            print()
-            
-            print("Classification Report:")
-            print(classification_report(nsp_labels, nsp_predictions, target_names=nsp_target_names))
-            
-            print("Masked Language Modeling:")
-            for key, value in mlm_model_metrics.items():
-                print(key, ' : ', value)
+                
+                mlm_labels=np.array(mlm_labels)
+                mlm_predictions=np.array(mlm_predictions)
+                mlm_recall_micro=recall_score(mlm_labels, mlm_predictions, average = "micro")
+                mlm_precision_micro=precision_score(mlm_labels, mlm_predictions, average = "micro")
+                mlm_f1_micro=f1_score(mlm_labels, mlm_predictions, average = "micro")
+                #precision recall and f1_score for yes class mainly
+                
+                #perplexity for mlm
+                
+                mlm_model_metrics={"F1 score":mlm_f1_micro}
+                print("Next Sentence Prediction:")
+                for key, value in nsp_model_metrics.items():
+                    print(key, ' : ', value)
+                print()
+                
+                print("Classification Report:")
+                print()
+                
+                print("Masked Language Modeling:")
+                for key, value in mlm_model_metrics.items():
+                    print(key, ' : ', value)
     end_infer = time.time()
     # dllogger.log(step="Inference perf", data={"inference_sequences_per_second": total_samples * args.eval_batch_size / (end_infer - begin_infer)})
 
