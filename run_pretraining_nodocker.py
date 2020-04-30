@@ -472,6 +472,7 @@ def main():
                 random.shuffle(files)
                 f_start_id = 0
             else:
+
                 print(checkpoint['files'][0])
                 print(checkpoint['files'][1])
                 print(checkpoint['files'][2])
@@ -479,7 +480,8 @@ def main():
                 files = checkpoint['files'][1:]
                 args.resume_from_checkpoint = False
                 num_files = len(files)
-
+                print(files)
+                print(len(files))
 
             shared_file_list = {}
 
