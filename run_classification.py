@@ -92,9 +92,9 @@ def metrics_frame(preds, labels):
     precision_macro = precision_score(labels, preds, average="macro")
     f1_micro = f1_score(labels, preds, average="micro")
     f1_macro = f1_score(labels, preds, average="macro")
-    model_metrics = {("Precision", "Micro"): precision_micro, ("Precision", "Macro"): precision_macro,
-                     ("Recall", "Micro"): recall_micro, ("Recall", "Macro"): recall_macro,
-                     ("F1 score", "Micro"): f1_micro, ("F1 score", "Macro"): f1_macro}
+    model_metrics = {"Precision, Micro": precision_micro, "Precision, Macro": precision_macro,
+                     "Recall, Micro": recall_micro, "Recall, Macro": recall_macro,
+                     "F1 score, Micro": f1_micro, "F1 score, Macro": f1_macro}
     return model_metrics
 class InputExample(object):
     """A single training/test example for simple sequence classification."""
