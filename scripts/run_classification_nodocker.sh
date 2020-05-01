@@ -21,7 +21,7 @@ mkdir -p $OUT_DIR
 echo "Container nvidia build = " $NVIDIA_BUILD_ID
 
 init_checkpoint="${PWD}/results/checkpoints/ckpt_3985.pt"
-mode="train eval"
+mode="train test"
 max_steps="-1.0" # if < 0, has no effect
 batch_size="56"
 learning_rate="2e-5"
@@ -35,7 +35,7 @@ seed=2
 vocab_file="${PWD}/data/download/google_pretrained_weights/uncased_L-24_H-1024_A-16/vocab.txt"
 CONFIG_FILE="${PWD}/bert_config.json"
 
-while getopts g:p:c:n:d:b:e:l:o: option
+while getopts g:p:c:n:d:b:e:l:o:m: option
 do
  case "${option}"
  in
@@ -48,6 +48,7 @@ do
  e) epochs=${OPTARG};;
  l) learning_rate=${OPTARG};;
  o) OUT_DIR=${OPTARG};;
+ m) mode=${OPTARG};;
  esac
 done
 
@@ -86,6 +87,12 @@ if [ "$mode" == "train eval" ] ; then
   CMD+="--do_train "
   CMD+="--train_batch_size=$batch_size "
   CMD+="--do_eval "
+  CMD+="--eval_batch_size=$batch_size "
+fi
+if [ "$mode" == "train test" ] ; then
+  CMD+="--do_train "
+  CMD+="--train_batch_size=$batch_size "
+  CMD+="--do_test "
   CMD+="--eval_batch_size=$batch_size "
 fi
 

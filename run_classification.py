@@ -460,6 +460,9 @@ def main():
     parser.add_argument("--do_eval",
                         action='store_true',
                         help="Whether to run eval on the dev set.")
+    parser.add_argument("--do_test",
+                        action='store_true',
+                        help="Whether to run eval on the test set.")
     parser.add_argument("--do_lower_case",
                         action='store_true',
                         help="Set this flag if you are using an uncased model.")
@@ -570,8 +573,8 @@ def main():
     if n_gpu > 0:
         torch.cuda.manual_seed_all(args.seed)
 
-    if not args.do_train and not args.do_eval:
-        raise ValueError("At least one of `do_train` or `do_eval` must be True.")
+    if not args.do_train and not args.do_eval and not args.do_test:
+        raise ValueError("At least one of `do_train`, `do_eval` or `do_test` must be True.")
 
     if os.path.exists(args.output_dir) and os.listdir(args.output_dir) and args.do_train:
         print("WARNING: Output directory ({}) already exists and is not empty.".format(args.output_dir))
@@ -728,8 +731,10 @@ def main():
                     optimizer.zero_grad()
                     global_step += 1
 
-    if args.do_eval and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
+    if (args.do_eval or args.do_test) and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
         eval_examples = processor.get_dev_examples(args.data_dir)
+        if args.do_test:
+            eval_examples = processor.get_test_examples(args.data_dir)
         eval_features = convert_examples_to_features(
             eval_examples, label_list, args.max_seq_length, tokenizer)
         logger.info("***** Running evaluation *****")
