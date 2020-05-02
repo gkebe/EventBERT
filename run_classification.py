@@ -38,7 +38,7 @@ from tokenization import BertTokenizer
 from optimization import BertAdam, warmup_linear
 from schedulers import LinearWarmUpScheduler
 from apex import amp
-from sklearn.metrics import matthews_corrcoef, f1_score, recall_score, precision_score, classification_report
+from sklearn.metrics import matthews_corrcoef, f1_score, recall_score, precision_score, classification_report, confusion_matrix
 from utils import is_main_process
 
 logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
@@ -46,7 +46,9 @@ logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(messa
                     level = logging.INFO)
 logger = logging.getLogger(__name__)
 
-def compute_metrics(task_name, preds, labels):
+def compute_metrics(task_name, preds, labels, label_names=None):
+    if label_names is None:
+        label_names = []
     assert len(preds) == len(labels)
     if task_name == "cola":
         return {"mcc": matthews_corrcoef(labels, preds)}
@@ -69,7 +71,7 @@ def compute_metrics(task_name, preds, labels):
     elif task_name == "wnli":
         return {"acc": simple_accuracy(preds, labels)}
     elif task_name == "frames":
-        return metrics_frame(preds, labels)
+        return metrics_frame(preds, labels,label_names)
     else:
         raise KeyError(task_name)
 
@@ -85,16 +87,18 @@ def acc_and_f1(preds, labels):
         "f1": f1,
         "acc_and_f1": (acc + f1) / 2,
     }
-def metrics_frame(preds, labels):
+def metrics_frame(preds, labels, label_names):
     recall_micro = recall_score(labels, preds, average="micro")
     recall_macro = recall_score(labels, preds, average="macro")
     precision_micro = precision_score(labels, preds, average="micro")
     precision_macro = precision_score(labels, preds, average="macro")
     f1_micro = f1_score(labels, preds, average="micro")
     f1_macro = f1_score(labels, preds, average="macro")
+    cm = confusion_matrix(labels, preds)
+    cr = classification_report(labels, preds, target_names=label_names)
     model_metrics = {"Precision, Micro": precision_micro, "Precision, Macro": precision_macro,
                      "Recall, Micro": recall_micro, "Recall, Macro": recall_macro,
-                     "F1 score, Micro": f1_micro, "F1 score, Macro": f1_macro}
+                     "F1 score, Micro": f1_micro, "F1 score, Macro": f1_macro, "Confusion matrix": cm, "Classification report": cr}
     return model_metrics
 class InputExample(object):
     """A single training/test example for simple sequence classification."""
@@ -784,7 +788,7 @@ def main():
                   'global_step': global_step,
                   'loss': loss}
 
-        result = compute_metrics(task_name, preds, out_label_ids)
+        result = compute_metrics(task_name, preds, out_label_ids, label_list)
         results.update(result)
         print(results)
         output_eval_file = os.path.join(args.output_dir, "eval_results.txt")
