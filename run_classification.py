@@ -787,7 +787,7 @@ def main():
         results = {'eval_loss': eval_loss,
                   'global_step': global_step,
                   'loss': loss}
-
+        np.set_printoptions(threshold=sys.maxsize)
         result = compute_metrics(task_name, preds, out_label_ids, label_list)
         results.update(result)
         print(results)
