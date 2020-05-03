@@ -10,7 +10,7 @@ __pycache__/
 
 #Data checkpoints and results
 data/*.sh
-data/*/*/*
+data/*/*.txt
 data/*/*/
 data/*/*.zip
 checkpoints/
