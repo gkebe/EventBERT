@@ -65,7 +65,7 @@ if [ "$precision" = "fp16" ] ; then
 fi
 
 if [ "$num_gpu" = "1" ] ; then
-  export CUDA_VISIBLE_DEVICES=0
+  export CUDA_VISIBLE_DEVICES=$gpu
   mpi_command=""
 else
   export CUDA_VISIBLE_DEVICES=$gpu
