@@ -796,6 +796,7 @@ def main():
             for key in sorted(results.keys()):
                 logger.info("  %s = %s", key, str(results[key]))
                 writer.write("%s = %s\n" % (key, str(results[key])))
-
+        print(out_label_ids)
+        print(preds)
 if __name__ == "__main__":
     main()
