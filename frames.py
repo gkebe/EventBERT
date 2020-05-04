@@ -293,11 +293,11 @@ label_list = processor.get_labels(data_dir=data_dir)
 train_features = convert_examples_to_features(train_examples, label_list, 128, tokenizer)
 test_features = convert_examples_to_features(test_examples,label_list, 128, tokenizer)
 
-train_input_ids = torch.tensor([f.input_ids for f in train_features], dtype=torch.float32)
+train_input_ids = torch.tensor([f.input_ids for f in train_features], dtype=torch.long)
 train_label_ids = torch.tensor([f.label_id for f in train_features], dtype=torch.long)
 train_input_masks = torch.tensor([f.input_mask for f in train_features], dtype=torch.long)
 
-test_input_ids = torch.tensor([f.input_ids for f in test_features], dtype=torch.float32)
+test_input_ids = torch.tensor([f.input_ids for f in test_features], dtype=torch.long)
 test_label_ids = torch.tensor([f.label_id for f in test_features], dtype=torch.long)
 test_input_masks = torch.tensor([f.input_mask for f in test_features], dtype=torch.long)
 
