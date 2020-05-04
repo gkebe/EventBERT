@@ -33,9 +33,10 @@ from torch.utils.data.distributed import DistributedSampler
 from tqdm import tqdm, trange
 
 from file_utils import PYTORCH_PRETRAINED_BERT_CACHE
-from modeling import BertForSequenceClassification, BertConfig, WEIGHTS_NAME, CONFIG_NAME
-from tokenization import BertTokenizer
-from optimization import BertAdam, warmup_linear
+#from modeling import BertForSequenceClassification, BertConfig, WEIGHTS_NAME, CONFIG_NAME
+from transformers import BertForSequenceClassification, BertConfig, BertTokenizer, AdamW
+#from tokenization import BertTokenizer
+#from optimization import BertAdam, warmup_linear
 from schedulers import LinearWarmUpScheduler
 from apex import amp
 from sklearn.metrics import matthews_corrcoef, f1_score, recall_score, precision_score, classification_report, confusion_matrix
@@ -600,8 +601,8 @@ def main():
 
     #tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
     #tokenizer = BertTokenizer.from_pretrained(args.vocab_file, do_lower_case=args.do_lower_case, max_len=512)
-    tokenizer = BertTokenizer(args.vocab_file, do_lower_case=args.do_lower_case, max_len=512) # for bert base
-
+    #tokenizer = BertTokenizer(args.vocab_file, do_lower_case=args.do_lower_case, max_len=512) # for bert base
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
     train_examples = None
     num_train_optimization_steps = None
     if args.do_train:
@@ -617,18 +618,18 @@ def main():
     if config.vocab_size % 8 != 0:
         config.vocab_size += 8 - (config.vocab_size % 8)
 
-    model = BertForSequenceClassification(config, num_labels=num_labels)
-    print("USING CHECKPOINT from", args.init_checkpoint)
-    model.load_state_dict(torch.load(args.init_checkpoint, map_location='cpu')["model"], strict=False)
-    print("USED CHECKPOINT from", args.init_checkpoint)
+    model = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=num_labels)
+    # print("USING CHECKPOINT from", args.init_checkpoint)
+    # model.load_state_dict(torch.load(args.init_checkpoint, map_location='cpu')["model"], strict=False)
+    # print("USED CHECKPOINT from", args.init_checkpoint)
 
     model.to(device)
     # Prepare optimizer
     param_optimizer = list(model.named_parameters())
     no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
     optimizer_grouped_parameters = [
-        {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
-        {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
+        {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay_rate': 0.01},
+        {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay_rate': 0.0}
         ]
     if args.fp16:
         print("using fp16")
@@ -653,10 +654,12 @@ def main():
         
     else:
         print("using fp32")
-        optimizer = BertAdam(optimizer_grouped_parameters,
-                             lr=args.learning_rate,
-                             warmup=args.warmup_proportion,
-                             t_total=num_train_optimization_steps)
+        # optimizer = BertAdam(optimizer_grouped_parameters,
+        #                      lr=args.learning_rate,
+        #                      warmup=args.warmup_proportion,
+        #                      t_total=num_train_optimization_steps)
+        optimizer = AdamW(optimizer_grouped_parameters,
+                          lr=args.learning_rate)
 
     if args.local_rank != -1:
         try:

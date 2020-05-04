@@ -73,7 +73,7 @@ else
 fi
 
 
-CMD="python $mpi_command run_classification.py "
+CMD="python $mpi_command run_classification_huggingface.py "
 CMD+="--task_name frames "
 if [ "$mode" = "train" ] ; then
   CMD+="--do_train "
