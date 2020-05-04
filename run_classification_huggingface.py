@@ -34,7 +34,7 @@ from tqdm import tqdm, trange
 
 from file_utils import PYTORCH_PRETRAINED_BERT_CACHE
 #from modeling import BertForSequenceClassification, BertConfig, WEIGHTS_NAME, CONFIG_NAME
-from transformers import BertForSequenceClassification, BertConfig, BertTokenizer, AdamW
+from pytorch_transformers import BertForSequenceClassification, BertConfig, BertTokenizer, AdamW
 #from tokenization import BertTokenizer
 #from optimization import BertAdam, warmup_linear
 from schedulers import LinearWarmUpScheduler
