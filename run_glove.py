@@ -245,7 +245,8 @@ test_loader = torch.utils.data.DataLoader(dataset=test_data, batch_size=batch_si
 model = LogisticRegression(input_dim, output_dim)
 criterion = torch.nn.CrossEntropyLoss() # computes softmax and then the cross entropy
 optimizer = torch.optim.SGD(model.parameters(), lr=lr_rate)
-
+preds = None
+out_label_ids = None 
 iter = 0
 for epoch in range(int(epochs)):
     for i, (inputs, labels) in enumerate(train_loader):
@@ -257,7 +258,7 @@ for epoch in range(int(epochs)):
         loss = criterion(outputs, labels)
         loss.backward()
         optimizer.step()
-
+        
         iter+=1
         if iter%500==0:
             preds = None
@@ -280,12 +281,12 @@ for epoch in range(int(epochs)):
                 correct+= (predicted == labels).sum()
             accuracy = 100 * correct/total
             print("Iteration: {}. Loss: {}. Accuracy: {}.".format(iter, loss.item(), accuracy))
-        results = {}
-        np.set_printoptions(threshold=sys.maxsize)
-        result = metrics_frame(preds, out_label_ids, label_list)
-        results.update(result)
-        print(results)
-        output_eval_file = os.path.join("./data/", "eval_results.txt")
-        with open(output_eval_file, "w") as writer:
-            for key in sorted(results.keys()):
-                writer.write("%s = %s\n" % (key, str(results[key])))
+results = {}
+np.set_printoptions(threshold=sys.maxsize)
+result = metrics_frame(preds, out_label_ids, label_list)
+results.update(result)
+print(results)
+output_eval_file = os.path.join("./data/", "eval_results.txt")
+with open(output_eval_file, "w") as writer:
+    for key in sorted(results.keys()):
+        writer.write("%s = %s\n" % (key, str(results[key])))
