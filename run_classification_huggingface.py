@@ -715,7 +715,8 @@ def main():
                     break
                 batch = tuple(t.to(device) for t in batch)
                 input_ids, input_mask, segment_ids, label_ids = batch
-                loss = model(input_ids, segment_ids, input_mask, label_ids)
+                output = model(input_ids, segment_ids, input_mask, label_ids)
+                loss = output[0]
                 if n_gpu > 1:
                     loss = loss.mean() # mean() to average on multi-gpu.
                 if args.gradient_accumulation_steps > 1:
@@ -769,8 +770,10 @@ def main():
             label_ids = label_ids.to(device)
 
             with torch.no_grad():
-                tmp_eval_loss = model(input_ids, segment_ids, input_mask, label_ids)
-                logits = model(input_ids, segment_ids, input_mask)
+                output = model(input_ids, segment_ids, input_mask, label_ids)
+                tmp_eval_loss = output[1]
+                output = model(input_ids, segment_ids, input_mask)
+                logits = output[0]
                 eval_loss += tmp_eval_loss.mean().item()
             nb_eval_steps += 1
             if preds is None:
