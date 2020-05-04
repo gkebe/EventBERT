@@ -288,8 +288,10 @@ processor = FramesProcessor()
 train_examples = processor.get_train_examples(data_dir)
 test_examples = processor.get_test_examples(data_dir)
 
-train_features = convert_examples_to_features(train_examples, 128, tokenizer)
-test_features = convert_examples_to_features(test_examples, 128, tokenizer)
+label_list = processor.get_labels(data_dir=data_dir)
+
+train_features = convert_examples_to_features(train_examples, label_list, 128, tokenizer)
+test_features = convert_examples_to_features(test_examples,label_list, 128, tokenizer)
 
 train_input_ids = torch.tensor([f.input_ids for f in train_features], dtype=torch.float32)
 train_label_ids = torch.tensor([f.label_id for f in train_features], dtype=torch.long)
@@ -298,16 +300,6 @@ train_input_masks = torch.tensor([f.input_mask for f in train_features], dtype=t
 test_input_ids = torch.tensor([f.input_ids for f in test_features], dtype=torch.float32)
 test_label_ids = torch.tensor([f.label_id for f in test_features], dtype=torch.long)
 test_input_masks = torch.tensor([f.input_mask for f in test_features], dtype=torch.long)
-
-# Represent labels as one-hot encoded vectors
-train_df = pd.read_csv("train.tsv", delimiter='\t')
-test_df = pd.read_csv("test.tsv", delimiter='\t')
-train_sentences = train_df.sentence.values
-test_sentences = test_df.sentence.values
-train_labels = train_df.label.values
-test_labels= test_df.label.values
-label_names= list(set(train_labels.tolist()+test_labels.tolist()))
-label_ids= list(range(len(label_names)))
 
 
 # Pre-processing
@@ -323,10 +315,6 @@ def preprocess(sentences):
   #Add begining and end of sentence tokens
   clean_sentences = [sentence + " [SEP] [CLS]" for sentence in clean_sentences]
   return clean_sentences
-
-def to_labels(t):
-  print(len(t))
-  print(Counter(list(chain.from_iterable([[label_names[j] for j in range(len(i.tolist())) if i.tolist()[j]==1] for i in t]))))
 
 def bert_model(train_inputs, test_inputs, train_labels, test_labels, train_masks, test_masks, epochs = 4, batch_size = 32, lr = 2e-5):
     """
@@ -368,8 +356,7 @@ def bert_model(train_inputs, test_inputs, train_labels, test_labels, train_masks
     test_sampler = SequentialSampler(test_data)
     test_dataloader = DataLoader(test_data, sampler=test_sampler, batch_size=batch_size)
     # Load BertForSequenceClassification, the pretrained BERT model with a single linear classification layer on top. 
-
-    model = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=len(label_names))
+    model = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=len(label_list))
     model.cuda()
     param_optimizer = list(model.named_parameters())
     no_decay = ['bias', 'gamma', 'beta']
@@ -464,7 +451,7 @@ def bert_model(train_inputs, test_inputs, train_labels, test_labels, train_masks
     print(batch_size_)
     print(model_metrics)
     np.set_printoptions(threshold=sys.maxsize)
-    result = compute_metrics("frames", predictions, labels, label_names)
+    result = compute_metrics("frames", predictions, labels, label_list)
     results = {}
     results.update(result)
     print(results)
@@ -482,7 +469,6 @@ batch_size = 32
 epochs = 4
 bert_lr = 2e-5
 # testing
-clean_train_sentences, clean_test_sentences = (preprocess(train_sentences), preprocess(test_sentences))
 bert_test_scores = bert_model(train_input_ids, test_input_ids, train_label_ids, test_label_ids, train_input_masks, test_input_masks, epochs, batch_size, bert_lr)
 print(bert_test_scores[0])
 print(bert_test_scores[1])
