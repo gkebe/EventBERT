@@ -14,7 +14,6 @@ from torch.utils.data import TensorDataset, DataLoader, RandomSampler, Sequentia
 from pytorch_transformers import BertTokenizer, BertForSequenceClassification
 from pytorch_transformers import AdamW
 from tqdm import trange
-import pandas as pd
 import numpy as np
 from sklearn.metrics import matthews_corrcoef, f1_score, recall_score, precision_score, confusion_matrix, classification_report
 import csv
