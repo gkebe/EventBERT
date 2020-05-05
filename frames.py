@@ -11,7 +11,7 @@ from collections import Counter
 from itertools import chain 
 import torch
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
-from pytorch_transformers import BertTokenizer, BertForSequenceClassification, BertConfig
+from pytorch_transformers import BertTokenizer, BertForSequenceClassification, BertConfig, PretrainedConfig
 from pytorch_transformers import AdamW
 from tqdm import trange
 import numpy as np
@@ -357,13 +357,14 @@ def bert_model(train_inputs, test_inputs, train_labels, test_labels, train_masks
     test_dataloader = DataLoader(test_data, sampler=test_sampler, batch_size=batch_size)
     # Load BertForSequenceClassification, the pretrained BERT model with a single linear classification layer on top. 
     # model = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=len(label_list))
-    config = BertConfig()
+    config = BertConfig(num_labels=len(label_list))
     if config.vocab_size % 8 != 0:
         config.vocab_size += 8 - (config.vocab_size % 8)
     model_fn = "./model/ckpt_0.pt"
     bert_model = 'bert-base-uncased'    
     model_state_dict = torch.load(model_fn, map_location='cpu')["model"]
-    model = BertForSequenceClassification.from_pretrained(bert_model, config = config, state_dict = model_state_dict, num_labels=len(label_list))
+    model = BertForSequenceClassification.from_pretrained(bert_model, config = config, state_dict = model_state_dict)
+    print(model.num_labels)
     model.cuda()
     param_optimizer = list(model.named_parameters())
     no_decay = ['bias', 'gamma', 'beta']
