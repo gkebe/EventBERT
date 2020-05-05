@@ -475,7 +475,7 @@ def bert_model(train_inputs, test_inputs, train_labels, test_labels, train_masks
     results = {}
     results.update(result)
     print(results)
-    with open("./model/wiki_70k_frames/logfile", "w") as writer:
+    with open("./model/wiki_70k_frames/logfile"+model_fn, "w") as writer:
         logger.info("***** Eval results *****")
         for key in sorted(results.keys()):
             logger.info("  %s = %s", key, str(results[key]))
