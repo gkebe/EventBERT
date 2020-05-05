@@ -363,7 +363,7 @@ def bert_model(train_inputs, test_inputs, train_labels, test_labels, train_masks
     model_fn = "./model/ckpt_0.pt"
     bert_model = 'bert-base-uncased'    
     model_state_dict = torch.load(model_fn, map_location='cpu')["model"]
-    model = BertForSequenceClassification(config = config, num_labels=len(label_list))
+    model = BertForSequenceClassification(config = config)
     model.load_state_dict(model_state_dict, strict=False)
     print(model.num_labels)
     model.cuda()
