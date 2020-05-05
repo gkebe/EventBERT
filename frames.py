@@ -20,6 +20,7 @@ import csv
 import sys
 import os
 import logging
+import argparse
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 n_gpu = torch.cuda.device_count()
@@ -315,8 +316,17 @@ def preprocess(sentences):
   #Add begining and end of sentence tokens
   clean_sentences = [sentence + " [SEP] [CLS]" for sentence in clean_sentences]
   return clean_sentences
-
-def bert_model(train_inputs, test_inputs, train_labels, test_labels, train_masks, test_masks, epochs = 1, batch_size = 32, lr = 2e-5):
+def parse_arguments():
+    parser = argparse.ArgumentParser()
+    ## Required parameters
+    parser.add_argument("--checkpoint",
+                        default="model/ckpt_0.pt",
+                        type=str,
+                        required=False,
+                        help="Specify a checkpoint!")
+    return parser.parse_args()
+args = parse_arguments()
+def bert_model(train_inputs, test_inputs, train_labels, test_labels, train_masks, test_masks, epochs = 4, batch_size = 32, lr = 2e-5):
     """
     lr = learning rate
     T = probabilistic threshold
@@ -347,7 +357,7 @@ def bert_model(train_inputs, test_inputs, train_labels, test_labels, train_masks
 #      test_masks.append(seq_mask)
     # Create an iterator of our data with torch DataLoader. This helps save on memory during training because, unlike a for loop, 
     # with an iterator the entire dataset does not need to be loaded into memory
-
+    
     train_data = TensorDataset(train_inputs, train_masks, train_labels)
     train_sampler = RandomSampler(train_data)
     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)
@@ -360,8 +370,9 @@ def bert_model(train_inputs, test_inputs, train_labels, test_labels, train_masks
     config = BertConfig(num_labels=len(label_list))
     if config.vocab_size % 8 != 0:
         config.vocab_size += 8 - (config.vocab_size % 8)
-    model_fn = "./model/ckpt_0.pt"
+    model_fn = args.checkpoint
     bert_model = 'bert-base-uncased'    
+    print(model_fn)
     model_state_dict = torch.load(model_fn, map_location='cpu')["model"]
     model = BertForSequenceClassification(config = config)
     model.load_state_dict(model_state_dict, strict=False)
@@ -475,7 +486,7 @@ def bert_model(train_inputs, test_inputs, train_labels, test_labels, train_masks
 
 
 batch_size = 32
-epochs = 1
+epochs = 4
 bert_lr = 2e-5
 # testing
 bert_test_scores = bert_model(train_input_ids, test_input_ids, train_label_ids, test_label_ids, train_input_masks, test_input_masks, epochs, batch_size, bert_lr)
