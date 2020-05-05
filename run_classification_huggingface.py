@@ -612,15 +612,13 @@ def main():
         if args.local_rank != -1:
             num_train_optimization_steps = num_train_optimization_steps // torch.distributed.get_world_size()
 
-
-    config = BertConfig(num_labels=num_labels)
+    # Prepare model
+    config = BertConfig.from_json_file(args.config_file)
+    # Padding for divisibility by 8
     if config.vocab_size % 8 != 0:
         config.vocab_size += 8 - (config.vocab_size % 8)
-    model_fn = args.init_checkpoint
-    bert_model = 'bert-base-uncased'    
-    model_state_dict = torch.load(model_fn, map_location='cpu')["model"]
-    model = BertForSequenceClassification.from_pretrained(bert_model, config = config, state_dict = model_state_dict)
-    print(model.num_labels)
+
+    model = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=num_labels)
     # print("USING CHECKPOINT from", args.init_checkpoint)
     # model.load_state_dict(torch.load(args.init_checkpoint, map_location='cpu')["model"], strict=False)
     # print("USED CHECKPOINT from", args.init_checkpoint)
