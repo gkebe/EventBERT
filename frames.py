@@ -316,7 +316,7 @@ def preprocess(sentences):
   clean_sentences = [sentence + " [SEP] [CLS]" for sentence in clean_sentences]
   return clean_sentences
 
-def bert_model(train_inputs, test_inputs, train_labels, test_labels, train_masks, test_masks, epochs = 4, batch_size = 32, lr = 2e-5):
+def bert_model(train_inputs, test_inputs, train_labels, test_labels, train_masks, test_masks, epochs = 1, batch_size = 32, lr = 2e-5):
     """
     lr = learning rate
     T = probabilistic threshold
@@ -474,7 +474,7 @@ def bert_model(train_inputs, test_inputs, train_labels, test_labels, train_masks
 
 
 batch_size = 32
-epochs = 4
+epochs = 1
 bert_lr = 2e-5
 # testing
 bert_test_scores = bert_model(train_input_ids, test_input_ids, train_label_ids, test_label_ids, train_input_masks, test_input_masks, epochs, batch_size, bert_lr)
