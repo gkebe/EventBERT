@@ -20,7 +20,7 @@ mkdir -p $OUT_DIR
 
 echo "Container nvidia build = " $NVIDIA_BUILD_ID
 
-init_checkpoint="${PWD}/results/checkpoints/ckpt_6364.pt.pt"
+init_checkpoint="${PWD}/results/checkpoints/ckpt_6364.pt"
 mode="train test"
 max_steps="-1.0" # if < 0, has no effect
 batch_size="32"
