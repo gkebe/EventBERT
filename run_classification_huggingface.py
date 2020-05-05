@@ -619,7 +619,12 @@ def main():
     model_fn = args.init_checkpoint
     bert_model = 'bert-base-uncased'    
     model_state_dict = torch.load(model_fn, map_location='cpu')["model"]
+    model = BertForSequenceClassification.from_pretrained(bert_model, config = config)
+    print("before:")
+    print(model.parameters())
     model = BertForSequenceClassification.from_pretrained(bert_model, config = config, state_dict = model_state_dict)
+    print("after:")
+    print(model.parameters())
     print(model.num_labels)
     # print("USING CHECKPOINT from", args.init_checkpoint)
     # model.load_state_dict(torch.load(args.init_checkpoint, map_location='cpu')["model"], strict=False)
