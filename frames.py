@@ -360,7 +360,7 @@ def bert_model(train_inputs, test_inputs, train_labels, test_labels, train_masks
     config = BertConfig(num_labels=len(label_list))
     if config.vocab_size % 8 != 0:
         config.vocab_size += 8 - (config.vocab_size % 8)
-    model_fn = "./model/old/ckpt_0_no_pretraining.pt"
+    model_fn = "./model/ckpt_0.pt"
     bert_model = 'bert-base-uncased'    
     model_state_dict = torch.load(model_fn, map_location='cpu')["model"]
     model = BertForSequenceClassification.from_pretrained(bert_model, config = config)
