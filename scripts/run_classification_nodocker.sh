@@ -20,14 +20,14 @@ mkdir -p $OUT_DIR
 
 echo "Container nvidia build = " $NVIDIA_BUILD_ID
 
-init_checkpoint="${PWD}/results/checkpoints/ckpt_3985.pt"
+init_checkpoint="${PWD}/results/checkpoints/ckpt_6364.pt.pt"
 mode="train test"
 max_steps="-1.0" # if < 0, has no effect
 batch_size="32"
 learning_rate="2e-5"
 precision="fp16"
-num_gpu=1
-gpu="2"
+num_gpu=2
+gpu="2,3"
 master_port="8599"
 epochs="4"
 warmup_proportion="0.1"
@@ -73,7 +73,7 @@ else
 fi
 
 
-CMD="python $mpi_command run_classification_huggingface.py "
+CMD="python $mpi_command run_classification.py "
 CMD+="--task_name frames "
 if [ "$mode" = "train" ] ; then
   CMD+="--do_train "

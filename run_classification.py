@@ -625,7 +625,7 @@ def main():
     model.to(device)
     # Prepare optimizer
     param_optimizer = list(model.named_parameters())
-    no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
+    no_decay = ['bias', 'gamma', 'beta']
     optimizer_grouped_parameters = [
         {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
         {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
@@ -796,6 +796,6 @@ def main():
             for key in sorted(results.keys()):
                 logger.info("  %s = %s", key, str(results[key]))
                 writer.write("%s = %s\n" % (key, str(results[key])))
-        
+
 if __name__ == "__main__":
     main()
