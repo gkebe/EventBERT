@@ -621,14 +621,14 @@ def main():
     model = BertForSequenceClassification.from_pretrained(bert_model, config = config)
 
     print("before:")
-    print(model.parameters())
-    
+    print(list(model.parameters()))
+
     if config.vocab_size % 8 != 0:
         config.vocab_size += 8 - (config.vocab_size % 8)
     model = BertForSequenceClassification.from_pretrained(bert_model, config = config, state_dict = model_state_dict)
 
     print("after:")
-    print(model.parameters())
+    print(list(model.parameters()))
 
 
     print(model.num_labels)
