@@ -613,24 +613,13 @@ def main():
             num_train_optimization_steps = num_train_optimization_steps // torch.distributed.get_world_size()
 
 
+    config = BertConfig(num_labels=num_labels)
+    if config.vocab_size % 8 != 0:
+        config.vocab_size += 8 - (config.vocab_size % 8)
     model_fn = args.init_checkpoint
     bert_model = 'bert-base-uncased'    
     model_state_dict = torch.load(model_fn, map_location='cpu')["model"]
-
-    config = BertConfig(num_labels=num_labels)
-    model = BertForSequenceClassification.from_pretrained(bert_model, config = config)
-
-    print("before:")
-    print(list(model.parameters()))
-
-    if config.vocab_size % 8 != 0:
-        config.vocab_size += 8 - (config.vocab_size % 8)
     model = BertForSequenceClassification.from_pretrained(bert_model, config = config, state_dict = model_state_dict)
-
-    print("after:")
-    print(list(model.parameters()))
-
-
     print(model.num_labels)
     # print("USING CHECKPOINT from", args.init_checkpoint)
     # model.load_state_dict(torch.load(args.init_checkpoint, map_location='cpu')["model"], strict=False)
