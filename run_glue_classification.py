@@ -217,8 +217,7 @@ class FramesProcessor(DataProcessor):
         train_examples = self.get_train_examples(data_dir)
         dev_examples = self.get_dev_examples(data_dir)
         test_examples = self.get_test_examples(data_dir)
-        return list(set([i.label for i in train_examples+dev_examples+test_examples]))
-
+        return ['Placing', 'Adopt_selection', 'Sending', 'Getting', 'Taking_sides', 'Receiving', 'Becoming', 'Operating_a_system', 'Request', 'Supply', 'Shoot_projectiles', 'Awareness', 'Motion', 'Process_continue', 'Have_associated', 'Perception_experience', 'Building', 'Being_named', 'Manufacturing', 'State_continue', 'Permitting', 'Cause_to_make_progress', 'Quitting', 'Secrecy_status', 'Possession', 'Intentionally_act', 'Supporting', 'Commerce_sell', 'Cause_to_amalgamate', 'Becoming_aware', '__NOFRAME__', 'Becoming_a_member', 'Finish_competition', 'Appointing', 'Cause_change_of_position_on_a_scale', 'Sign_agreement', 'Departing', 'Judgment_communication', 'Activity_start', 'Using', 'Creating', 'Separating', 'Undergo_change', 'Respond_to_proposal', 'Cause_change', 'Grant_permission', 'Residence', 'Performers_and_roles', 'Activity_ongoing', 'Cause_motion', 'Offering', 'Coming_to_be', 'Event', 'Relative_time', 'Conquering', 'Evidence', 'Causation', 'Categorization', 'Change_of_leadership', 'Taking', 'Change_position_on_a_scale', 'Locating', 'Text_creation', 'Releasing', 'Being_located', 'Come_together', 'Appearance', 'Inclusion', 'Assistance', 'Communicate_categorization', 'Participation', 'Attempt', 'Removing', 'Choosing', 'Intentionally_create', 'Self_motion', 'Verification', 'Containing', 'Success_or_failure', 'Bringing', 'Leadership', 'Statement', 'Giving', 'Arriving']
     def _create_examples(self, lines, set_type):
         """Creates examples for the training and dev sets."""
         examples = []
