@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-MRPC_DIR=${PWD}/data/glue/MRPC
+MRPC_DIR=${PWD}/data/MRPC
 OUT_DIR=${PWD}/results/MRPC
 
 mkdir -p $OUT_DIR
