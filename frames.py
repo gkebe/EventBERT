@@ -284,7 +284,7 @@ def accuracy(out, labels):
     return np.sum(outputs == labels)
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
-data_dir = "./model/wiki_70k_frames"
+data_dir = "./data/frames"
 processor = FramesProcessor()
 train_examples = processor.get_train_examples(data_dir)
 test_examples = processor.get_test_examples(data_dir)
@@ -320,7 +320,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser()
     ## Required parameters
     parser.add_argument("--checkpoint",
-                        default="model/ckpt_0.pt",
+                        default="checkpoints/bert-base.pt",
                         type=str,
                         required=False,
                         help="Specify a checkpoint!")
