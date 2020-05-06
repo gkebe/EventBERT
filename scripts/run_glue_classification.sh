@@ -74,7 +74,7 @@ else
 fi
 
 
-CMD="python $mpi_command run_glue.py "
+CMD="python $mpi_command run_glue_classification.py "
 CMD+="--task_name $task "
 if [ "$mode" = "train" ] ; then
   CMD+="--do_train "
