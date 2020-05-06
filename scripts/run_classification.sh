@@ -105,7 +105,8 @@ CMD+="--vocab_file=$vocab_file "
 CMD+="--config_file=$CONFIG_FILE "
 CMD+="--output_dir $OUT_DIR "
 CMD+="$use_fp16"
-suffix="${$(basename "$init_checkpoint")%.*}"
+suffix=$(basename "$init_checkpoint")
+suffix="${suffix%.*}"
 LOGFILE=$OUT_DIR/logfile_$suffix
 
 echo $CMD
