@@ -817,7 +817,7 @@ def main():
         result = compute_metrics(task_name, preds, out_label_ids, label_list)
         results.update(result)
         print(results)
-        output_eval_file = os.path.join(args.output_dir, "eval_results_"+args.init_checkpoint.split("/")[-1]+".txt")
+        output_eval_file = os.path.join(args.output_dir, "eval_results_"+args.init_checkpoint.split("/")[-1].split(".")[0]+".txt")
         with open(output_eval_file, "w") as writer:
             logger.info("***** Eval results *****")
             for key in sorted(results.keys()):
