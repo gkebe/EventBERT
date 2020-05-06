@@ -13,25 +13,46 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-MRPC_DIR=/workspace/bert/data/glue/MRPC
-OUT_DIR=/results/MRPC
+MRPC_DIR=${PWD}/data/glue/MRPC
+OUT_DIR=${PWD}/results/MRPC
 
 mkdir -p $OUT_DIR
 
 echo "Container nvidia build = " $NVIDIA_BUILD_ID
 
-init_checkpoint=${1:-"/workspace/bert/checkpoints/ckpt_8601.pt"}
-mode=${2:-"train eval"}
-max_steps=${3:-"-1.0"} # if < 0, has no effect
-batch_size=${4:-"8"}
-learning_rate=${5:-"2e-5"}
-precision=${6:-"fp16"}
-num_gpu=${7:-8}
-epochs=${8:-"3"}
-warmup_proportion=${9:-"0.01"}
-seed=${10:-2}
-vocab_file=${11:-"$BERT_PREP_WORKING_DIR/download/google_pretrained_weights/uncased_L-24_H-1024_A-16/vocab.txt"}
-CONFIG_FILE=${12:-"/workspace/bert/bert_config.json"}
+init_checkpoint="${PWD}/checkpoints/ckpt_8601.pt"
+mode="train eval"
+max_steps="-1.0" # if < 0, has no effect
+batch_size="32"
+learning_rate="2e-5"
+precision="fp16"
+num_gpu=2
+gpu="2,3"
+master_port="8599"
+epochs="4"
+warmup_proportion="0.01"
+seed=2
+vocab_file="${PWD}/data/download/google_pretrained_weights/uncased_L-12_H-768_A-12/vocab.txt"
+CONFIG_FILE="${PWD}/bert_config.json"
+
+while getopts g:p:c:n:d:b:e:l:o:m: option
+do
+ case "${option}"
+ in
+ g) gpu=${OPTARG};;
+ p) master_port=${OPTARG};;
+ c) init_checkpoint=${OPTARG};;
+ n) num_gpu=${OPTARG};;
+ d) DATA_DIR=${OPTARG};;
+ b) batch_size=${OPTARG};;
+ e) epochs=${OPTARG};;
+ l) learning_rate=${OPTARG};;
+ o) OUT_DIR=${OPTARG};;
+ m) mode=${OPTARG};;
+ esac
+done
+
+
 
 if [ "$mode" = "eval" ] ; then
   num_gpu=1
@@ -44,10 +65,10 @@ if [ "$precision" = "fp16" ] ; then
 fi
 
 if [ "$num_gpu" = "1" ] ; then
-  export CUDA_VISIBLE_DEVICES=0
+  export CUDA_VISIBLE_DEVICES=$gpu
   mpi_command=""
 else
-  unset CUDA_VISIBLE_DEVICES
+  export CUDA_VISIBLE_DEVICES=$gpu
   mpi_command=" -m torch.distributed.launch --nproc_per_node=$num_gpu"
 fi
 
