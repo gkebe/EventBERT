@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-MRPC_DIR=${PWD}/data/MRPC
 OUT_DIR=${PWD}/results/MRPC
 
 mkdir -p $OUT_DIR
@@ -35,6 +34,7 @@ seed=2
 vocab_file="${PWD}/data/download/google_pretrained_weights/uncased_L-12_H-768_A-12/vocab.txt"
 CONFIG_FILE="${PWD}/bert_config.json"
 task="MRPC"
+DATA_DIR=${PWD}/data/${task}
 
 while getopts g:p:c:n:d:b:e:l:o:m:t: option
 do
@@ -93,7 +93,7 @@ if [ "$mode" == "train eval" ] ; then
 fi
 
 CMD+="--do_lower_case "
-CMD+="--data_dir $MRPC_DIR "
+CMD+="--data_dir $DATA_DIR "
 CMD+="--bert_model bert-large-uncased "
 CMD+="--seed $seed "
 CMD+="--init_checkpoint $init_checkpoint "
