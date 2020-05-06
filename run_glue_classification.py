@@ -562,7 +562,7 @@ def main():
                         help="The BERT model config")
 
     args = parser.parse_args()
-    print(a)
+    print("a")
     if args.server_ip and args.server_port:
         # Distant debugging - see https://code.visualstudio.com/docs/python/debugging#_attach-to-a-local-script
         import ptvsd
