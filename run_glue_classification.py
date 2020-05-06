@@ -621,9 +621,10 @@ def main():
 
     processor = processors[task_name]()
     num_labels = num_labels_task[task_name]
-    label_list = processor.get_labels()
     if task_name=="frames":
         label_list = processor.get_labels(args.data_dir)
+    else:
+        label_list = processor.get_labels()
     #tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
     tokenizer = BertTokenizer(args.vocab_file, do_lower_case=args.do_lower_case, max_len=512) # for bert large
     
