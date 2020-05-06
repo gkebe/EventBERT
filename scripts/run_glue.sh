@@ -13,9 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-OUT_DIR=${PWD}/results/MRPC
-
-mkdir -p $OUT_DIR
 
 echo "Container nvidia build = " $NVIDIA_BUILD_ID
 
@@ -34,7 +31,6 @@ seed=2
 vocab_file="${PWD}/data/download/google_pretrained_weights/uncased_L-12_H-768_A-12/vocab.txt"
 CONFIG_FILE="${PWD}/bert_config.json"
 task="MRPC"
-DATA_DIR=${PWD}/data/${task}
 
 while getopts g:p:c:n:d:b:e:l:o:m:t: option
 do
@@ -53,7 +49,10 @@ do
  t) task=${OPTARG};;
  esac
 done
+DATA_DIR=${PWD}/data/${task}
+OUT_DIR=${PWD}/results/${task}
 
+mkdir -p $OUT_DIR
 
 
 if [ "$mode" = "eval" ] ; then
