@@ -630,6 +630,7 @@ def main():
         label_list = processor.get_labels()
         num_labels = num_labels_task[task_name]
     print(label_list)
+    print("a")
     #tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
     tokenizer = BertTokenizer(args.vocab_file, do_lower_case=args.do_lower_case, max_len=128) # for bert large
     
