@@ -46,7 +46,9 @@ logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(messa
                     level = logging.INFO)
 logger = logging.getLogger(__name__)
 
-def compute_metrics(task_name, preds, labels):
+def compute_metrics(task_name, preds, labels, label_names=None):
+    if label_names is None:
+        label_names = []
     assert len(preds) == len(labels)
     if task_name == "cola":
         return {"mcc": matthews_corrcoef(labels, preds)}
@@ -68,6 +70,8 @@ def compute_metrics(task_name, preds, labels):
         return {"acc": acc_and_f1(preds, labels)}
     elif task_name == "wnli":
         return {"acc": simple_accuracy(preds, labels)}
+    elif task_name == "frames":
+        return metrics_frame(preds, labels,label_names)
     else:
         raise KeyError(task_name)
 
@@ -813,7 +817,7 @@ def main():
                   'global_step': global_step,
                   'loss': loss}
 
-        result = compute_metrics(task_name, preds, out_label_ids)
+        result = compute_metrics(task_name, preds, out_label_ids, label_list)
         results.update(result)
         print(results)
         output_eval_file = os.path.join(args.output_dir, "eval_results.txt")
