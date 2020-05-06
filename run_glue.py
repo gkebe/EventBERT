@@ -65,7 +65,7 @@ def compute_metrics(task_name, preds, labels):
     elif task_name == "qnli":
         return {"acc": simple_accuracy(preds, labels)}
     elif task_name == "rte":
-        return {"acc": simple_accuracy(preds, labels)}
+        return {"acc": acc_and_f1(preds, labels)}
     elif task_name == "wnli":
         return {"acc": simple_accuracy(preds, labels)}
     else:
