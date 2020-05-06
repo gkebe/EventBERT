@@ -36,7 +36,7 @@ vocab_file="${PWD}/data/download/google_pretrained_weights/uncased_L-12_H-768_A-
 CONFIG_FILE="${PWD}/bert_config.json"
 task="MRPC"
 
-while getopts g:p:c:n:d:b:e:l:o:m: option
+while getopts g:p:c:n:d:b:e:l:o:m:t: option
 do
  case "${option}"
  in
