@@ -219,12 +219,11 @@ class RteProcessor(DataProcessor):
     def get_dev_examples(self, data_dir):
         """See base class."""
         return self._create_examples(
-            self._read_tsv(os.path.join(data_dir, "dev_matched.tsv")),
-            "dev_matched")
-
+            self._read_tsv(os.path.join(data_dir, "dev.tsv")),
+            "dev")
     def get_labels(self):
         """See base class."""
-        return ["contradiction", "entailment", "neutral"]
+        return ["not_entailment", "entailment"]
 
     def _create_examples(self, lines, set_type):
         """Creates examples for the training and dev sets."""
@@ -233,9 +232,9 @@ class RteProcessor(DataProcessor):
             if i == 0:
                 continue
             guid = "%s-%s" % (set_type, line[0])
-            text_a = line[8]
-            text_b = line[9]
-            label = line[-1]
+            text_a = line[1]
+            text_b = line[2]
+            label = line[3]
             examples.append(
                 InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
         return examples
@@ -519,12 +518,14 @@ def main():
         "cola": ColaProcessor,
         "mnli": MnliProcessor,
         "mrpc": MrpcProcessor,
+        "rte": RteProcessor,
     }
 
     num_labels_task = {
         "cola": 2,
         "mnli": 3,
         "mrpc": 2,
+        "rte":2,
     }
 
     if args.local_rank == -1 or args.no_cuda:
