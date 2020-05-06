@@ -41,7 +41,6 @@ from apex import amp
 from sklearn.metrics import matthews_corrcoef, f1_score, recall_score, precision_score, classification_report, confusion_matrix
 from utils import is_main_process
 
-
 logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt = '%m/%d/%Y %H:%M:%S',
                     level = logging.INFO)
@@ -57,8 +56,8 @@ def compute_metrics(task_name, preds, labels, label_names=None):
         return {"acc": simple_accuracy(preds, labels)}
     elif task_name == "mrpc":
         return acc_and_f1(preds, labels)
-    # elif task_name == "sts-b":
-    #     return pearson_and_spearman(preds, labels)
+    elif task_name == "sts-b":
+        return pearson_and_spearman(preds, labels)
     elif task_name == "qqp":
         return acc_and_f1(preds, labels)
     elif task_name == "mnli":
@@ -68,7 +67,7 @@ def compute_metrics(task_name, preds, labels, label_names=None):
     elif task_name == "qnli":
         return {"acc": simple_accuracy(preds, labels)}
     elif task_name == "rte":
-        return {"acc": simple_accuracy(preds, labels)}
+        return {"acc": acc_and_f1(preds, labels)}
     elif task_name == "wnli":
         return {"acc": simple_accuracy(preds, labels)}
     elif task_name == "frames":
@@ -80,14 +79,6 @@ def compute_metrics(task_name, preds, labels, label_names=None):
 def simple_accuracy(preds, labels):
     return (preds == labels).mean()
 
-def acc_and_f1(preds, labels):
-    acc = simple_accuracy(preds, labels)
-    f1 = f1_score(y_true=labels, y_pred=preds)
-    return {
-        "acc": acc,
-        "f1": f1,
-        "acc_and_f1": (acc + f1) / 2,
-    }
 def metrics_frame(preds, labels, label_names):
     recall_micro = recall_score(labels, preds, average="micro")
     recall_macro = recall_score(labels, preds, average="macro")
@@ -101,6 +92,16 @@ def metrics_frame(preds, labels, label_names):
                      "Recall, Micro": recall_micro, "Recall, Macro": recall_macro,
                      "F1 score, Micro": f1_micro, "F1 score, Macro": f1_macro, "Confusion matrix": cm, "Classification report": cr}
     return model_metrics
+
+def acc_and_f1(preds, labels):
+    acc = simple_accuracy(preds, labels)
+    f1 = f1_score(y_true=labels, y_pred=preds)
+    return {
+        "acc": acc,
+        "f1": f1,
+        "acc_and_f1": (acc + f1) / 2,
+    }
+
 class InputExample(object):
     """A single training/test example for simple sequence classification."""
 
@@ -150,53 +151,15 @@ class DataProcessor(object):
     @classmethod
     def _read_tsv(cls, input_file, quotechar=None):
         """Reads a tab separated value file."""
-        with open(input_file, "r", encoding="utf8") as f:
+        with open(input_file, "r") as f:
             reader = csv.reader(f, delimiter="\t", quotechar=quotechar)
             lines = []
             for line in reader:
                 if sys.version_info[0] == 2:
-                    line = list(cell.decode('utf-8') for cell in line)
+                    line = list(unicode(cell, 'utf-8') for cell in line)
                 lines.append(line)
             return lines
 
-class FramesProcessor(DataProcessor):
-    """Processor for the Frames data set (Wiki_70k version)."""
-
-    def get_train_examples(self, data_dir):
-        """See base class."""
-        logger.info("LOOKING AT {}".format(os.path.join(data_dir, "train.tsv")))
-        return self._create_examples(
-            self._read_tsv(os.path.join(data_dir, "train.tsv")), "train")
-
-    def get_dev_examples(self, data_dir):
-        """See base class."""
-        return self._create_examples(
-            self._read_tsv(os.path.join(data_dir, "valid.tsv")), "dev")
-
-    def get_test_examples(self, data_dir):
-        """See base class."""
-        return self._create_examples(
-            self._read_tsv(os.path.join(data_dir, "test.tsv")), "test")
-
-    def get_labels(self, data_dir):
-        """See base class."""
-        train_examples = self.get_train_examples(data_dir)
-        dev_examples = self.get_dev_examples(data_dir)
-        test_examples = self.get_test_examples(data_dir)
-        return list(set([i.label for i in train_examples+dev_examples+test_examples]))
-
-    def _create_examples(self, lines, set_type):
-        """Creates examples for the training and dev sets."""
-        examples = []
-        for (i, line) in enumerate(lines):
-            if i == 0:
-                continue
-            guid = "%s-%s" % (set_type, i)
-            sentence = line[0]
-            label = line[1]
-            examples.append(
-                InputExample(guid=guid, text_a=sentence, label=label))
-        return examples
 
 class MrpcProcessor(DataProcessor):
     """Processor for the MRPC data set (GLUE version)."""
@@ -230,6 +193,43 @@ class MrpcProcessor(DataProcessor):
                 InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
         return examples
 
+class FramesProcessor(DataProcessor):
+    """Processor for the Frames data set (Wiki_70k version)."""
+
+    def get_train_examples(self, data_dir):
+        """See base class."""
+        logger.info("LOOKING AT {}".format(os.path.join(data_dir, "train.tsv")))
+        return self._create_examples(
+            self._read_tsv(os.path.join(data_dir, "train.tsv")), "train")
+
+    def get_dev_examples(self, data_dir):
+        """See base class."""
+        return self._create_examples(
+            self._read_tsv(os.path.join(data_dir, "valid.tsv")), "dev")
+
+    def get_test_examples(self, data_dir):
+        """See base class."""
+        return self._create_examples(
+            self._read_tsv(os.path.join(data_dir, "test.tsv")), "test")
+
+    def get_labels(self, data_dir):
+        """See base class."""
+        train_examples = self.get_train_examples(data_dir)
+        dev_examples = self.get_dev_examples(data_dir)
+        test_examples = self.get_test_examples(data_dir)
+        return ['Placing', 'Adopt_selection', 'Sending', 'Getting', 'Taking_sides', 'Receiving', 'Becoming', 'Operating_a_system', 'Request', 'Supply', 'Shoot_projectiles', 'Awareness', 'Motion', 'Process_continue', 'Have_associated', 'Perception_experience', 'Building', 'Being_named', 'Manufacturing', 'State_continue', 'Permitting', 'Cause_to_make_progress', 'Quitting', 'Secrecy_status', 'Possession', 'Intentionally_act', 'Supporting', 'Commerce_sell', 'Cause_to_amalgamate', 'Becoming_aware', '__NOFRAME__', 'Becoming_a_member', 'Finish_competition', 'Appointing', 'Cause_change_of_position_on_a_scale', 'Sign_agreement', 'Departing', 'Judgment_communication', 'Activity_start', 'Using', 'Creating', 'Separating', 'Undergo_change', 'Respond_to_proposal', 'Cause_change', 'Grant_permission', 'Residence', 'Performers_and_roles', 'Activity_ongoing', 'Cause_motion', 'Offering', 'Coming_to_be', 'Event', 'Relative_time', 'Conquering', 'Evidence', 'Causation', 'Categorization', 'Change_of_leadership', 'Taking', 'Change_position_on_a_scale', 'Locating', 'Text_creation', 'Releasing', 'Being_located', 'Come_together', 'Appearance', 'Inclusion', 'Assistance', 'Communicate_categorization', 'Participation', 'Attempt', 'Removing', 'Choosing', 'Intentionally_create', 'Self_motion', 'Verification', 'Containing', 'Success_or_failure', 'Bringing', 'Leadership', 'Statement', 'Giving', 'Arriving']
+    def _create_examples(self, lines, set_type):
+        """Creates examples for the training and dev sets."""
+        examples = []
+        for (i, line) in enumerate(lines):
+            if i == 0:
+                continue
+            guid = "%s-%s" % (set_type, i)
+            sentence = line[0]
+            label = line[1]
+            examples.append(
+                InputExample(guid=guid, text_a=sentence, label=label))
+        return examples
 
 class MnliProcessor(DataProcessor):
     """Processor for the MultiNLI data set (GLUE version)."""
@@ -259,6 +259,37 @@ class MnliProcessor(DataProcessor):
             text_a = line[8]
             text_b = line[9]
             label = line[-1]
+            examples.append(
+                InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
+        return examples
+
+class RteProcessor(DataProcessor):
+    """Processor for the MultiNLI data set (GLUE version)."""
+
+    def get_train_examples(self, data_dir):
+        """See base class."""
+        return self._create_examples(
+            self._read_tsv(os.path.join(data_dir, "train.tsv")), "train")
+
+    def get_dev_examples(self, data_dir):
+        """See base class."""
+        return self._create_examples(
+            self._read_tsv(os.path.join(data_dir, "dev.tsv")),
+            "dev")
+    def get_labels(self):
+        """See base class."""
+        return ["not_entailment", "entailment"]
+
+    def _create_examples(self, lines, set_type):
+        """Creates examples for the training and dev sets."""
+        examples = []
+        for (i, line) in enumerate(lines):
+            if i == 0:
+                continue
+            guid = "%s-%s" % (set_type, line[0])
+            text_a = line[1]
+            text_b = line[2]
+            label = line[3]
             examples.append(
                 InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
         return examples
@@ -465,9 +496,6 @@ def main():
     parser.add_argument("--do_eval",
                         action='store_true',
                         help="Whether to run eval on the dev set.")
-    parser.add_argument("--do_test",
-                        action='store_true',
-                        help="Whether to run eval on the test set.")
     parser.add_argument("--do_lower_case",
                         action='store_true',
                         help="Set this flag if you are using an uncased model.")
@@ -533,7 +561,6 @@ def main():
                         help="The BERT model config")
 
     args = parser.parse_args()
-
     if args.server_ip and args.server_port:
         # Distant debugging - see https://code.visualstudio.com/docs/python/debugging#_attach-to-a-local-script
         import ptvsd
@@ -545,13 +572,15 @@ def main():
         "cola": ColaProcessor,
         "mnli": MnliProcessor,
         "mrpc": MrpcProcessor,
-        "frames": FramesProcessor
+        "rte": RteProcessor,
+        "frames": FramesProcessor,
     }
 
     num_labels_task = {
         "cola": 2,
         "mnli": 3,
         "mrpc": 2,
+        "rte":2,
     }
 
     if args.local_rank == -1 or args.no_cuda:
@@ -578,8 +607,8 @@ def main():
     if n_gpu > 0:
         torch.cuda.manual_seed_all(args.seed)
 
-    if not args.do_train and not args.do_eval and not args.do_test:
-        raise ValueError("At least one of `do_train`, `do_eval` or `do_test` must be True.")
+    if not args.do_train and not args.do_eval:
+        raise ValueError("At least one of `do_train` or `do_eval` must be True.")
 
     if os.path.exists(args.output_dir) and os.listdir(args.output_dir) and args.do_train:
         print("WARNING: Output directory ({}) already exists and is not empty.".format(args.output_dir))
@@ -592,16 +621,17 @@ def main():
         raise ValueError("Task not found: %s" % (task_name))
 
     processor = processors[task_name]()
-    if task_name == "frames":
-        label_list = processor.get_labels(data_dir=args.data_dir)
+    if task_name=="frames":
+        label_list = processor.get_labels(args.data_dir)
+        num_labels = len(label_list)
     else:
         label_list = processor.get_labels()
-    num_labels = len(label_list)
-
+        num_labels = num_labels_task[task_name]
+    for i in label_list:
+        logger.info(i)
     #tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
-    #tokenizer = BertTokenizer.from_pretrained(args.vocab_file, do_lower_case=args.do_lower_case, max_len=512)
-    tokenizer = BertTokenizer(args.vocab_file, do_lower_case=args.do_lower_case, max_len=512) # for bert base
-
+    tokenizer = BertTokenizer(args.vocab_file, do_lower_case=args.do_lower_case, max_len=128) # for bert large
+    
     train_examples = None
     num_train_optimization_steps = None
     if args.do_train:
@@ -625,10 +655,10 @@ def main():
     model.to(device)
     # Prepare optimizer
     param_optimizer = list(model.named_parameters())
-    no_decay = ['bias', 'gamma', 'beta']
+    no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
     optimizer_grouped_parameters = [
-        {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay_rate': 0.01},
-        {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay_rate': 0.0}
+        {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
+        {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
         ]
     if args.fp16:
         print("using fp16")
@@ -674,20 +704,20 @@ def main():
     tr_loss = 0
     if args.do_train:
         print("data prep")
-        # cached_train_features_file = args.data_dir + '_{0}_{1}_{2}'.format(
-        #     list(filter(None, args.bert_model.split('/'))).pop(), str(args.max_seq_length), str(args.do_lower_case))
-        # train_features = None
-        #
-        # try:
-        #     with open(cached_train_features_file, "rb") as reader:
-        #         train_features = pickle.load(reader)
-        # except:
-        #     train_features = convert_examples_to_features(train_examples, label_list, args.max_seq_length, tokenizer)
-        #     if args.local_rank == -1 or torch.distributed.get_rank() == 0:
-        #         logger.info("  Saving train features into cached file %s", cached_train_features_file)
-        #         with open(cached_train_features_file, "wb") as writer:
-        #             pickle.dump(train_features, writer)
-        train_features = convert_examples_to_features(train_examples, label_list, args.max_seq_length, tokenizer)
+        cached_train_features_file = args.data_dir + '_{0}_{1}_{2}'.format(
+            list(filter(None, args.bert_model.split('/'))).pop(), str(args.max_seq_length), str(args.do_lower_case))
+        train_features = None
+
+        try:
+            with open(cached_train_features_file, "rb") as reader:
+                train_features = pickle.load(reader)
+        except:
+            train_features = convert_examples_to_features(train_examples, label_list, args.max_seq_length, tokenizer)
+            if args.local_rank == -1 or torch.distributed.get_rank() == 0:
+                logger.info("  Saving train features into cached file %s", cached_train_features_file)
+                with open(cached_train_features_file, "wb") as writer:
+                    pickle.dump(train_features, writer)
+
         logger.info("***** Running training *****")
         logger.info("  Num examples = %d", len(train_examples))
         logger.info("  Batch size = %d", args.train_batch_size)
@@ -736,10 +766,8 @@ def main():
                     optimizer.zero_grad()
                     global_step += 1
 
-    if (args.do_eval or args.do_test) and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
+    if args.do_eval and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
         eval_examples = processor.get_dev_examples(args.data_dir)
-        if args.do_test:
-            eval_examples = processor.get_test_examples(args.data_dir)
         eval_features = convert_examples_to_features(
             eval_examples, label_list, args.max_seq_length, tokenizer)
         logger.info("***** Running evaluation *****")
@@ -768,6 +796,8 @@ def main():
             with torch.no_grad():
                 tmp_eval_loss = model(input_ids, segment_ids, input_mask, label_ids)
                 logits = model(input_ids, segment_ids, input_mask)
+
+
                 eval_loss += tmp_eval_loss.mean().item()
             nb_eval_steps += 1
             if preds is None:
@@ -786,7 +816,7 @@ def main():
         results = {'eval_loss': eval_loss,
                   'global_step': global_step,
                   'loss': loss}
-        np.set_printoptions(threshold=sys.maxsize)
+
         result = compute_metrics(task_name, preds, out_label_ids, label_list)
         results.update(result)
         print(results)
