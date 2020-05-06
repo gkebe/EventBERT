@@ -583,7 +583,6 @@ def main():
         "mnli": 3,
         "mrpc": 2,
         "rte":2,
-        "frames": len(FramesProcessor().get_labels(args.data_dir))
     }
 
     if args.local_rank == -1 or args.no_cuda:
@@ -624,11 +623,12 @@ def main():
         raise ValueError("Task not found: %s" % (task_name))
 
     processor = processors[task_name]()
-    num_labels = num_labels_task[task_name]
     if task_name=="frames":
         label_list = processor.get_labels(args.data_dir)
+        num_labels = len(label_list)
     else:
         label_list = processor.get_labels()
+        num_labels = num_labels_task[task_name]
     #tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
     tokenizer = BertTokenizer(args.vocab_file, do_lower_case=args.do_lower_case, max_len=512) # for bert large
     
