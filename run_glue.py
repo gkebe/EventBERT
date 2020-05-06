@@ -570,7 +570,7 @@ def main():
     label_list = processor.get_labels()
 
     #tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
-    tokenizer = BertTokenizer(args.vocab_file, do_lower_case=args.do_lower_case, max_len=512) # for bert large
+    tokenizer = BertTokenizer(args.vocab_file, do_lower_case=args.do_lower_case, max_len=128) # for bert large
     
     train_examples = None
     num_train_optimization_steps = None
