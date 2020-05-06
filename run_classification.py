@@ -86,11 +86,10 @@ def metrics_frame(preds, labels, label_names):
     precision_macro = precision_score(labels, preds, average="macro")
     f1_micro = f1_score(labels, preds, average="micro")
     f1_macro = f1_score(labels, preds, average="macro")
-    cm = confusion_matrix(labels, preds)
     cr = classification_report(labels, preds, labels=list(range(len(label_names))), target_names=label_names)
     model_metrics = {"Precision, Micro": precision_micro, "Precision, Macro": precision_macro,
                      "Recall, Micro": recall_micro, "Recall, Macro": recall_macro,
-                     "F1 score, Micro": f1_micro, "F1 score, Macro": f1_macro, "Confusion matrix": cm, "Classification report": cr}
+                     "F1 score, Micro": f1_micro, "F1 score, Macro": f1_macro, "Classification report": cr}
     return model_metrics
 
 def acc_and_f1(preds, labels):
@@ -627,8 +626,6 @@ def main():
     else:
         label_list = processor.get_labels()
         num_labels = num_labels_task[task_name]
-    for i in label_list:
-        logger.info(i)
     #tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
     tokenizer = BertTokenizer(args.vocab_file, do_lower_case=args.do_lower_case, max_len=128) # for bert large
     
