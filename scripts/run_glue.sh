@@ -34,6 +34,7 @@ warmup_proportion="0.01"
 seed=2
 vocab_file="${PWD}/data/download/google_pretrained_weights/uncased_L-12_H-768_A-12/vocab.txt"
 CONFIG_FILE="${PWD}/bert_config.json"
+task="MRPC"
 
 while getopts g:p:c:n:d:b:e:l:o:m: option
 do
@@ -49,6 +50,7 @@ do
  l) learning_rate=${OPTARG};;
  o) OUT_DIR=${OPTARG};;
  m) mode=${OPTARG};;
+ t) task=${OPTARG};;
  esac
 done
 
@@ -74,7 +76,7 @@ fi
 
 
 CMD="python $mpi_command run_glue.py "
-CMD+="--task_name MRPC "
+CMD+="--task_name $task "
 if [ "$mode" = "train" ] ; then
   CMD+="--do_train "
   CMD+="--train_batch_size=$batch_size "
