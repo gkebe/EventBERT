@@ -46,15 +46,14 @@ mkdir -p $OUT_DIR
 
 export CUDA_VISIBLE_DEVICES=$gpu
 
-FLAGS=(--seed_sentence="$seed_sentence")
 
 CMD="python run_generation.py "
 CMD+="--mode $mode "
 CMD+="--do_lower_case "
 CMD+="--data_dir $DATA_DIR "
 CMD+="--bert_model bert-base-uncased "
-CMD+="${FLAGS[*]}"
-CMD+=" --init_checkpoint $init_checkpoint "
+CMD+="--seed_sentence=$seed_sentence "
+CMD+="--init_checkpoint $init_checkpoint "
 CMD+="--max_len 4 "
 CMD+="--seq_len $seq_len "
 CMD+="--vocab_file=$vocab_file "

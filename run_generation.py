@@ -280,7 +280,7 @@ def main():
             sentences += batch
         return sentences
     # Choose the prefix context
-    seed_text = seed_sentence.split()
+    seed_text = seed_sentence.split(",")
     seq_len = args.seq_len - 1
     bert_sents = generate(n_samples, seed_text=seed_text, batch_size=batch_size, seq_len=seq_len, max_len=max_len,
                           generation_mode=generation_mode,
