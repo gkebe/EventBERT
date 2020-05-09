@@ -40,6 +40,12 @@ def main():
                         type=str,
                         required=True,
                         help="The checkpoint file from pretraining")
+    parser.add_argument("--max_seq_length",
+                        default=128,
+                        type=int,
+                        help="The maximum total input sequence length after WordPiece tokenization. \n"
+                             "Sequences longer than this will be truncated, and sequences shorter \n"
+                             "than this will be padded.")
     parser.add_argument('--vocab_file',
                         type=str, default=None, required=True,
                         help="Vocabulary mapping/file BERT was pretrained on")
@@ -207,8 +213,18 @@ def main():
             print()
             for jj in range(batch_size):
                 batch[jj][seed_len + kk] = mask_id
-            inp = torch.tensor(batch).cuda() if cuda else torch.tensor(batch)
-            out = model(inp)
+            mas = []
+            inp = batch
+            for seq in inp:
+                while len(seq) < args.max_seq_length:
+                    seq.append(0)
+                seq_mask = [float(i > 0) for i in seq]
+                mas.append(seq_mask)
+            print(len(inp[0]))
+            print(len(mas[0]))
+            inp = torch.tensor(inp).cuda() if cuda else torch.tensor(inp)
+            mas = torch.tensor(mas).cuda() if cuda else torch.tensor(mas)
+            out = model(input_ids=inp, attention_mask=mas)
             topk = top_k if (ii >= burnin) else 0
             idxs = generate_step(out, gen_idx=seed_len + kk, top_k=topk, temperature=temperature, sample=(ii < burnin))
             for jj in range(batch_size):
