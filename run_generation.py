@@ -300,3 +300,5 @@ def main():
     pct_uniques = self_unique_ngrams(bert_sents, max_n)
     for i in range(1, max_n + 1):
         print("BERT unique %d-grams relative to self: %.2f" % (i, 100 * pct_uniques[i]))
+if __name__ == "__main__":
+    main()
