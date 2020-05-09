@@ -37,7 +37,7 @@ do
  d) DATA_DIR=${OPTARG};;
  o) OUT_DIR=${OPTARG};;
  m) mode=${OPTARG};;
- s) seed_sentence=${OPTARG};;
+ s) seed_sentence="${OPTARG}";;
  l) seq_len=${OPTARG};;
  esac
 done
@@ -54,7 +54,7 @@ CMD+="--mode $mode "
 CMD+="--do_lower_case "
 CMD+="--data_dir $DATA_DIR "
 CMD+="--bert_model bert-base-uncased "
-CMD+="--seed_sentence 'I love you' "
+CMD+="--seed_sentence $seed_sentence" "
 CMD+="--init_checkpoint $init_checkpoint "
 CMD+="--max_len 4 "
 CMD+="--seq_len $seq_len "
