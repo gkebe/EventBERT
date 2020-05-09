@@ -41,7 +41,7 @@ do
  l) seq_len=${OPTARG};;
  esac
 done
-echo $seed_sentence
+echo "$seed_sentence"
 mkdir -p $OUT_DIR
 
 
