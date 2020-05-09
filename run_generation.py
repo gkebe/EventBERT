@@ -199,7 +199,7 @@ def main():
 
         for ii in range(max_iter):
             mask_indices = [i for i in range(len(batch[0])) if batch[0][i] == MASK]
-            kk = mask_indices[np.random.randint(0, len(mask_indices))] - seed_len
+            kk = mask_indices[np.random.randint(seed_len, len(mask_indices))] - seed_len
             for jj in range(batch_size):
                 batch[jj][seed_len + kk] = mask_id
             inp = torch.tensor(batch).cuda() if cuda else torch.tensor(batch)
