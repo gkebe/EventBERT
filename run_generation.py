@@ -201,6 +201,10 @@ def main():
         mask_indices = [i for i in range(len(batch[0])) if batch[0][i] == mask_id]
         for ii in range(max_iter):
             kk = mask_indices[np.random.randint(seed_len, len(mask_indices))] - seed_len
+            print(mask_indices)
+            print(kk)
+            print(batch[0])
+            print()
             for jj in range(batch_size):
                 batch[jj][seed_len + kk] = mask_id
             inp = torch.tensor(batch).cuda() if cuda else torch.tensor(batch)
