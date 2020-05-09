@@ -213,25 +213,25 @@ def main():
             print()
             for jj in range(batch_size):
                 batch[jj][seed_len + kk] = mask_id
-            mas = []
-            inp = batch
-            normal_len = len(inp)
-            for seq in inp:
-                while len(seq) < args.max_seq_length:
-                    seq.append(0)
-                seq_mask = [float(i > 0) for i in seq]
-                mas.append(seq_mask)
-            print(len(inp[0]))
-            print(len(mas[0]))
-            inp = torch.tensor(inp).cuda() if cuda else torch.tensor(inp)
-            mas = torch.tensor(mas).cuda() if cuda else torch.tensor(mas)
-            out = model(input_ids=inp, attention_mask=mas)
+            # mas = []
+            # inp = batch
+            # for seq in inp:
+            #     while len(seq) < args.max_seq_length:
+            #         seq.append(0)
+            #     seq_mask = [float(i > 0) for i in seq]
+            #     mas.append(seq_mask)
+            # print(len(inp[0]))
+            # print(len(mas[0]))
+            # inp = torch.tensor(inp).cuda() if cuda else torch.tensor(inp)
+            # mas = torch.tensor(mas).cuda() if cuda else torch.tensor(mas)
+            # out = model(input_ids=inp, attention_mask=mas)
+            inp = torch.tensor(batch).cuda() if cuda else torch.tensor(batch)
+            out = model(inp)
             topk = top_k if (ii >= burnin) else 0
             idxs = generate_step(out, gen_idx=seed_len + kk, top_k=topk, temperature=temperature, sample=(ii < burnin))
             for jj in range(batch_size):
                 batch[jj][seed_len + kk] = idxs[jj]
-            for seq in batch:
-                seq = seq[:normal_len]
+
             if verbose and np.mod(ii + 1, print_every) == 0:
                 for_print = tokenizer.convert_ids_to_tokens(batch[0])
                 for_print = for_print[:seed_len + kk + 1] + ['(*)'] + for_print[seed_len + kk + 1:]
