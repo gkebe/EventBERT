@@ -198,7 +198,7 @@ def main():
         batch = get_init_sequence(seed_text, max_len, batch_size, seq_len)
 
         for ii in range(max_iter):
-            mask_indices = [i for i in range(len(batch[0])) if batch[0][i] == "[MASK]"]
+            mask_indices = [i for i in range(len(batch[0])) if batch[0][i] == MASK]
             kk = mask_indices[np.random.randint(0, len(mask_indices))]
             for jj in range(batch_size):
                 batch[jj][seed_len + kk] = mask_id
