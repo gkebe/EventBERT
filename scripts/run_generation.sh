@@ -41,10 +41,9 @@ do
  l) seq_len=${OPTARG};;
  esac
 done
-
+echo $seed_sentence
 mkdir -p $OUT_DIR
 
-Z
 
 export CUDA_VISIBLE_DEVICES=$gpu
 
