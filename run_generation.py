@@ -148,7 +148,7 @@ def main():
         return tokenize_batch(batch)
     def printer(sent, should_detokenize=True):
         if should_detokenize:
-            sent = detokenize(sent)[1:-1]
+            sent = detokenize(sent)
         print(" ".join(sent))
 
     """Let's call the actual generation function! We'll use the following settings
