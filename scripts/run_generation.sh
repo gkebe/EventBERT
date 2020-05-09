@@ -37,11 +37,10 @@ do
  d) DATA_DIR=${OPTARG};;
  o) OUT_DIR=${OPTARG};;
  m) mode=${OPTARG};;
- s) seed_sentence="${OPTARG}";;
+ s) seed_sentence=\"${OPTARG}\";;
  l) seq_len=${OPTARG};;
  esac
 done
-echo "$seed_sentence"
 mkdir -p $OUT_DIR
 
 
