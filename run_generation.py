@@ -215,6 +215,7 @@ def main():
                 batch[jj][seed_len + kk] = mask_id
             mas = []
             inp = batch
+            normal_len = len(inp)
             for seq in inp:
                 while len(seq) < args.max_seq_length:
                     seq.append(0)
@@ -228,7 +229,7 @@ def main():
             topk = top_k if (ii >= burnin) else 0
             idxs = generate_step(out, gen_idx=seed_len + kk, top_k=topk, temperature=temperature, sample=(ii < burnin))
             for jj in range(batch_size):
-                batch[jj][seed_len + kk] = idxs[jj]
+                batch[jj][seed_len + kk] = idxs[jj][:normal_len]
 
             if verbose and np.mod(ii + 1, print_every) == 0:
                 for_print = tokenizer.convert_ids_to_tokens(batch[0])
