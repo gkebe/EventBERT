@@ -197,7 +197,7 @@ def main():
         seed_len = len(seed_text)
         batch = get_init_sequence(seed_text, max_len, batch_size, seq_len)
         print(batch)
-        print(seed_text)
+        print(seed_len)
         mask_indices = [i for i in range(len(batch[0])) if batch[0][i] == mask_id]
         for ii in range(max_iter):
             kk = mask_indices[np.random.randint(seed_len, len(mask_indices))] - seed_len
