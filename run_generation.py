@@ -53,6 +53,20 @@ def main():
                         type=str,
                         required=False,
                         help="The generation method")
+    parser.add_argument("--max_seq_length",
+                        default=128,
+                        type=int,
+                        help="The maximum total input sequence length after WordPiece tokenization. \n"
+                             "Sequences longer than this will be truncated, and sequences shorter \n"
+                             "than this will be padded.")
+    parser.add_argument("--do_lower_case",
+                        action='store_true',
+                        help="Set this flag if you are using an uncased model.")
+    parser.add_argument('--seed',
+                        type=int,
+                        default=1,
+                        help="random seed for initialization")
+
     args = parser.parse_args()
     # Prepare model
     config = BertConfig.from_json_file(args.config_file)
