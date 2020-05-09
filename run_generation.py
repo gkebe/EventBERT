@@ -42,7 +42,7 @@ def main():
                         help="The checkpoint file from pretraining")
     parser.add_argument('--vocab_file',
                         type=str, default=None, required=True,
-                        help="Vocabulary mapping/file BERT was pretrainined on")
+                        help="Vocabulary mapping/file BERT was pretrained on")
     parser.add_argument("--config_file",
                         default=None,
                         type=str,
@@ -53,19 +53,17 @@ def main():
                         type=str,
                         required=False,
                         help="The generation method")
-    parser.add_argument("--max_seq_length",
-                        default=128,
+    parser.add_argument("--max_len",
+                        default=4,
                         type=int,
-                        help="The maximum total input sequence length after WordPiece tokenization. \n"
-                             "Sequences longer than this will be truncated, and sequences shorter \n"
-                             "than this will be padded.")
+                        help="The number of tokens per sentence")
     parser.add_argument("--do_lower_case",
                         action='store_true',
-                        help="Set this flag if you are using an uncased model.")
-    parser.add_argument('--seed',
-                        type=int,
-                        default=1,
-                        help="random seed for initialization")
+                        help="Set this flag if you are using an uncased model")
+    parser.add_argument('--seed_text',
+                        type=str,
+                        default="CLS",
+                        help="The seed used for generation")
 
     args = parser.parse_args()
     # Prepare model
@@ -134,7 +132,7 @@ def main():
 
     def get_init_text(seed_text, max_len, batch_size=1, rand_init=False):
         """ Get initial sentence by padding seed_text with either masks or random words to max_len """
-        batch = [seed_text + [MASK] * max_len + [SEP] for _ in range(batch_size)]
+        batch = [seed_text + [MASK] * max_len + ["."] + [SEP] for _ in range(batch_size)]
         # if rand_init:
         #    for ii in range(max_len):
         #        init_idx[seed_len+ii] = np.random.randint(0, len(tokenizer.vocab))
@@ -157,7 +155,7 @@ def main():
 
     n_samples = 5
     batch_size = 5
-    max_len = 40
+    max_len = args.max_len
     top_k = 100
     temperature = 1.0
     generation_mode = args.mode
@@ -165,6 +163,7 @@ def main():
     burnin = 250
     sample = True
     max_iter = 500
+    seed_text = args.seed_text.split()
     """This is the meat of the algorithm. The general idea is
     1. start from all masks
     2. repeatedly pick a location, mask the token at that location, and generate from the probability distribution given by BERT
