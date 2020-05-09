@@ -20,13 +20,14 @@ init_checkpoint="${PWD}/checkpoints/bert-base.pt"
 mode="sequential"
 gpu="0"
 master_port="8599"
-seed_text="CLS"
+seed_sentence="[CLS]"
+seq_len=5
 vocab_file="${PWD}/data/download/google_pretrained_weights/uncased_L-12_H-768_A-12/vocab.txt"
 CONFIG_FILE="${PWD}/bert_config.json"
 DATA_DIR=${PWD}/data/generation
 OUT_DIR=${PWD}/results/generation
 
-while getopts g:p:c:d:o:m:s: option
+while getopts g:p:c:d:o:m:s:l: option
 do
  case "${option}"
  in
@@ -36,7 +37,8 @@ do
  d) DATA_DIR=${OPTARG};;
  o) OUT_DIR=${OPTARG};;
  m) mode=${OPTARG};;
- s) seed_text=${OPTARG};;
+ s) seed_sentence=${OPTARG};;
+ l) seq_len=${OPTARG};;
  esac
 done
 
@@ -52,9 +54,10 @@ CMD+="--mode $mode "
 CMD+="--do_lower_case "
 CMD+="--data_dir $DATA_DIR "
 CMD+="--bert_model bert-base-uncased "
-CMD+="--seed_text $seed_text "
+CMD+="--seed_sentence $seed_sentence "
 CMD+="--init_checkpoint $init_checkpoint "
 CMD+="--max_len 4 "
+CMD+="--seq_len $seq_len "
 CMD+="--vocab_file=$vocab_file "
 CMD+="--config_file=$CONFIG_FILE "
 CMD+="--output_dir $OUT_DIR "
