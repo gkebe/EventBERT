@@ -148,9 +148,9 @@ def main():
         #        init_idx[seed_len+ii] = np.random.randint(0, len(tokenizer.vocab))
 
         return tokenize_batch(batch)
-    def get_init_sequence(seed_text, max_len, batch_size=1, seq_len=4, rand_init=False):
+    def get_init_sequence(seed_texts, max_len, batch_size=1, seq_len=4, rand_init=False):
         """ Get initial sentence by padding seed_text with either masks or random words to max_len """
-        batch = [seed_text + ([MASK] * max_len + ["."] + [SEP]) * seq_len for _ in range(batch_size)]
+        batch = [seed_text[i] + ([MASK] * max_len + ["."] + [SEP]) * seq_len for i in range(batch_size)]
         return tokenize_batch(batch)
     def printer(sent, should_detokenize=True):
         if should_detokenize:
@@ -192,7 +192,7 @@ def main():
 
     # Generation modes as functions
 
-    def parallel_sequential_generation(seed_text, batch_size=10, seq_len=4, max_len=15, top_k=0, temperature=None, max_iter=300,
+    def parallel_sequential_generation(seed_texts, batch_size=10, seq_len=4, max_len=15, top_k=0, temperature=None, max_iter=300,
                                        burnin=200,
                                        cuda=False, print_every=10, verbose=True):
         """ Generate for one random position at a timestep
@@ -200,8 +200,8 @@ def main():
         args:
             - burnin: during burn-in period, sample from full distribution; afterwards take argmax
         """
-        seed_len = len(seed_text)
-        batch = get_init_sequence(seed_text, max_len, batch_size, seq_len)
+        seed_len = len(seed_texts[0])
+        batch = get_init_sequence(seed_texts, max_len, batch_size, seq_len)
         print(batch)
         print(seed_len)
         mask_indices = [i for i in range(len(batch[0])) if batch[0][i] == mask_id]
@@ -274,7 +274,7 @@ def main():
 
         return untokenize_batch(batch)
 
-    def generate(n_samples, seed_text, batch_size=10, seq_len=4, max_len=25,
+    def generate(n_samples, seed_texts, batch_size=10, seq_len=4, max_len=25,
                  generation_mode="parallel-sequential",
                  sample=True, top_k=100, temperature=1.0, burnin=200, max_iter=500,
                  cuda=False, print_every=1):
@@ -284,15 +284,15 @@ def main():
         start_time = time.time()
         for batch_n in range(n_batches):
             if generation_mode == "parallel-sequential":
-                batch = parallel_sequential_generation(seed_text, batch_size=batch_size, seq_len=seq_len, max_len=max_len, top_k=top_k,
+                batch = parallel_sequential_generation(seed_texts, batch_size=batch_size, seq_len=seq_len, max_len=max_len, top_k=top_k,
                                                        temperature=temperature, burnin=burnin, max_iter=max_iter,
                                                        cuda=cuda, verbose=False)
             elif generation_mode == "sequential":
-                batch = sequential_generation(seed_text, batch_size=batch_size, seq_len=seq_len, max_len=max_len, top_k=top_k,
+                batch = sequential_generation(seed_texts, batch_size=batch_size, seq_len=seq_len, max_len=max_len, top_k=top_k,
                                               temperature=temperature, leed_out_len=leed_out_len, sample=sample,
                                               cuda=cuda)
             elif generation_mode == "parallel":
-                batch = parallel_generation(seed_text, batch_size=batch_size, seq_len=seq_len,
+                batch = parallel_generation(seed_texts, batch_size=batch_size, seq_len=seq_len,
                                             max_len=max_len, top_k=top_k, temperature=temperature,
                                             sample=sample, max_iter=max_iter,
                                             cuda=cuda, verbose=False)
@@ -306,10 +306,16 @@ def main():
     # Choose the prefix context
     seed_text = seed_sentence.split(",")
     seq_len = args.seq_len - 1
-    bert_sents = generate(n_samples, seed_text=seed_text, batch_size=batch_size, seq_len=seq_len, max_len=max_len,
+    bert_sents = []
+    seed_texts = [seed_text for _ in range(batch_size)]
+    for i in range(seq_len):
+        bert_sent = generate(n_samples, seed_texts=seed_texts, batch_size=batch_size, seq_len=2, max_len=max_len,
                           generation_mode=generation_mode,
                           sample=sample, top_k=top_k, temperature=temperature, burnin=burnin, max_iter=max_iter,
                           cuda=cuda)
+        seed_text = seed_from_output(bert_sent)
+        bert_sents = append_output(bert_sents, bert_sent)
+
 
     for sent in bert_sents:
         printer(sent, should_detokenize=True)
