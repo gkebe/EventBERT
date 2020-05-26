@@ -437,7 +437,7 @@ def main():
             tmp_eval_loss = model(input_ids, segment_ids, input_mask)
             logits = model(input_ids, segment_ids, input_mask)
 
-            probabilities = torch.softmax(logits, 1)
+            probabilities = logits
 
             eval_loss += tmp_eval_loss.mean().item()
         nb_eval_steps += 1
