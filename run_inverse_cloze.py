@@ -405,12 +405,17 @@ def main():
     for f in eval_features:
         sequences = [f.T, f.F1, f.F2, f.F3, f.F4, f.F5]
         print("True")
-        print(f.T[0]["input_ids"])
+        print([i["input_ids"] for i in f.T])
+        print([i["input_ids"] for i in f.F1])
+        print([i["input_ids"] for i in f.F2])
+        print([i["input_ids"] for i in f.F3])
+        print([i["input_ids"] for i in f.F4])
+        print([i["input_ids"] for i in f.F5])
         input_ids = []
         input_mask = []
         segment_ids = []
         for seq in sequences:
-            print(seq[0]["input_ids"])
+            print([i["input_ids"] for i in seq])
             input_ids += [s["input_ids"] for s in seq]
             input_mask += [s["input_mask"] for s in seq]
             segment_ids += [s["segment_ids"] for s in seq]
@@ -438,7 +443,7 @@ def main():
         input_mask = input_mask.to(device)
         segment_ids = segment_ids.to(device)
         print("")
-        print(input_ids)
+        print(input_ids.tolist())
         with torch.no_grad():
             tmp_eval_loss = model(input_ids, segment_ids, input_mask)
             logits = model(input_ids, segment_ids, input_mask)
