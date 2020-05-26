@@ -421,7 +421,7 @@ def main():
     eval_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids)
     # Run prediction for full data
     eval_sampler = SequentialSampler(eval_data)
-    eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=24)
+    eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=32)
 
     model.eval()
     eval_loss, eval_accuracy = 0, 0
