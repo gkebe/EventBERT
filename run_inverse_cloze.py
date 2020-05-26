@@ -421,12 +421,12 @@ def main():
     eval_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids)
     # Run prediction for full data
     eval_sampler = SequentialSampler(eval_data)
-    eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=32)
+    eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=24)
 
     model.eval()
     eval_loss, eval_accuracy = 0, 0
     nb_eval_steps, nb_eval_examples = 0, 0
-    preds = None
+    preds = []
     out_label_ids = None
     for input_ids, input_mask, segment_ids in tqdm(eval_dataloader, desc="Evaluating"):
         input_ids = input_ids.to(device)
@@ -438,22 +438,25 @@ def main():
             logits = model(input_ids, segment_ids, input_mask)
 
             probabilities = torch.softmax(logits, 1)
-            print(probabilities)
+            probs = probabilities.tolist()
+            probs = [i[1] for i in probs]
+            probs_seq = [probs[x:x + 4] for x in range(0, len(probs), 4)]
+            probs_prod = [np.prod(i) for i in probs_seq]
+            pred = np.argmax(probs_prod)
+            preds.append(pred)
+
 
             eval_loss += tmp_eval_loss.mean().item()
         nb_eval_steps += 1
-        if preds is None:
-            preds = probabilities.detach().cpu().numpy()
-        else:
-            preds = np.append(preds, probabilities.detach().cpu().numpy(), axis=0)
 
     eval_loss = eval_loss / nb_eval_steps
 
-    print(preds)
+    accuracy = simple_accuracy(np.array(preds), np.array([0]*len(preds)))
 
     eval_loss = eval_loss / nb_eval_steps
 
-    results = {'eval_loss': eval_loss}
+    results = {'eval_loss': eval_loss,
+               'accuracy': accuracy}
 
     print(results)
     output_eval_file = os.path.join(args.output_dir,
