@@ -454,7 +454,7 @@ def main():
     accuracy = simple_accuracy(np.array(preds), np.array([0]*len(preds)))
 
     eval_loss = eval_loss / nb_eval_steps
-
+    print(preds)
     results = {'eval_loss': eval_loss,
                'accuracy': accuracy}
 
