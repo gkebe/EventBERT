@@ -398,7 +398,7 @@ def main():
         instances, args.max_seq_length, tokenizer)
     logger.info("***** Running evaluation *****")
     logger.info("  Num examples = %d", len(instances))
-    logger.info("  Batch size = %d", args.eval_batch_size)
+    logger.info("  Batch size = %d", 24)
     all_input_ids = []
     all_input_mask = []
     all_segment_ids = []
