@@ -434,12 +434,12 @@ def main():
         input_mask = input_mask.to(device)
         segment_ids = segment_ids.to(device)
         with torch.no_grad():
-            tmp_eval_loss = model(input_ids, segment_ids, input_mask)
+            tmp_eval_loss = model(input_ids=input_ids, token_type_ids=segment_ids, attention_mask=input_mask, next_sentence_label=None)
             logits = model(input_ids, segment_ids, input_mask)
 
             probabilities = torch.softmax(logits, 1)
             probs = probabilities.tolist()
-            probs = [i[1] for i in probs]
+            probs = [i[0] for i in probs]
             probs_seq = [probs[x:x + 4] for x in range(0, len(probs), 4)]
             probs_prod = [np.prod(i) for i in probs_seq]
             pred = np.argmax(probs_prod)
