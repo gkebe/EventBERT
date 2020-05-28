@@ -161,7 +161,9 @@ class DataProcessor(object):
         """Gets a collection of `InputExample`s for the train set."""
         return self._create_instances(
             self._read_json(os.path.join(data_dir)))
-
+    def get_num_events(self, data_dir):
+        dataset = self._read_json(os.path.join(data_dir))
+        return len(dataset[0]["T"])
     @classmethod
     def _read_json(cls, input_file):
         """Reads a tab separated value file."""
@@ -394,6 +396,7 @@ def main():
     # Prepare optimizer
     processor = DataProcessor()
     instances = processor.get_instances(args.data_dir)
+    num_events = processor.get_num_events(args.data_dir)
     eval_features = convert_instances_to_features(
         instances, args.max_seq_length, tokenizer)
     logger.info("***** Running evaluation *****")
@@ -422,7 +425,8 @@ def main():
     eval_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids)
     # Run prediction for full data
     eval_sampler = SequentialSampler(eval_data)
-    eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=24)
+
+    eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=6*(num_events-1))
 
     model.eval()
     eval_loss, eval_accuracy = 0, 0
@@ -440,7 +444,7 @@ def main():
             probabilities = torch.softmax(logits, 1)
             probs = probabilities.tolist()
             probs = [i[0] for i in probs]
-            probs_seq = [probs[x:x + 4] for x in range(0, len(probs), 4)]
+            probs_seq = [probs[x:x + (num_events-1)] for x in range(0, len(probs), (num_events-1))]
             probs_prod = [np.prod(i) for i in probs_seq]
             pred = np.argmax(probs_prod)
             preds.append(pred)
@@ -460,7 +464,8 @@ def main():
 
     print(results)
     output_eval_file = os.path.join(args.output_dir,
-                                    "eval_results_" + args.init_checkpoint.split("/")[-1].split(".")[0] + ".txt")
+                                    "eval_results_" + args.init_checkpoint.split("/")[-1].split(".")[0] + "_"
+                                    + args.data_dir.split("/")[-1].split(".")[0] + ".txt")
     with open(output_eval_file, "w") as writer:
         logger.info("***** Eval results *****")
         for key in sorted(results.keys()):
