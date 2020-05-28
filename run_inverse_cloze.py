@@ -163,7 +163,7 @@ class DataProcessor(object):
             self._read_json(os.path.join(data_dir)))
     def get_num_events(self, data_dir):
         dataset = self._read_json(os.path.join(data_dir))
-        return len(dataset[0]["T"])
+        return len(dataset["0"]["T"])
     @classmethod
     def _read_json(cls, input_file):
         """Reads a tab separated value file."""
