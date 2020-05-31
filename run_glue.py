@@ -646,18 +646,8 @@ def main():
         print("data prep")
         cached_train_features_file = args.data_dir + '_{0}_{1}_{2}'.format(
             list(filter(None, args.bert_model.split('/'))).pop(), str(args.max_seq_length), str(args.do_lower_case))
-        train_features = None
 
-        try:
-            with open(cached_train_features_file, "rb") as reader:
-                train_features = pickle.load(reader)
-        except:
-            train_features = convert_examples_to_features(train_examples, label_list, args.max_seq_length, tokenizer)
-            if args.local_rank == -1 or torch.distributed.get_rank() == 0:
-                logger.info("  Saving train features into cached file %s", cached_train_features_file)
-                with open(cached_train_features_file, "wb") as writer:
-                    pickle.dump(train_features, writer)
-
+        train_features = convert_examples_to_features(train_examples, label_list, args.max_seq_length, tokenizer)
         logger.info("***** Running training *****")
         logger.info("  Num examples = %d", len(train_examples))
         logger.info("  Batch size = %d", args.train_batch_size)
