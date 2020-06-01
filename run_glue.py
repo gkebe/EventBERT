@@ -644,8 +644,6 @@ def main():
     tr_loss = 0
     if args.do_train:
         print("data prep")
-        cached_train_features_file = args.data_dir + '_{0}_{1}_{2}'.format(
-            list(filter(None, args.bert_model.split('/'))).pop(), str(args.max_seq_length), str(args.do_lower_case))
 
         train_features = convert_examples_to_features(train_examples, label_list, args.max_seq_length, tokenizer)
         logger.info("***** Running training *****")
