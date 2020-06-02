@@ -468,7 +468,6 @@ def main():
     results = {'eval_loss': eval_loss,
                'accuracy': accuracy}
 
-    print(results)
     output_eval_file = os.path.join(args.output_dir,
                                     "eval_results_" + args.init_checkpoint.split("/")[-1].split(".")[0] + "_"
                                     + args.data_dir.split("/")[-1].split(".")[0] + ".txt")
@@ -494,7 +493,7 @@ def main():
         for key in sorted(results.keys()):
             logger.info("  %s = %s", key, str(results[key]))
             writer.write("%s = %s\n" % (key, str(results[key])))
-
+    print(results)
 
 if __name__ == "__main__":
     main()
