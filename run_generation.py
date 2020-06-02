@@ -315,14 +315,15 @@ def main():
                           generation_mode=generation_mode,
                           sample=sample, top_k=top_k, temperature=temperature, burnin=burnin, max_iter=max_iter,
                           cuda=cuda)
-    i = 0
+
     for sent in bert_sents:
+        i = 0
         followup = sent
         sequence = [seed_text]
         while i < 5:
-            seed_text = follow_up(followup, len(seed_text), should_detokenize=True)
-            sequence.append(seed_text)
-            followup = generate(2, seed_text=seed_text, batch_size=2, seq_len=seq_len, max_len=max_len,
+            seed_text_ = follow_up(followup, len(seed_text), should_detokenize=True)
+            sequence.append(seed_text_)
+            followup = generate(2, seed_text=seed_text_, batch_size=2, seq_len=seq_len, max_len=max_len,
                                   generation_mode=generation_mode,
                                   sample=sample, top_k=top_k, temperature=temperature, burnin=burnin, max_iter=max_iter,
                                   cuda=cuda)[0]
