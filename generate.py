@@ -5,7 +5,7 @@ import argparse
 import torch
 import torch.nn.functional as F
 from torch.distributions import Categorical
-from modeling import BertForMaskedLM
+from modeling import BertForMaskedLM, BertConfig
 from tokenization import BertTokenizer
 
 MASK = "[MASK]"
