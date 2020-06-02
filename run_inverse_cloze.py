@@ -446,7 +446,7 @@ def main():
             probabilities = torch.softmax(logits, 1)
             probs = probabilities.tolist()
             probs = [i[0] for i in probs]
-            probs_seq = [probs[x:x + (num_events-1)] for x in range(0, len(probs), (num_events-1))]
+            probs_seq = [probs[x:x + (num_events)] for x in range(0, len(probs), (num_events))]
             probs_prod = [np.prod(i) for i in probs_seq]
             pred = np.argmax(probs_prod)
             preds.append(pred)
