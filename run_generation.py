@@ -152,11 +152,14 @@ def main():
         """ Get initial sentence by padding seed_text with either masks or random words to max_len """
         batch = [seed_text + ([MASK] * max_len + ["."] + [SEP]) * seq_len for _ in range(batch_size)]
         return tokenize_batch(batch)
-    def printer(sent, seed_len, should_detokenize=True):
+    def printer(sent, should_detokenize=True):
         if should_detokenize:
             sent = detokenize(sent)
-        print(sent[seed_len:])
         print(" ".join(sent))
+    def follow_up(sent, seed_len, should_detokenize=True):
+        if should_detokenize:
+            sent = detokenize(sent)
+        return "[CLS]"+sent[seed_len:]
 
     """Let's call the actual generation function! We'll use the following settings
     - max_len (40): length of sequence to generate
@@ -311,9 +314,19 @@ def main():
                           generation_mode=generation_mode,
                           sample=sample, top_k=top_k, temperature=temperature, burnin=burnin, max_iter=max_iter,
                           cuda=cuda)
-
+    i = 0
     for sent in bert_sents:
-        printer(sent, len(seed_text), should_detokenize=True)
+        followup = sent
+        sequence = [seed_text]
+        while i < 5:
+            seed_text = follow_up(followup, len(seed_text), should_detokenize=True)
+            sequence.append(seed_text)
+            followup = generate(1, seed_text=seed_text, batch_size=1, seq_len=seq_len, max_len=max_len,
+                                  generation_mode=generation_mode,
+                                  sample=sample, top_k=top_k, temperature=temperature, burnin=burnin, max_iter=max_iter,
+                                  cuda=cuda)[0]
+            i+=1
+        print(sequence)
 
     """
     Evaluation methods for unconditional generation aren't perfect. We'll measure the diversity of our generated samples via self-BLEU: we compute corpus BLEU where for each generated sentence, we compute BLEU treating the other sentences as references. We also compute the percentage of $n$-grams that are unique among the generations. We try some other strategies, including comparing to outside models, in our report, and you can see some of the code for that [here](https://github.com/kyunghyuncho/bert-gen/blob/master/bert-babble.ipynb).
