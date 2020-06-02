@@ -476,9 +476,10 @@ def main():
         for i in range(len(preds)):
             seqs = [instances[i].T, instances[i].F1, instances[i].F2, instances[i].F3, instances[i].F4, instances[i].F5]
             for j in range(len(probs_prod_[i])):
+                print(instance_template[j])
                 for k in range(len(probs_[i][j])):
-                    print(seqs[j][k] + ": " + str(probs_[i][j][k]))
-                    writer.write(seqs[j][k] + ": " + str(probs_[i][j][k]))
+                    print("\t"+seqs[j][k] + ": " + str(probs_[i][j][k]))
+                    writer.write("\t"+seqs[j][k] + ": " + str(probs_[i][j][k]))
                 print("Product = " + str(probs_prod_[i][j]))
                 writer.write("Product = " + str(probs_prod_[i][j]))
                 print()
