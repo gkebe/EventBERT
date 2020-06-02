@@ -136,7 +136,6 @@ def main():
         elif sample:
             dist = torch.distributions.categorical.Categorical(logits=logits)
             idx = dist.sample().squeeze(-1)
-            print(idx)
         else:
             idx = torch.argmax(logits, dim=-1)
         return idx.tolist() if return_list else idx
@@ -232,11 +231,10 @@ def main():
             # out = model(input_ids=inp, attention_mask=mas)
             inp = torch.tensor(batch).cuda() if cuda else torch.tensor(batch)
             out = model(inp)
+            print(out)
             topk = top_k if (ii >= burnin) else 0
-            print(topk, ii, burnin)
             idxs = generate_step(out, gen_idx=seed_len + kk, top_k=topk, temperature=temperature, sample=(ii < burnin))
             for jj in range(batch_size):
-                print(idxs)
                 batch[jj][seed_len + kk] = idxs[jj]
 
             if verbose and np.mod(ii + 1, print_every) == 0:
