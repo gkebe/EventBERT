@@ -72,7 +72,7 @@ CMD+="--max_seq_length 128 "
 #CMD+="--seq_len $seq_len "
 CMD+="--vocab_file=$vocab_file "
 CMD+="--config_file=$CONFIG_FILE "
-CMD+="--output_dir $OUT_DIR "
+#CMD+="--output_dir $OUT_DIR "
 CMD+=" $interact"
 suffix=$(basename "$init_checkpoint")
 suffix="${suffix%.*}"
