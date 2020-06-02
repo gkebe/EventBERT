@@ -201,7 +201,7 @@ def main():
             - burnin: during burn-in period, sample from full distribution; afterwards take argmax
         """
         seed_len = len(seed_texts[0])
-        batch = get_init_text(seed_texts, max_len, batch_size, seq_len)
+        batch = get_init_text(seed_texts, max_len, batch_size)
         print(batch)
         print(seed_len)
         mask_indices = [i for i in range(len(batch[0])) if batch[0][i] == mask_id]
