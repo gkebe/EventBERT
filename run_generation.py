@@ -164,7 +164,7 @@ def main():
             sent_ = [i for i in sent if i != "[SEP]" and i != "[CLS]"]
             if "." in sent_:
                 dot_=". "
-            sent_ = " ".join([i for i in sent_ if i!="."]+dot_)
+            sent_ = " ".join([i for i in sent_ if i!="."])+dot_
 
         seq_+=sent_
         return seq_
