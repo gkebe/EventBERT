@@ -31,7 +31,7 @@ n_append_mask=0
 decoding_strategy="sequential"
 token_strategy="argmax"
 
-while getopts g:p:c:d:o:m:s:l:i:n:s:t: option
+while getopts g:p:c:d:o:m:s:l:i:n:y:t: option
 do
  case "${option}"
  in
@@ -45,7 +45,7 @@ do
  l) seq_len=${OPTARG};;
  i) interact=${OPTARG};;
  n) n_append_mask=${OPTARG};;
- s) decoding_strategy=${OPTARG};;
+ y) decoding_strategy=${OPTARG};;
  t) token_strategy=${OPTARG};;
  esac
 done
