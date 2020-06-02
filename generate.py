@@ -162,8 +162,7 @@ def main(arguments):
                         choices=["argmax", "sample", "sample_topk"])
 
     args = parser.parse_args(arguments)
-
-    pdb.set_trace()
+    
     # Prepare model
     config = BertConfig.from_json_file(args.config_file)
     # Padding for divisibility by 8
