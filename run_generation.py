@@ -150,7 +150,7 @@ def main():
         return tokenize_batch(batch)
     def get_init_sequence(seed_text, max_len, batch_size=1, seq_len=4, rand_init=False):
         """ Get initial sentence by padding seed_text with either masks or random words to max_len """
-        batch = [[seed_text + ([MASK] * max_len + ["."] + [SEP]) * seq_len] for _ in range(batch_size)]
+        batch = [seed_text + ([MASK] * max_len + ["."] + [SEP]) * seq_len for _ in range(batch_size)]
         return tokenize_batch(batch)
     def printer(sent, should_detokenize=True):
         if should_detokenize:
