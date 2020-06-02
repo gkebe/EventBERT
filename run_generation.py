@@ -206,7 +206,7 @@ def main():
         print(seed_len)
         mask_indices = [i for i in range(len(batch[0])) if batch[0][i] == mask_id]
         for ii in range(max_iter):
-            kk = mask_indices[np.random.randint(seed_len, len(mask_indices))] - seed_len
+            kk = mask_indices[np.random.randint(seed_len, max(mask_indices))] - seed_len
             print(mask_indices)
             print(kk)
             print(batch[0])
