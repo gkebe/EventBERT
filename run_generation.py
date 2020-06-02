@@ -136,7 +136,7 @@ def main():
         elif sample:
             dist = torch.distributions.categorical.Categorical(logits=logits)
             idx = dist.sample().squeeze(-1)
-            print("Yes")
+            print(idx)
         else:
             idx = torch.argmax(logits, dim=-1)
         return idx.tolist() if return_list else idx
