@@ -470,7 +470,9 @@ def main():
             for k in range(len(probs_[i][j])):
                 print(seqs[j][k] + ": " + str(probs_[i][j][k]))
             print("Product = " + str(probs_prod_[i][j]))
+            print()
         print("Predicted " + instance_template[int(preds[i])])
+        print()
         print()
 
     results = {'eval_loss': eval_loss,
