@@ -16,7 +16,7 @@ import time
 from collections import Counter
 from nltk.util import ngrams
 from nltk.translate import bleu_score as bleu
-
+import os
 def main():
     parser = argparse.ArgumentParser()
 
@@ -156,6 +156,18 @@ def main():
         if should_detokenize:
             sent = detokenize(sent)
         print(" ".join(sent))
+    def printer_sequence(sequence):
+        dot_=""
+        sent_ = ""
+        seq_=""
+        for sent in sequence:
+            sent_ = [i for i in sent if i != "[SEP]" and i != "[CLS]"]
+            if "." in sent_:
+                dot_=". "
+            sent_ = " ".join([i for i in sent_ if i!="."]+dot_)
+
+        seq_+=sent_
+        return seq_
     def follow_up(sent, seed_len, should_detokenize=True):
         if should_detokenize:
             sent = detokenize(sent)
@@ -315,7 +327,7 @@ def main():
                           generation_mode=generation_mode,
                           sample=sample, top_k=top_k, temperature=temperature, burnin=burnin, max_iter=max_iter,
                           cuda=cuda)
-
+    sequences = []
     for sent in bert_sents:
         i = 0
         followup = sent
@@ -329,7 +341,12 @@ def main():
                                   cuda=cuda)[0]
             i+=1
         print(sequence)
-
+        sequences.append(sequence)
+    output_eval_file = os.path.join(args.output_dir,
+                                    "generation_" + args.init_checkpoint.split("/")[-1].split(".")[0] + ".txt")
+    with open(output_eval_file, "w") as writer:
+        for seq in sequences:
+            writer.write("%s\n" % (printer_sequence(seq)))
     """
     Evaluation methods for unconditional generation aren't perfect. We'll measure the diversity of our generated samples via self-BLEU: we compute corpus BLEU where for each generated sentence, we compute BLEU treating the other sentences as references. We also compute the percentage of $n$-grams that are unique among the generations. We try some other strategies, including comparing to outside models, in our report, and you can see some of the code for that [here](https://github.com/kyunghyuncho/bert-gen/blob/master/bert-babble.ipynb).
     """
