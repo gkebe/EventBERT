@@ -393,7 +393,7 @@ def main():
                 nsp_precision_macro=precision_score(nsp_labels, nsp_predictions, average = "macro")
                 nsp_f1_micro=f1_score(nsp_labels, nsp_predictions, average = "micro")
                 nsp_f1_macro=f1_score(nsp_labels, nsp_predictions, average = "macro")
-                nsp_target_names = ["False", "True"]
+                nsp_target_names = ["True", "False"]
                 nsp_model_metrics=classification_report(nsp_labels, nsp_predictions, target_names=nsp_target_names, output_dict=True)["True"]
 
                 
