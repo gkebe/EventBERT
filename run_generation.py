@@ -322,7 +322,7 @@ def main():
         while i < 5:
             seed_text = follow_up(followup, len(seed_text), should_detokenize=True)
             sequence.append(seed_text)
-            followup = generate(1, seed_text=seed_text, batch_size=1, seq_len=seq_len, max_len=max_len,
+            followup = generate(2, seed_text=seed_text, batch_size=2, seq_len=seq_len, max_len=max_len,
                                   generation_mode=generation_mode,
                                   sample=sample, top_k=top_k, temperature=temperature, burnin=burnin, max_iter=max_iter,
                                   cuda=cuda)[0]
