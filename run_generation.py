@@ -148,9 +148,9 @@ def main():
         #        init_idx[seed_len+ii] = np.random.randint(0, len(tokenizer.vocab))
 
         return tokenize_batch(batch)
-    def get_init_sequence(seed_texts, max_len, batch_size=1, seq_len=4, rand_init=False):
+    def get_init_sequence(seed_text, max_len, batch_size=1, seq_len=4, rand_init=False):
         """ Get initial sentence by padding seed_text with either masks or random words to max_len """
-        batch = [seed_text + ([MASK] * max_len + ["."] + [SEP]) * seq_len for i in range(batch_size)]
+        batch = [seed_text + ([MASK] * max_len + ["."] + [SEP]) * seq_len for _ in range(batch_size)]
         return tokenize_batch(batch)
     def printer(sent, should_detokenize=True):
         if should_detokenize:
@@ -201,11 +201,10 @@ def main():
             - burnin: during burn-in period, sample from full distribution; afterwards take argmax
         """
         seed_len = len(seed_text)
-        batch = get_init_text(seed_texts, max_len, batch_size)
+        batch = get_init_sequence(seed_text, max_len, batch_size, seq_len)
         print(batch)
         print(seed_len)
         mask_indices = [i for i in range(len(batch[0])) if batch[0][i] == mask_id]
-        print(mask_indices)
         for ii in range(max_iter):
             kk = mask_indices[np.random.randint(seed_len, len(mask_indices))] - seed_len
             print(mask_indices)
@@ -307,16 +306,10 @@ def main():
     # Choose the prefix context
     seed_text = seed_sentence.split(",")
     seq_len = args.seq_len - 1
-    bert_sents = []
-    seed_texts = [seed_text for _ in range(batch_size)]
-    for i in range(seq_len):
-        bert_sents = generate(n_samples, seed_text=seed_text, batch_size=batch_size, seq_len=2, max_len=max_len,
+    bert_sents = generate(n_samples, seed_text=seed_text, batch_size=batch_size, seq_len=seq_len, max_len=max_len,
                           generation_mode=generation_mode,
                           sample=sample, top_k=top_k, temperature=temperature, burnin=burnin, max_iter=max_iter,
                           cuda=cuda)
-#        seed_text = seed_from_output(bert_sent)
-#        bert_sents = append_output(bert_sents, bert_sent)
-
 
     for sent in bert_sents:
         printer(sent, should_detokenize=True)
