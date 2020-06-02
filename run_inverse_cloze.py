@@ -464,16 +464,6 @@ def main():
 
     instance_template = ["T", "F1", "F2", "F3", "F4", "F5"]
 
-    for i in range(len(preds)):
-        seqs = [instances[i].T, instances[i].F1, instances[i].F2, instances[i].F3, instances[i].F4, instances[i].F5]
-        for j in range(len(probs_prod_[i])):
-            for k in range(len(probs_[i][j])):
-                print(seqs[j][k] + ": " + str(probs_[i][j][k]))
-            print("Product = " + str(probs_prod_[i][j]))
-            print()
-        print("Predicted " + instance_template[int(preds[i])])
-        print()
-        print()
 
     results = {'eval_loss': eval_loss,
                'accuracy': accuracy}
@@ -483,6 +473,22 @@ def main():
                                     "eval_results_" + args.init_checkpoint.split("/")[-1].split(".")[0] + "_"
                                     + args.data_dir.split("/")[-1].split(".")[0] + ".txt")
     with open(output_eval_file, "w") as writer:
+        for i in range(len(preds)):
+            seqs = [instances[i].T, instances[i].F1, instances[i].F2, instances[i].F3, instances[i].F4, instances[i].F5]
+            for j in range(len(probs_prod_[i])):
+                for k in range(len(probs_[i][j])):
+                    print(seqs[j][k] + ": " + str(probs_[i][j][k]))
+                    writer.write(seqs[j][k] + ": " + str(probs_[i][j][k]))
+                print("Product = " + str(probs_prod_[i][j]))
+                writer.write("Product = " + str(probs_prod_[i][j]))
+                print()
+                writer.write("\n")
+            print("Predicted " + instance_template[int(preds[i])])
+            writer.write("Predicted " + instance_template[int(preds[i])])
+            print()
+            print()
+            writer.write("\n")
+            writer.write("\n")
         logger.info("***** Eval results *****")
         for key in sorted(results.keys()):
             logger.info("  %s = %s", key, str(results[key]))
