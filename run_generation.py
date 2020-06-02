@@ -309,7 +309,7 @@ def main():
     bert_sents = []
     seed_texts = [seed_text for _ in range(batch_size)]
     for i in range(seq_len):
-        bert_sent = generate(n_samples, seed_text=seed_text, batch_size=batch_size, seq_len=2, max_len=max_len,
+        bert_sents = generate(n_samples, seed_text=seed_text, batch_size=batch_size, seq_len=2, max_len=max_len,
                           generation_mode=generation_mode,
                           sample=sample, top_k=top_k, temperature=temperature, burnin=burnin, max_iter=max_iter,
                           cuda=cuda)
