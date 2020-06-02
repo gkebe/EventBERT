@@ -159,7 +159,7 @@ def main():
     def follow_up(sent, seed_len, should_detokenize=True):
         if should_detokenize:
             sent = detokenize(sent)
-        return "[CLS]"+sent[seed_len:]
+        return ["[CLS]"] +sent[seed_len:]
 
     """Let's call the actual generation function! We'll use the following settings
     - max_len (40): length of sequence to generate
