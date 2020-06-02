@@ -231,8 +231,8 @@ def main():
             # out = model(input_ids=inp, attention_mask=mas)
             inp = torch.tensor(batch).cuda() if cuda else torch.tensor(batch)
             out = model(inp)
-            print(out)
             topk = top_k if (ii >= burnin) else 0
+            print(topk, ii, burnin)
             idxs = generate_step(out, gen_idx=seed_len + kk, top_k=topk, temperature=temperature, sample=(ii < burnin))
             for jj in range(batch_size):
                 print(idxs)
