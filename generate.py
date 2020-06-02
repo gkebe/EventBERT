@@ -14,7 +14,7 @@ MASK_ATOM = "[MASK]"
 def preprocess(tokens, tokenizer):
     """ Preprocess the sentence by tokenizing and converting to tensor. """
     tok_ids = tokenizer.convert_tokens_to_ids(tokens)
-    tok_tensor = torch.tensor([tok_ids]) # pylint: disable=not-callable
+    tok_tensor = torch.tensor([tok_ids]).cuda() # pylint: disable=not-callable
     return tok_tensor
 
 
@@ -51,7 +51,7 @@ def get_seed_sent(seed_sentence, tokenizer, masking, n_append_mask=0):
     mask_ids = sorted(list(set(mask_ids)))
 
     seg = [0] * len(toks)
-    seg_tensor = torch.tensor([seg]) # pylint: disable=not-callable
+    seg_tensor = torch.tensor([seg]).cuda() # pylint: disable=not-callable
 
     return toks, seg_tensor, mask_ids
 
@@ -162,7 +162,7 @@ def main(arguments):
                         choices=["argmax", "sample", "sample_topk"])
 
     args = parser.parse_args(arguments)
-    
+
     # Prepare model
     config = BertConfig.from_json_file(args.config_file)
     # Padding for divisibility by 8
