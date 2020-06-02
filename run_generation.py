@@ -192,7 +192,7 @@ def main():
 
     # Generation modes as functions
 
-    def parallel_sequential_generation(seed_texts, batch_size=10, seq_len=4, max_len=15, top_k=0, temperature=None, max_iter=300,
+    def parallel_sequential_generation(seed_text, batch_size=10, seq_len=4, max_len=15, top_k=0, temperature=None, max_iter=300,
                                        burnin=200,
                                        cuda=False, print_every=10, verbose=True):
         """ Generate for one random position at a timestep
@@ -200,7 +200,7 @@ def main():
         args:
             - burnin: during burn-in period, sample from full distribution; afterwards take argmax
         """
-        seed_len = len(seed_texts[0])
+        seed_len = len(seed_text)
         batch = get_init_text(seed_texts, max_len, batch_size)
         print(batch)
         print(seed_len)
