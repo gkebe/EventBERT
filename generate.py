@@ -126,7 +126,28 @@ def main(arguments):
     parser.add_argument("--bert_version", default="bert-base-cased",
                         choices=["bert-base-uncased", "bert-base-cased",
                                  "bert-large-uncased", "bert-large-uncased"])
-
+    parser.add_argument("--init_checkpoint",
+                        default=None,
+                        type=str,
+                        required=True,
+                        help="The checkpoint file from pretraining")
+    parser.add_argument("--max_seq_length",
+                        default=128,
+                        type=int,
+                        help="The maximum total input sequence length after WordPiece tokenization. \n"
+                             "Sequences longer than this will be truncated, and sequences shorter \n"
+                             "than this will be padded.")
+    parser.add_argument('--vocab_file',
+                        type=str, default=None, required=True,
+                        help="Vocabulary mapping/file BERT was pretrained on")
+    parser.add_argument("--config_file",
+                        default=None,
+                        type=str,
+                        required=True,
+                        help="The BERT model config")
+    parser.add_argument("--do_lower_case",
+                        action='store_true',
+                        help="Set this flag if you are using an uncased model")
     # How to choose text
     parser.add_argument("--seed_sentence", type=str, default="this is a sentence .")
     parser.add_argument("--masking", type=str,
@@ -143,8 +164,24 @@ def main(arguments):
     args = parser.parse_args(arguments)
 
     pdb.set_trace()
-    tokenizer = BertTokenizer.from_pretrained(args.bert_version)
-    model = load_model(args.bert_version)
+    # Prepare model
+    config = BertConfig.from_json_file(args.config_file)
+    # Padding for divisibility by 8
+    if config.vocab_size % 8 != 0:
+        config.vocab_size += 8 - (config.vocab_size % 8)
+
+    model = BertForMaskedLM(config)
+    print("USING CHECKPOINT from", args.init_checkpoint)
+    model.load_state_dict(torch.load(args.init_checkpoint, map_location='cpu')["model"], strict=False)
+    print("USED CHECKPOINT from", args.init_checkpoint)
+    # Load pre-trained model (weights)
+    model.eval()
+    cuda = torch.cuda.is_available()
+    if cuda:
+        model = model.cuda()
+
+    # Load pre-trained model tokenizer (vocabulary)
+    tokenizer = BertTokenizer(args.vocab_file, do_lower_case=args.do_lower_case, max_len=args.max_seq_length)
 
     print("Decoding strategy %s, %s at each step" % (args.decoding_strategy, args.token_strategy))
     if args.interact:
