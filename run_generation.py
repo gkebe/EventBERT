@@ -218,15 +218,10 @@ def main():
         """
         seed_len = len(seed_text)
         batch = get_init_sequence(seed_text, max_len, batch_size, seq_len)
-        print(batch)
-        print(seed_len)
+
         mask_indices = [i for i in range(len(batch[0])) if batch[0][i] == mask_id]
         for ii in range(max_iter):
             kk = np.random.randint(0, max_len)
-            print(mask_indices)
-            print(kk)
-            print(batch[0])
-            print()
             for jj in range(batch_size):
                 batch[jj][seed_len + kk] = mask_id
             # mas = []
@@ -343,7 +338,6 @@ def main():
                                   sample=sample, top_k=top_k, temperature=temperature, burnin=burnin, max_iter=max_iter,
                                   cuda=cuda)[0]
             i+=1
-        print(sequence)
         sequences.append(sequence)
     output_eval_file = os.path.join(args.output_dir,
                                     "generation_" + args.init_checkpoint.split("/")[-1].split(".")[0] + ".txt")
