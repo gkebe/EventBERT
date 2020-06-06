@@ -14,36 +14,60 @@
 # limitations under the License.
 
 echo "Container nvidia build = " $NVIDIA_BUILD_ID
-train_batch_size=${1:-14336}
-learning_rate=${2:-"6e-3"}
-precision=${3:-"fp16"}
-num_gpus=${4:-2}
-warmup_proportion=${5:-"0.2843"}
-train_steps=${6:-7038}
-save_checkpoint_steps=${7:-200}
-resume_training=${8:-"false"}
-create_logfile=${9:-"true"}
-accumulate_gradients=${10:-"true"}
-gradient_accumulation_steps=${11:-256}
-seed=${12:-$RANDOM}
-job_name=${13:-"bert_lamb_pretraining"}
-allreduce_post_accumulation=${14:-"true"}
-allreduce_post_accumulation_fp16=${15:-"true"}
-train_batch_size_phase2=${17:-5120}
-learning_rate_phase2=${18:-"4e-3"}
-warmup_proportion_phase2=${19:-"0.128"}
-train_steps_phase2=${20:-1563}
-gradient_accumulation_steps_phase2=${21:-512}
-DATASET=hdf5_lower_case_1_seq_len_128_max_pred_20_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/wiki_70k # change this for other datasets
-DATA_DIR_PHASE1=${22:-$BERT_PREP_WORKING_DIR/${DATASET}/}
+gpu="2,3"
+master_port="8595"
+init_checkpoint=""
+DATASET1="hdf5_lower_case_1_seq_len_128_max_pred_20_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/wiki_70k" # change this for other datasets
+DATASET2="hdf5_lower_case_1_seq_len_512_max_pred_80_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/wiki_70k" # change this for other datasets
+train_batch_size=14336
+num_gpus=2
+train_batch_size_phase2=4096
+train_steps=7038
+train_steps_phase2=1563
+gradient_accumulation_steps=256
+gradient_accumulation_steps_phase2=512
+resume_training="true"
+
+while getopts g:p:c:n:d:e:x:y:a:b:w:z:r: option 
+do 
+ case "${option}" 
+ in 
+ g) gpu=${OPTARG};; 
+ p) master_port=${OPTARG};;
+ c) init_checkpoint=${OPTARG};;
+ r) resume_training=${OPTARG};;
+ n) num_gpus=${OPTARG};;
+ d) DATASET1=${OPTARG};;
+ e) DATASET2=${OPTARG};;
+ a) train_batch_size=${OPTARG};;
+ b) train_batch_size_phase2=${OPTARG};;
+ x) gradient_accumulation_steps=${OPTARG};;
+ y) gradient_accumulation_steps_phase2=${OPTARG};;
+ w) train_steps=${OPTARG};;
+ z) train_steps_phase2=${OPTARG};;
+ esac 
+done 
+
+learning_rate="6e-3"
+precision="fp16"
+warmup_proportion="0.2843"
+save_checkpoint_steps=200
+create_logfile="true"
+accumulate_gradients="true"
+seed=$RANDOM
+job_name="bert_lamb_pretraining"
+allreduce_post_accumulation="true"
+allreduce_post_accumulation_fp16="true"
+learning_rate_phase2="4e-3"
+warmup_proportion_phase2="0.128"
+DATA_DIR_PHASE1=${PWD}/data/${DATASET1}/
 BERT_CONFIG=bert_config.json
-CODEDIR=${24:-"/workspace/bert"}
-init_checkpoint=${25:-"bert-base-uncased.pt"}
-gpu=${26:-"2,3"}
+CODEDIR="${PWD}"
 RESULTS_DIR=$CODEDIR/results
 CHECKPOINTS_DIR=$RESULTS_DIR/checkpoints
 
 mkdir -p $CHECKPOINTS_DIR
+
 export CUDA_VISIBLE_DEVICES=$gpu
 
 if [ ! -d "$DATA_DIR_PHASE1" ] ; then
@@ -100,7 +124,7 @@ fi
 
 echo $DATA_DIR_PHASE1
 INPUT_DIR=$DATA_DIR_PHASE1
-CMD=" $CODEDIR/run_pretraining.py"
+CMD=" $CODEDIR/run_pretraining_nodocker.py"
 CMD+=" --input_dir=$DATA_DIR_PHASE1"
 CMD+=" --output_dir=$CHECKPOINTS_DIR"
 CMD+=" --config_file=$BERT_CONFIG"
@@ -113,7 +137,6 @@ CMD+=" --warmup_proportion=$warmup_proportion"
 CMD+=" --num_steps_per_checkpoint=$save_checkpoint_steps"
 CMD+=" --learning_rate=$learning_rate"
 CMD+=" --seed=$seed"
-CMD+=" --gpu=$gpu"
 CMD+=" $PREC"
 CMD+=" $ACCUMULATE_GRADIENTS"
 CMD+=" $CHECKPOINT"
@@ -122,7 +145,7 @@ CMD+=" $ALL_REDUCE_POST_ACCUMULATION_FP16"
 CMD+=" $INIT_CHECKPOINT"
 CMD+=" --do_train"
 
-CMD="python3 -m torch.distributed.launch --nproc_per_node=$num_gpus $CMD"
+CMD="python3 -m torch.distributed.launch --master_port $master_port --nproc_per_node=$num_gpus $CMD"
 
 
 if [ "$create_logfile" = "true" ] ; then
@@ -148,8 +171,7 @@ echo "finished pretraining"
 
 #Start Phase2
 
-DATASET=hdf5_lower_case_1_seq_len_512_max_pred_80_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/wiki_70k # change this for other datasets
-DATA_DIR_PHASE2=${23:-$BERT_PREP_WORKING_DIR/${DATASET}/}
+DATA_DIR_PHASE2=${PWD}/data/${DATASET2}/
 
 PREC=""
 if [ "$precision" = "fp16" ] ; then
@@ -178,7 +200,7 @@ fi
 
 echo $DATA_DIR_PHASE2
 INPUT_DIR=$DATA_DIR_PHASE2
-CMD=" $CODEDIR/run_pretraining.py"
+CMD=" $CODEDIR/run_pretraining_nodocker.py"
 CMD+=" --input_dir=$DATA_DIR_PHASE2"
 CMD+=" --output_dir=$CHECKPOINTS_DIR"
 CMD+=" --config_file=$BERT_CONFIG"
@@ -198,7 +220,7 @@ CMD+=" $ALL_REDUCE_POST_ACCUMULATION"
 CMD+=" $ALL_REDUCE_POST_ACCUMULATION_FP16"
 CMD+=" --do_train --phase2 --resume_from_checkpoint --phase1_end_step=$train_steps"
 
-CMD="python3 -m torch.distributed.launch --nproc_per_node=$num_gpus $CMD"
+CMD="python3 -m torch.distributed.launch --master_port $master_port --nproc_per_node=$num_gpus $CMD"
 
 if [ "$create_logfile" = "true" ] ; then
   export GBS=$(expr $train_batch_size_phase2 \* $num_gpus)

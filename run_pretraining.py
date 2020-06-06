@@ -52,7 +52,7 @@ import amp_C
 import apex_C
 from apex.amp import _amp_state
 
-import dllogger
+# import dllogger
 from concurrent.futures import ProcessPoolExecutor
 
 skipped_steps = 0
@@ -248,12 +248,12 @@ def setup_training(args):
         torch.distributed.init_process_group(backend='nccl', init_method='env://')
         args.n_gpu = 1
         
-    if is_main_process():
-        dllogger.init(backends=[dllogger.JSONStreamBackend(verbosity=dllogger.Verbosity.VERBOSE,
-                                                           filename=args.json_summary),
-                                dllogger.StdOutBackend(verbosity=dllogger.Verbosity.VERBOSE, step_format=format_step)])
-    else:
-        dllogger.init(backends=[])
+    # if is_main_process():
+        # dllogger.init(backends=[dllogger.JSONStreamBackend(verbosity=dllogger.Verbosity.VERBOSE,
+                                                           # filename=args.json_summary),
+                                # dllogger.StdOutBackend(verbosity=dllogger.Verbosity.VERBOSE, step_format=format_step)])
+    # else:
+        # dllogger.init(backends=[])
 
     print("device: {} n_gpu: {}, distributed training: {}, 16-bits training: {}".format(
         device, args.n_gpu, bool(args.local_rank != -1), args.fp16))
@@ -407,7 +407,8 @@ def take_optimizer_step(args, optimizer, model, overflow_buf, global_step):
             skipped_steps += 1
             if is_main_process():
                 scaler = _amp_state.loss_scalers[0]
-                dllogger.log(step="PARAMETER", data={"loss_scale": scaler.loss_scale()})
+                # dllogger.log(step="PARAMETER", data={"loss_scale": scaler.loss_scale()})
+                print("PARAMETER loss_scale: "+str(scaler.loss_scale()))
             if _amp_state.opt_properties.master_weights:
                 for param in optimizer._amp_stash.all_fp32_from_fp16_params:
                     param.grad = None
@@ -434,20 +435,23 @@ def main():
     torch.manual_seed(args.seed)
 
     device, args = setup_training(args)
-    dllogger.log(step="PARAMETER", data={"Config": [str(args)]})
-
+    # dllogger.log(step="PARAMETER", data={"Config": [str(args)]})
+    print("PARAMETER Config: "+str(args))
     # Prepare optimizer
     model, optimizer, lr_scheduler, checkpoint, global_step = prepare_model_and_optimizer(args, device)
 
     if is_main_process():
-        dllogger.log(step="PARAMETER", data={"SEED": args.seed})
-
+        #dllogger.log(step="PARAMETER", data={"SEED": args.seed})
+        print("PARAMETER SEED: "+ str(args.seed))
     raw_train_start = time.time()
     if args.do_train:
         if is_main_process():
-            dllogger.log(step="PARAMETER", data={"train_start": True})
-            dllogger.log(step="PARAMETER", data={"batch_size_per_gpu": args.train_batch_size})
-            dllogger.log(step="PARAMETER", data={"learning_rate": args.learning_rate})
+            # dllogger.log(step="PARAMETER", data={"train_start": True})
+            # dllogger.log(step="PARAMETER", data={"batch_size_per_gpu": args.train_batch_size})
+            # dllogger.log(step="PARAMETER", data={"learning_rate": args.learning_rate})
+            print("PARAMETER train_start: " + "True")
+            print("PARAMETER batch_size_per_gpu: " + str(args.train_batch_size))
+            print("PARAMETER learning_rate: " + str(args.learning_rate))
 
         model.train()
         most_recent_ckpts_paths = []
@@ -549,19 +553,24 @@ def main():
                             torch.distributed.all_reduce(average_loss)
                         final_loss = average_loss.item()
                         if is_main_process():
-                            dllogger.log(step=(epoch, training_steps / args.gradient_accumulation_steps, ), data={"final_loss": final_loss})
+                            # dllogger.log(step=(epoch, training_steps / args.gradient_accumulation_steps, ), data={"final_loss": final_loss})
+                            print(format_step((epoch, training_steps / args.gradient_accumulation_steps, ))+" final_loss: "+str(final_loss))
                     elif training_steps % (args.log_freq * args.gradient_accumulation_steps) == 0:
                         if is_main_process():
-                            dllogger.log(step=(epoch, global_step, ), data={"average_loss": average_loss / (args.log_freq * divisor),
-                                                                            "step_loss": loss.item() * args.gradient_accumulation_steps / divisor,
-                                                                            "learning_rate": optimizer.param_groups[0]['lr']})
+                            # dllogger.log(step=(epoch, global_step, ), data={"average_loss": average_loss / (args.log_freq * divisor),
+                                                                            # "step_loss": loss.item() * args.gradient_accumulation_steps / divisor,
+                                                                            # "learning_rate": optimizer.param_groups[0]['lr']})
+                            print(format_step((epoch, global_step, ))+" average_loss: "+ str(average_loss / (args.log_freq * divisor))+
+                                                                            " step_loss: "+ str(loss.item() * args.gradient_accumulation_steps / divisor)+
+                                                                            " learning_rate: "+ str(optimizer.param_groups[0]['lr']))
                         average_loss = 0
 
                     if global_step >= args.max_steps or training_steps % (
                             args.num_steps_per_checkpoint * args.gradient_accumulation_steps) == 0:
                         if is_main_process() and not args.skip_checkpoint:
                             # Save a trained model
-                            dllogger.log(step="PARAMETER", data={"checkpoint_step": global_step})
+                            #dllogger.log(step="PARAMETER", data={"checkpoint_step": global_step})
+                            print("PARAMETER checkpoint_step: "+str(global_step))
                             model_to_save = model.module if hasattr(model,
                                                                     'module') else model  # Only save the model it-self
                             if args.resume_step < 0 or not args.phase2:
@@ -607,6 +616,6 @@ if __name__ == "__main__":
         e2e_time = time.time() - now
         training_perf = args.train_batch_size * args.gradient_accumulation_steps * gpu_count\
                         * (args.max_steps - args.resume_step + skipped_steps) / train_time_raw
-        dllogger.log(step=tuple(), data={"e2e_train_time": e2e_time, "training_sequences_per_second": training_perf,
-                                         "final_loss": final_loss, "raw_train_time": train_time_raw })
-    dllogger.flush()
+        # dllogger.log(step=tuple(), data={"e2e_train_time": e2e_time, "training_sequences_per_second": training_perf, "final_loss": final_loss, "raw_train_time": train_time_raw })
+        print("e2e_train_time: " + str(e2e_time) + " training_sequences_per_second: " + str(training_perf) + " final_loss: " + str(final_loss) + " raw_train_time: " + str(train_time_raw))
+    #dllogger.flush()
