@@ -90,7 +90,7 @@ export CUDA_VISIBLE_DEVICES=$gpu
 
 echo $DATA_DIR
 CMD="${PWD}"
-CMD+="/run_pretraining_inference_nodocker.py"
+CMD+="/run_pretraining_inference.py"
 CMD+=" --input_dir=$DATA_DIR"
 CMD+=" --ckpt_dir=$CHECKPOINTS_DIR"
 CMD+=" --config_file=$BERT_CONFIG"
