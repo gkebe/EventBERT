@@ -124,7 +124,7 @@ fi
 
 echo $DATA_DIR_PHASE1
 INPUT_DIR=$DATA_DIR_PHASE1
-CMD=" $CODEDIR/run_pretraining_nodocker.py"
+CMD=" $CODEDIR/run_pretraining.py"
 CMD+=" --input_dir=$DATA_DIR_PHASE1"
 CMD+=" --output_dir=$CHECKPOINTS_DIR"
 CMD+=" --config_file=$BERT_CONFIG"
