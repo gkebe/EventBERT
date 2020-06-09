@@ -288,7 +288,7 @@ def main():
 
     args = parser.parse_args()
 
-    tokenizer = XLNetTokenizer(args.xlnet_model, do_lower_case=args.do_lower_case, max_len=512)
+    tokenizer = XLNetTokenizer(args.vocab_file, do_lower_case=args.do_lower_case, max_len=512)
     
     input_files = []
     if os.path.isfile(args.input_file):
