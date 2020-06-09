@@ -14,9 +14,6 @@ def main(args):
         xlnet_preprocessing_command += ' --max_predictions_per_seq=' + str(args.max_predictions_per_seq)
         xlnet_preprocessing_command += ' --random_seed=' + str(args.random_seed)
         xlnet_preprocessing_command += ' --dupe_factor=' + str(args.dupe_factor)
-        xlnet_preprocessing_command += ' --keep_label=' + str(args.keep_label)
-        if "_test_with_labels" in filename_prefix:
-            xlnet_preprocessing_command += ' --label_file=' + "wiki_70k/step3/" + filename_prefix + '_labels' + '_' + str(shard_id) + '.txt'
         xlnet_preprocessing_process = subprocess.Popen(xlnet_preprocessing_command, shell=True)
 
         last_process = xlnet_preprocessing_process
