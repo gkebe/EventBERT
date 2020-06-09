@@ -40,6 +40,10 @@ import multiprocessing
 
 from tokenization import BertTokenizer
 from modeling import BertForPreTraining, BertConfig
+
+from transformers import XLNetTokenizer, XLNetLMHeadModel, XLNetConfig
+from transformers import BertTokenizer, BertForPreTraining, BertConfig
+
 from apex.optimizers import FusedLAMB
 from schedulers import PolyWarmUpScheduler
 
@@ -282,12 +286,12 @@ def setup_training(args):
 def prepare_model_and_optimizer(args, device):
 
     # Prepare model
-    config = BertConfig.from_json_file(args.config_file)
+    config = XLNetConfig.from_json_file(args.config_file)
 
     # Padding for divisibility by 8
     if config.vocab_size % 8 != 0:
         config.vocab_size += 8 - (config.vocab_size % 8)
-    model = BertForPreTraining(config)
+    model = XLNetLMHeadModel(config)
 
     checkpoint = None
     if not args.resume_from_checkpoint:

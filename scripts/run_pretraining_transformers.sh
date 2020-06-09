@@ -26,7 +26,7 @@ train_steps=7038
 train_steps_phase2=1563
 gradient_accumulation_steps=256
 gradient_accumulation_steps_phase2=512
-resume_training="true"
+resume_training="false"
 
 while getopts g:p:c:n:d:e:x:y:a:b:w:z:r: option 
 do 
@@ -55,13 +55,14 @@ save_checkpoint_steps=200
 create_logfile="true"
 accumulate_gradients="true"
 seed=$RANDOM
-job_name="bert_lamb_pretraining"
+job_name="transformers_lamb_pretraining"
 allreduce_post_accumulation="true"
 allreduce_post_accumulation_fp16="true"
 learning_rate_phase2="4e-3"
 warmup_proportion_phase2="0.128"
 DATA_DIR_PHASE1=${PWD}/data/${DATASET1}/
 BERT_CONFIG=bert_config.json
+XLNET_CONFIG=xlnet_config.json
 CODEDIR="${PWD}"
 RESULTS_DIR=$CODEDIR/results
 CHECKPOINTS_DIR=$RESULTS_DIR/checkpoints
@@ -82,8 +83,8 @@ if [ ! -d "$CHECKPOINTS_DIR" ] ; then
    echo "Checkpoints will be written to $RESULTS_DIR instead."
    CHECKPOINTS_DIR=$RESULTS_DIR
 fi
-if [ ! -f "$BERT_CONFIG" ] ; then
-   echo "Error! BERT base configuration file not found at $BERT_CONFIG"
+if [ ! -f "$XLNET_CONFIG" ] ; then
+   echo "Error! XLNET base configuration file not found at $XLNET_CONFIG"
    exit -1
 fi
 
@@ -127,8 +128,9 @@ INPUT_DIR=$DATA_DIR_PHASE1
 CMD=" $CODEDIR/run_pretraining_transformers.py"
 CMD+=" --input_dir=$DATA_DIR_PHASE1"
 CMD+=" --output_dir=$CHECKPOINTS_DIR"
-CMD+=" --config_file=$BERT_CONFIG"
+CMD+=" --config_file=$XLNET_CONFIG"
 CMD+=" --bert_model=bert-base-uncased"
+CMD+=" --xlnet_model=xlnet-base-cased"
 CMD+=" --train_batch_size=$train_batch_size"
 CMD+=" --max_seq_length=128"
 CMD+=" --max_predictions_per_seq=20"
