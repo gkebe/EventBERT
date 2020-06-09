@@ -288,7 +288,7 @@ def main():
 
     args = parser.parse_args()
 
-    tokenizer = XLNetTokenizer.from_pretrained((args.xlnet_model)
+    tokenizer = XLNetTokenizer.from_pretrained(args.xlnet_model)
     
     input_files = []
     if os.path.isfile(args.input_file):
