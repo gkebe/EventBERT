@@ -3,7 +3,7 @@ import subprocess
 def main(args):
     def create_record_worker(filename_prefix, shard_id, output_format='hdf5'):
         hdf5_tfrecord_folder_prefix = "_lower_case_" + str(args.do_lower_case) + "_seq_len_" + str(args.max_seq_length) \
-                                      + "_max_pred_" + str(args.max_predictions_per_seq) + "_masked_lm_prob_" + str(args.masked_lm_prob) \
+                                      + "_max_pred_" + str(args.max_predictions_per_seq) \
                                       + "_random_seed_" + str(args.random_seed) + "_dupe_factor_" + str(args.dupe_factor)
         xlnet_preprocessing_command = 'python ../create_pretraining_events.py'
         xlnet_preprocessing_command += ' --input_file=' + "wiki_70k/step3/" + filename_prefix + '_' + str(shard_id) + '.txt'
