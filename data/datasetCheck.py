@@ -17,8 +17,7 @@ def main(args):
          if filename.endswith(".hdf5") and "training" in filename: 
              print(filename)
              f = h5py.File(os.path.join(args.dataset, filename), 'r')
-             data_size += len(f["input_ids"])
-             print(f["input_ids"].shape)
+             data_size += f["input_ids"].shape[0]
              continue
          else:
              continue
