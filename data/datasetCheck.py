@@ -18,6 +18,7 @@ def main(args):
              print(filename)
              f = h5py.File(os.path.join(args.dataset, filename), 'r')
              data_size += len(f["input_ids"])
+             print(type(f["input_ids"]))
              continue
          else:
              continue
