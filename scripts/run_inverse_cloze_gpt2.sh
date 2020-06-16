@@ -16,7 +16,7 @@
 
 echo "Container nvidia build = " $NVIDIA_BUILD_ID
 
-init_checkpoint="${PWD}/model/xlnet/model.ckpt"
+init_checkpoint="${PWD}/model/gpt2/model.ckpt"
 master_port="8599"
 seed=2
 vocab_file="${PWD}/data/download/google_pretrained_weights/uncased_L-12_H-768_A-12/vocab.txt"
