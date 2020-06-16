@@ -286,7 +286,8 @@ def log_likelihood(tokenizer, model, seed, option, device):
 
         with torch.no_grad():
             outputs = model(input_ids, perm_mask=perm_mask, target_mapping=target_mapping)
-            next_token_logits = outputs[0]  # Output has shape [target_mapping.size(0), target_mapping.size(1), config.vocab_size]
+            next_token_logits = outputs[0].detach().cpu()  # Output has shape [target_mapping.size(0), target_mapping.size(1), config.vocab_size]
+
 
         word_id = tokenizer.convert_tokens_to_ids([tokenize_input[max_word_id]])[0]
         predicted_prob = softmax(np.array(next_token_logits[0][-1]))
