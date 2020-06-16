@@ -456,9 +456,6 @@ def main():
             pred = np.argmax(probs_prod)
             rank = sorted(probs_prod, reverse=True).index(probs_prod[0]) + 1
 
-            print(pred)
-            print(rank)
-
             ranks.append(rank)
             preds.append(pred)
             probs_.append(probs_seq)

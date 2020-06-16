@@ -80,6 +80,8 @@ def compute_metrics(task_name, preds, labels, label_names=None):
     else:
         raise KeyError(task_name)
 
+def simple_mrr(ranks):
+    return np.sum([1/i for i in ranks])/len(ranks)
 
 def simple_accuracy(preds, labels):
     return (preds == labels).mean()
@@ -431,6 +433,7 @@ def main():
     logger.info("  Num examples = %d", len(instances))
     preds=[]
     probs=[]
+    ranks=[]
     i=0
     instance_template = ["T", "F1", "F2", "F3", "F4", "F5"]
 
@@ -444,18 +447,22 @@ def main():
             log_l = log_likelihood(tokenizer,model,seq["full"],device)
             log_ls.append(log_l)
         pred = np.argmax(log_ls)
+        rank = sorted(log_ls, reverse=True).index(log_ls[0]) + 1
         print("Predicted: " + instance_template[int(pred)])
         preds.append(pred)
+        ranks.append(rank)
         probs.append(log_ls)
         i+=1
         print(str(i)+"/"+str(len(eval_features)))
 
     accuracy = simple_accuracy(np.array(preds), np.array([0]*len(preds)))
+    mrr = simple_mrr(ranks)
 
     instance_template = ["T", "F1", "F2", "F3", "F4", "F5"]
 
 
-    results = {'accuracy': accuracy}
+    results = {'accuracy': accuracy,
+               'MRR': mrr}
 
     output_eval_file = os.path.join(args.output_dir,
                                     "eval_results_xlnet_" + args.init_checkpoint.split("/")[-1].split(".")[0] + "_"
@@ -472,6 +479,8 @@ def main():
                 writer.write("\n")
             print("Predicted " + instance_template[int(preds[i])])
             writer.write("Predicted " + instance_template[int(preds[i])]+"\n")
+            print("Rank of T: " + str(ranks[i]))
+            writer.write("Rank of T: " + str(ranks[i]) +"\n")
             print()
             print()
             writer.write("\n\n")

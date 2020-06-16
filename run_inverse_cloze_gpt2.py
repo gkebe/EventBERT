@@ -70,6 +70,8 @@ def compute_metrics(task_name, preds, labels, label_names=None):
     else:
         raise KeyError(task_name)
 
+def simple_mrr(ranks):
+    return np.sum([1/i for i in ranks])/len(ranks)
 
 def simple_accuracy(preds, labels):
     return (preds == labels).mean()
@@ -357,6 +359,7 @@ def main():
     logger.info("  Num examples = %d", len(instances))
     preds=[]
     probs=[]
+    ranks=[]
     i=0
     instance_template = ["T", "F1", "F2", "F3", "F4", "F5"]
 
@@ -370,6 +373,9 @@ def main():
             log_l = perplexity(tokenizer,model,seq["full"],device)
             log_ls.append(log_l)
         pred = np.argmin(log_ls)
+        rank = sorted(log_ls).index(log_ls[0]) + 1
+
+        ranks.append(rank)
         print("Predicted: " + instance_template[int(pred)])
         preds.append(pred)
         probs.append(log_ls)
@@ -377,11 +383,13 @@ def main():
         print(str(i)+"/"+str(len(eval_features)))
 
     accuracy = simple_accuracy(np.array(preds), np.array([0]*len(preds)))
+    mrr = simple_mrr(ranks)
 
     instance_template = ["T", "F1", "F2", "F3", "F4", "F5"]
 
 
-    results = {'accuracy': accuracy}
+    results = {'accuracy': accuracy,
+               'MRR': mrr}
 
     output_eval_file = os.path.join(args.output_dir,
                                     "eval_results_gpt2_" + args.init_checkpoint.split("/")[-1].split(".")[0] + "_"
@@ -392,12 +400,14 @@ def main():
             for j in range(len(probs[i])):
                 print(instance_template[j])
                 writer.write(instance_template[j] + "\n")
-                print("Log likelihood = " + str(probs[i][j]))
-                writer.write("Log likelihood = " + str(probs[i][j])+"\n")
+                print("Perplexity = " + str(probs[i][j]))
+                writer.write("Perplexity = " + str(probs[i][j])+"\n")
                 print()
                 writer.write("\n")
             print("Predicted " + instance_template[int(preds[i])])
             writer.write("Predicted " + instance_template[int(preds[i])]+"\n")
+            print("Rank of T: " + str(ranks[i]))
+            writer.write("Rank of T: " + str(ranks[i]) +"\n")
             print()
             print()
             writer.write("\n\n")
