@@ -40,7 +40,7 @@ mkdir -p $OUT_DIR
 export CUDA_VISIBLE_DEVICES=$gpu
 
 
-CMD="python run_inverse_cloze.py "
+CMD="python run_inverse_cloze_alt.py "
 
 
 CMD+="--do_lower_case "
