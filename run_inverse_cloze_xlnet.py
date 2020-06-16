@@ -263,7 +263,7 @@ class GradientClipper:
         if clip_coef < 1:
             multi_tensor_applier(self.multi_tensor_scale, self._overflow_buf, [l, l], clip_coef)
 
-def log_likelihood(tokenizer, model, seed, option):
+def log_likelihood(tokenizer, model, seed, option, device):
 
     tokenize_input = tokenizer.tokenize(seed + option)
     tokenize_text = tokenizer.tokenize(option)
@@ -279,6 +279,10 @@ def log_likelihood(tokenizer, model, seed, option):
 
         target_mapping = torch.zeros((1, 1, input_ids.shape[1]), dtype=torch.float)
         target_mapping[0, 0, max_word_id] = 1.0
+
+        target_mapping = target_mapping.to(device)
+        perm_mask = perm_mask.to(device)
+        input_ids = input_ids.to(device)
 
         with torch.no_grad():
             outputs = model(input_ids, perm_mask=perm_mask, target_mapping=target_mapping)
@@ -422,7 +426,7 @@ def main():
         input_mask = []
         log_ls = []
         for seq in sequences:
-            log_l = log_likelihood(tokenizer,model,seq["seed"],seq["next"])
+            log_l = log_likelihood(tokenizer,model,seq["seed"],seq["next"],device)
             log_ls.append(log_l)
         pred = np.argmax(log_ls)
         preds.append(pred)
