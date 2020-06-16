@@ -423,7 +423,7 @@ def main():
     results = {'accuracy': accuracy}
 
     output_eval_file = os.path.join(args.output_dir,
-                                    "eval_results_xlnet_" + args.init_checkpoint.split("/")[-1].split(".")[0] + "_"
+                                    "eval_results_gpt2_" + args.init_checkpoint.split("/")[-1].split(".")[0] + "_"
                                     + args.data_dir.split("/")[-1].split(".")[0] + ".txt")
     with open(output_eval_file, "w") as writer:
         for i in range(len(preds)):
