@@ -210,7 +210,6 @@ def tokenize_sequence(sequence, max_seq_length, tokenizer):
     first = ""
     for _, second in zip(sequence, sequence[1:]):
         first = " ".join(sequence[:sequence.index(second)])
-        print(first)
         tokens_a = tokenizer.tokenize(first)
         tokens_b = tokenizer.tokenize(second)
         _truncate_seq_pair(tokens_a, tokens_b, max_seq_length - 3)
