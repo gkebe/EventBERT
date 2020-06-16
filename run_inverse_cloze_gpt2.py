@@ -369,7 +369,6 @@ def main():
         input_mask = []
         log_ls = []
         for seq in sequences:
-            print(seq)
             log_l = perplexity(tokenizer,model,seq["full"],device)
             log_ls.append(log_l)
         pred = np.argmin(log_ls)
