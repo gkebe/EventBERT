@@ -183,6 +183,15 @@ def main():
     parser.add_argument("--padding_text", type=str, default="", help="Padding text for Transfo-XL and XLNet.")
     parser.add_argument("--xlm_language", type=str, default="", help="Optional language when used with the XLM model.")
 
+    parser.add_argument("--no_tokenizer", action="store_true", help="Avoid using CUDA when available")
+    parser.add_argument(
+        "--model_name",
+        default=None,
+        type=str,
+        required=True,
+        help="Shortcut name selected in the list: " + ", ".join(MODEL_CLASSES.keys()),
+    )
+
     parser.add_argument("--seed", type=int, default=42, help="random seed for initialization")
     parser.add_argument("--no_cuda", action="store_true", help="Avoid using CUDA when available")
     parser.add_argument("--num_return_sequences", type=int, default=1, help="The number of samples to generate.")
@@ -199,8 +208,10 @@ def main():
         model_class, tokenizer_class = MODEL_CLASSES[args.model_type]
     except KeyError:
         raise KeyError("the model {} you specified is not supported. You are welcome to add it and open a PR :)")
-
-    tokenizer = tokenizer_class.from_pretrained(args.model_name_or_path)
+    if args.no_tokenizer:
+        tokenizer = tokenizer_class.from_pretrained(args.model_name)
+    else:
+        tokenizer = tokenizer_class.from_pretrained(args.model_name_or_path)
     model = model_class.from_pretrained(args.model_name_or_path)
     model.to(args.device)
 
