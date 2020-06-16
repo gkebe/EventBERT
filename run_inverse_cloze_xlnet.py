@@ -418,9 +418,9 @@ def main():
         instances, args.max_seq_length, tokenizer)
     logger.info("***** Running evaluation *****")
     logger.info("  Num examples = %d", len(instances))
-    logger.info("  Batch size = %d", 24)
     preds=[]
     probs=[]
+    i=0
     for f in eval_features:
         sequences = [f.T, f.F1, f.F2, f.F3, f.F4, f.F5]
         input_ids = []
@@ -432,6 +432,8 @@ def main():
         pred = np.argmax(log_ls)
         preds.append(pred)
         probs.append(log_ls)
+        i+=1
+        print(str(i)+"/"+str(len(eval_features)))
 
     accuracy = simple_accuracy(np.array(preds), np.array([0]*len(preds)))
 
