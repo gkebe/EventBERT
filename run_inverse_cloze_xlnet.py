@@ -386,21 +386,24 @@ def main():
         os.makedirs(args.output_dir)
 
     # tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
-    tokenizer = XLNetTokenizer(args.vocab_file, do_lower_case=args.do_lower_case, max_len=128)  # for xlnet base
-
+    #tokenizer = XLNetTokenizer(args.vocab_file, do_lower_case=args.do_lower_case, max_len=128)  # for xlnet base
+    tokenizer = XLNetTokenizer.from_pretrained(args.xlnet_model)
 
     # Prepare model
-    config = XLNetConfig.from_json_file(args.config_file)
+    #config = XLNetConfig.from_json_file(args.config_file)
     # Padding for divisibility by 8
-    if config.vocab_size % 8 != 0:
-        config.vocab_size += 8 - (config.vocab_size % 8)
+    #if config.vocab_size % 8 != 0:
+     #   config.vocab_size += 8 - (config.vocab_size % 8)
 
-    model = XLNetForSequenceClassification(config)
+    #model = XLNetForSequenceClassification(config)
+    #print("USING CHECKPOINT from", args.init_checkpoint)
+    #model.load_state_dict(torch.load(args.init_checkpoint, map_location='cpu')["model"], strict=False)
+    #print("USED CHECKPOINT from", args.init_checkpoint)
+
+    model = XLNetLMHeadModel.from_pretrained(args.xlnet_model)
     print("USING CHECKPOINT from", args.init_checkpoint)
     model.load_state_dict(torch.load(args.init_checkpoint, map_location='cpu')["model"], strict=False)
     print("USED CHECKPOINT from", args.init_checkpoint)
-
-    model = XLNetLMHeadModel.from_pretrained('xlnet-base-cased')
     model.to(device)
     # Prepare optimizer
     processor = DataProcessor()
