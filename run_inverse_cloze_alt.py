@@ -449,7 +449,7 @@ def main():
             probs = probabilities.tolist()
             probs = [i[0] for i in probs]
             probs_seq = [probs[x:x + (num_events-1)] for x in range(0, len(probs), (num_events-1))]
-            probs_prod = [np.prod(i) for i in probs_seq]
+            probs_prod = [np.sum(np.log(i)) for i in probs_seq]
             pred = np.argmax(probs_prod)
             preds.append(pred)
             probs_.append(probs_seq)
@@ -482,8 +482,8 @@ def main():
                 for k in range(len(probs_[i][j])):
                     print("\t"+seqs[j][k] +" "+ seqs[j][k+1] + ": " + str(probs_[i][j][k]))
                     writer.write("\t"+seqs[j][k] + " " + seqs[j][k+1] + ": " + str(probs_[i][j][k])+"\n")
-                print("Product = " + str(probs_prod_[i][j]))
-                writer.write("Product = " + str(probs_prod_[i][j])+"\n")
+                print("Sum = " + str(probs_prod_[i][j]))
+                writer.write("Sum = " + str(probs_prod_[i][j])+"\n")
                 print()
                 writer.write("\n")
             print("Predicted " + instance_template[int(preds[i])])
