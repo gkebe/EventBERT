@@ -263,10 +263,21 @@ class GradientClipper:
         if clip_coef < 1:
             multi_tensor_applier(self.multi_tensor_scale, self._overflow_buf, [l, l], clip_coef)
 
-def log_likelihood(tokenizer, model, seed, option, device):
+def log_likelihood(tokenizer, model, full, device):
 
-    tokenize_input = tokenizer.tokenize(seed + option)
-    tokenize_text = tokenizer.tokenize(option)
+    padding = """In 1991, the remains of Russian Tsar Nicholas II and his family
+                (except for Alexei and Maria) are discovered.
+                The voice of Nicholas's young son, Tsarevich Alexei Nikolaevich, narrates the
+                remainder of the story. 1883 Western Siberia,
+                a young Grigori Rasputin is asked by his father and a group of men to perform magic.
+                Rasputin has a vision and denounces one of the men as a horse thief. Although his
+                father initially slaps him for making such an accusation, Rasputin watches as the
+                man is chased outside and beaten. Twenty years later, Rasputin sees a vision of
+                the Virgin Mary, prompting him to become a priest. Rasputin quickly becomes famous,
+                 with people, even a bishop, begging for his blessing. <eod> """
+
+    tokenize_input = tokenizer.tokenize(padding + full)
+    tokenize_text = tokenizer.tokenize(full)
 
     sum_lp = 0.0
     for max_word_id in range((len(tokenize_input) - len(tokenize_text)), (len(tokenize_input))):
@@ -429,7 +440,7 @@ def main():
         log_ls = []
         for seq in sequences:
             print(seq)
-            log_l = log_likelihood(tokenizer,model,seq["seed"],seq["next"],device)
+            log_l = log_likelihood(tokenizer,model,seq["full"],device)
             log_ls.append(log_l)
         pred = np.argmax(log_ls)
         preds.append(pred)
