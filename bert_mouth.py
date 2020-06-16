@@ -126,9 +126,9 @@ def train(args, tokenizer, device):
     optimization_steps = len(train_dataloader) * args.num_train_epochs
     optimizer = AdamW(optimizer_grouped_parameters,
                       lr=args.learning_rate, eps=args.adam_epsilon)
-    scheduler = get_linear_schedule_with_warmup(optimizer,
-                                     num_warmup_steps=0,
-                                     num_training_steps=optimization_steps)
+    scheduler = WarmupLinearSchedule(optimizer,
+                                     warmup_steps=0,
+                                     t_total=optimization_steps)
     loss_fct = CrossEntropyLoss(ignore_index=0)
 
     def calc_batch_loss(batch):
