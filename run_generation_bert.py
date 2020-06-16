@@ -142,7 +142,7 @@ def main():
 
     def get_init_text(seed_text, max_len, batch_size=1, rand_init=False):
         """ Get initial sentence by padding seed_text with either masks or random words to max_len """
-        batch = [seed_text + [MASK] * max_len + ["."] + [SEP] for _ in range(batch_size)]
+        batch = [seed_text + [MASK] * max_len + [SEP] for _ in range(batch_size)]
         # if rand_init:
         #    for ii in range(max_len):
         #        init_idx[seed_len+ii] = np.random.randint(0, len(tokenizer.vocab))
@@ -187,8 +187,6 @@ def main():
     max_len = args.max_len
     top_k = 100
     temperature = 1.0
-    generation_mode = args.mode
-    leed_out_len = 5  # max_len
     burnin = 250
     sample = True
     max_iter = 500
@@ -208,8 +206,7 @@ def main():
 
     # Generation modes as functions
 
-    def parallel_sequential_generation(seed_text, batch_size=10, seq_len=4, max_len=15, top_k=0, temperature=None, max_iter=300,
-                                       burnin=200,
+    def parallel_sequential_generation(seed_text, max_len=15, top_k=0, temperature=None, max_iter=300, burnin=200,
                                        cuda=False, print_every=10, verbose=True):
         """ Generate for one random position at a timestep
 
@@ -217,28 +214,14 @@ def main():
             - burnin: during burn-in period, sample from full distribution; afterwards take argmax
         """
         seed_len = len(seed_text)
-        batch = get_init_sequence(seed_text, max_len, batch_size, seq_len)
+        batch = get_init_text(seed_text, max_len, batch_size)
 
-        mask_indices = [i for i in range(len(batch[0])) if batch[0][i] == mask_id]
         for ii in range(max_iter):
             kk = np.random.randint(0, max_len)
             for jj in range(batch_size):
                 batch[jj][seed_len + kk] = mask_id
-            # mas = []
-            # inp = batch
-            # for seq in inp:
-            #     while len(seq) < args.max_seq_length:
-            #         seq.append(0)
-            #     seq_mask = [float(i > 0) for i in seq]
-            #     mas.append(seq_mask)
-            # print(len(inp[0]))
-            # print(len(mas[0]))
-            # inp = torch.tensor(inp).cuda() if cuda else torch.tensor(inp)
-            # mas = torch.tensor(mas).cuda() if cuda else torch.tensor(mas)
-            # out = model(input_ids=inp, attention_mask=mas)
             inp = torch.tensor(batch).cuda() if cuda else torch.tensor(batch)
             out = model(inp)
-            print(out)
             topk = top_k if (ii >= burnin) else 0
             idxs = generate_step(out, gen_idx=seed_len + kk, top_k=topk, temperature=temperature, sample=(ii < burnin))
             for jj in range(batch_size):
@@ -286,8 +269,7 @@ def main():
 
         return untokenize_batch(batch)
 
-    def generate(n_samples, seed_text, batch_size=10, seq_len=4, max_len=25,
-                 generation_mode="parallel-sequential",
+    def generate(n_samples, seed_text="[CLS]", batch_size=10, max_len=25,
                  sample=True, top_k=100, temperature=1.0, burnin=200, max_iter=500,
                  cuda=False, print_every=1):
         # main generation function to call
@@ -295,19 +277,12 @@ def main():
         n_batches = math.ceil(n_samples / batch_size)
         start_time = time.time()
         for batch_n in range(n_batches):
-            if generation_mode == "parallel-sequential":
-                batch = parallel_sequential_generation(seed_text, batch_size=batch_size, seq_len=seq_len, max_len=max_len, top_k=top_k,
-                                                       temperature=temperature, burnin=burnin, max_iter=max_iter,
-                                                       cuda=cuda, verbose=False)
-            elif generation_mode == "sequential":
-                batch = sequential_generation(seed_text, batch_size=batch_size, seq_len=seq_len, max_len=max_len, top_k=top_k,
-                                              temperature=temperature, leed_out_len=leed_out_len, sample=sample,
-                                              cuda=cuda)
-            elif generation_mode == "parallel":
-                batch = parallel_generation(seed_text, batch_size=batch_size, seq_len=seq_len,
-                                            max_len=max_len, top_k=top_k, temperature=temperature,
-                                            sample=sample, max_iter=max_iter,
-                                            cuda=cuda, verbose=False)
+            batch = parallel_sequential_generation(seed_text, max_len=max_len, top_k=top_k,
+                                                   temperature=temperature, burnin=burnin, max_iter=max_iter,
+                                                   cuda=cuda, verbose=False)
+
+            # batch = sequential_generation(seed_text, batch_size=20, max_len=max_len, top_k=top_k, temperature=temperature, leed_out_len=leed_out_len, sample=sample)
+            # batch = parallel_generation(seed_text, max_len=max_len, top_k=top_k, temperature=temperature, sample=sample, max_iter=max_iter)
 
             if (batch_n + 1) % print_every == 0:
                 print("Finished batch %d in %.3fs" % (batch_n + 1, time.time() - start_time))
@@ -317,63 +292,12 @@ def main():
         return sentences
     # Choose the prefix context
     seed_text = seed_sentence.split(",")
-    if len(seed_text)<5:
-        for i in range(len(seed_text),5):
-            seed_text+=["[MASK]"]
-    seq_len = args.seq_len - 1
-    bert_sents = generate(n_samples, seed_text=seed_text, batch_size=batch_size, seq_len=seq_len, max_len=max_len,
-                          generation_mode=generation_mode,
+    bert_sents = generate(n_samples, seed_text=seed_text, batch_size=batch_size, max_len=max_len,
                           sample=sample, top_k=top_k, temperature=temperature, burnin=burnin, max_iter=max_iter,
-                          cuda=cuda)
-    sequences = []
-    for sent in bert_sents:
-        i = 0
-        followup = sent
-        sequence = [seed_text]
-        while i < 5:
-            seed_text_ = follow_up(followup, len(seed_text), should_detokenize=True)
-            sequence.append(seed_text_)
-            followup = generate(2, seed_text=seed_text_, batch_size=2, seq_len=seq_len, max_len=max_len,
-                                  generation_mode=generation_mode,
-                                  sample=sample, top_k=top_k, temperature=temperature, burnin=burnin, max_iter=max_iter,
-                                  cuda=cuda)[0]
-            i+=1
-        sequences.append(sequence)
-    output_eval_file = os.path.join(args.output_dir,
-                                    "generation_" + args.init_checkpoint.split("/")[-1].split(".")[0] + ".txt")
-    with open(output_eval_file, "w") as writer:
-        for seq in sequences:
-            writer.write("%s\n" % (printer_sequence(seq)))
-    """
-    Evaluation methods for unconditional generation aren't perfect. We'll measure the diversity of our generated samples via self-BLEU: we compute corpus BLEU where for each generated sentence, we compute BLEU treating the other sentences as references. We also compute the percentage of $n$-grams that are unique among the generations. We try some other strategies, including comparing to outside models, in our report, and you can see some of the code for that [here](https://github.com/kyunghyuncho/bert-gen/blob/master/bert-babble.ipynb).
-    """
-    def self_bleu(sents):
-        return bleu.corpus_bleu([[s for (j, s) in enumerate(sents) if j != i] for i in range(len(sents))], sents)
+                          cuda=True)
 
+    for i in range(len(bert_sents)):
+        printer(bert_sents[i], should_detokenize=True)
 
-    def get_ngram_counts(sents, max_n=4):
-        size2count = {}
-        for i in range(1, max_n + 1):
-            size2count[i] = Counter([n for sent in sents for n in ngrams(sent, i)])
-        return size2count
-
-
-    def self_unique_ngrams(preds, max_n=4):
-        # get # of pred ngrams with count 1
-        pct_unique = {}
-        pred_ngrams = get_ngram_counts(preds, max_n)
-        for i in range(1, max_n + 1):
-            n_unique = len([k for k, v in pred_ngrams[i].items() if v == 1])
-            total = sum(pred_ngrams[i].values())
-            pct_unique[i] = n_unique / total
-        return pct_unique
-    """# **Evaluation**"""
-
-    max_n = 4
-    print("BERT self-BLEU: %.2f" % (100 * self_bleu(bert_sents)))
-
-    pct_uniques = self_unique_ngrams(bert_sents, max_n)
-    for i in range(1, max_n + 1):
-        print("BERT unique %d-grams relative to self: %.2f" % (i, 100 * pct_uniques[i]))
 if __name__ == "__main__":
     main()
