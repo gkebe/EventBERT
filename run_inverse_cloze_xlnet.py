@@ -270,6 +270,7 @@ def log_likelihood(tokenizer, model, seed, option, device):
 
     sum_lp = 0.0
     for max_word_id in range((len(tokenize_input) - len(tokenize_text)), (len(tokenize_input))):
+        print(max_word_id)
         sent = tokenize_input[:]
 
         input_ids = torch.tensor([tokenizer.convert_tokens_to_ids(sent)])
@@ -427,6 +428,7 @@ def main():
         input_mask = []
         log_ls = []
         for seq in sequences:
+            print(seq)
             log_l = log_likelihood(tokenizer,model,seq["seed"],seq["next"],device)
             log_ls.append(log_l)
         pred = np.argmax(log_ls)
