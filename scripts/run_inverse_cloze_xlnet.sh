@@ -45,7 +45,7 @@ CMD="python run_inverse_cloze_xlnet.py "
 
 CMD+="--do_lower_case "
 CMD+="--data_dir $DATA_DIR "
-CMD+="--bert_model xlnet-base-cased "
+CMD+="--xlnet_model xlnet-base-cased "
 CMD+="--seed $seed "
 CMD+="--init_checkpoint $init_checkpoint "
 CMD+="--max_seq_length 128 "
