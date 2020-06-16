@@ -452,7 +452,7 @@ def main():
             probs_seq = [probs[x:x + (num_events-1)] for x in range(0, len(probs), (num_events-1))]
             probs_prod = [np.sum(np.log(i)) for i in probs_seq]
             pred = np.argmax(probs_prod)
-            rank = sorted(probs_prod, reverse=True).index(probs_prod[0])
+            rank = sorted(probs_prod, reverse=True).index(probs_prod[0]) + 1
 
             print(pred)
             print(rank)
@@ -475,7 +475,9 @@ def main():
 
 
     results = {'eval_loss': eval_loss,
-               'accuracy': accuracy}
+               'accuracy': accuracy,
+               'pred': preds,
+               'rank': ranks}
 
     output_eval_file = os.path.join(args.output_dir,
                                     "eval_results_alt_" + args.init_checkpoint.split("/")[-1].split(".")[0] + "_"
