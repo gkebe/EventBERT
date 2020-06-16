@@ -29,16 +29,6 @@ import math
 import numpy as np
 from scipy.special import softmax
 import torch
-from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler,
-                              TensorDataset)
-from torch.utils.data.distributed import DistributedSampler
-from tqdm import tqdm, trange
-
-from file_utils import PYTORCH_PRETRAINED_BERT_CACHE
-from modeling import BertForNextSentencePrediction, BertConfig, WEIGHTS_NAME, CONFIG_NAME
-from tokenization import BertTokenizer
-from optimization import BertAdam, warmup_linear
-from schedulers import LinearWarmUpScheduler
 
 from transformers import GPT2Tokenizer, GPT2Config, GPT2LMHeadModel
 from sklearn.metrics import matthews_corrcoef, f1_score, recall_score, precision_score, classification_report, \
