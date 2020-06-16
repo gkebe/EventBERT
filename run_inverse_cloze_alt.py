@@ -436,6 +436,7 @@ def main():
     preds = []
     probs_ = []
     probs_prod_ = []
+    ranks =[]
 
     for input_ids, input_mask, segment_ids in tqdm(eval_dataloader, desc="Evaluating"):
         input_ids = input_ids.to(device)
@@ -451,6 +452,12 @@ def main():
             probs_seq = [probs[x:x + (num_events-1)] for x in range(0, len(probs), (num_events-1))]
             probs_prod = [np.sum(np.log(i)) for i in probs_seq]
             pred = np.argmax(probs_prod)
+            rank = sorted(probs_prod, reverse=True).index(probs_prod[0])
+
+            print(pred)
+            print(rank)
+
+            ranks.append(rank)
             preds.append(pred)
             probs_.append(probs_seq)
             probs_prod_.append(probs_prod)
