@@ -402,7 +402,7 @@ def main():
 
     model = XLNetLMHeadModel.from_pretrained(args.xlnet_model)
     print("USING CHECKPOINT from", args.init_checkpoint)
-    model.load_state_dict(torch.load(args.init_checkpoint, map_location='cpu')["model"], strict=False)
+    model.load_state_dict(torch.load(args.init_checkpoint, map_location='cpu'), strict=False)
     print("USED CHECKPOINT from", args.init_checkpoint)
     model.to(device)
     # Prepare optimizer
