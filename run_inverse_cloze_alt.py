@@ -81,6 +81,8 @@ def compute_metrics(task_name, preds, labels, label_names=None):
 def simple_accuracy(preds, labels):
     return (preds == labels).mean()
 
+def simple_mrr(ranks):
+    return np.sum([1/i for i in ranks])/len(ranks)
 
 def metrics_frame(preds, labels, label_names):
     recall_micro = recall_score(labels, preds, average="micro")
@@ -468,7 +470,7 @@ def main():
     eval_loss = eval_loss / nb_eval_steps
 
     accuracy = simple_accuracy(np.array(preds), np.array([0]*len(preds)))
-
+    mrr = simple_mrr(ranks)
     eval_loss = eval_loss / nb_eval_steps
 
     instance_template = ["T", "F1", "F2", "F3", "F4", "F5"]
@@ -476,8 +478,7 @@ def main():
 
     results = {'eval_loss': eval_loss,
                'accuracy': accuracy,
-               'pred': preds,
-               'rank': ranks}
+               'MRR': mrr}
 
     output_eval_file = os.path.join(args.output_dir,
                                     "eval_results_alt_" + args.init_checkpoint.split("/")[-1].split(".")[0] + "_"
@@ -497,6 +498,8 @@ def main():
                 writer.write("\n")
             print("Predicted " + instance_template[int(preds[i])])
             writer.write("Predicted " + instance_template[int(preds[i])]+"\n")
+            print("Rank of T: " + str(ranks[i]))
+            writer.write("Rank of T: " + str(ranks[i]) +"\n")
             print()
             print()
             writer.write("\n\n")
