@@ -281,7 +281,6 @@ def log_likelihood(tokenizer, model, full, device):
 
     sum_lp = 0.0
     for max_word_id in range((len(tokenize_input) - len(tokenize_text)), (len(tokenize_input))):
-        print(max_word_id)
         sent = tokenize_input[:]
 
         input_ids = torch.tensor([tokenizer.convert_tokens_to_ids(sent)])
@@ -433,6 +432,8 @@ def main():
     preds=[]
     probs=[]
     i=0
+    instance_template = ["T", "F1", "F2", "F3", "F4", "F5"]
+
     for f in eval_features:
         sequences = [f.T, f.F1, f.F2, f.F3, f.F4, f.F5]
         input_ids = []
@@ -443,6 +444,7 @@ def main():
             log_l = log_likelihood(tokenizer,model,seq["full"],device)
             log_ls.append(log_l)
         pred = np.argmax(log_ls)
+        print("Predicted: " + instance_template[int(pred)])
         preds.append(pred)
         probs.append(log_ls)
         i+=1
