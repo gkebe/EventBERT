@@ -210,9 +210,11 @@ def main():
         raise KeyError("the model {} you specified is not supported. You are welcome to add it and open a PR :)")
     if args.no_tokenizer:
         tokenizer = tokenizer_class.from_pretrained(args.model_name)
+        model = model_class.from_pretrained(args.model_name)
+        model.load_state_dict(torch.load(args.model_name_or_path, map_location='cpu'), strict=False)
     else:
         tokenizer = tokenizer_class.from_pretrained(args.model_name_or_path)
-    model = model_class.from_pretrained(args.model_name_or_path)
+        model = model_class.from_pretrained(args.model_name_or_path)
     model.to(args.device)
 
     args.length = adjust_length_to_model(args.length, max_sequence_length=model.config.max_position_embeddings)
