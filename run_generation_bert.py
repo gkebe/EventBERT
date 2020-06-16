@@ -182,9 +182,9 @@ def main():
     - seed_text (["CLS"]): prefix to generate for. We found it crucial to start with the CLS token; you can try adding to it
     """
 
-    n_samples = 5
-    batch_size = 5
-    max_len = args.max_len
+    n_samples = 10
+    batch_size = 10
+    max_len = 20
     top_k = 100
     temperature = 1.0
     burnin = 250
