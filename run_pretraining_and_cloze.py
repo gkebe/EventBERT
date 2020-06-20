@@ -501,7 +501,9 @@ def main():
                                           batch_size=args.train_batch_size * args.n_gpu, num_workers=4,
                                           pin_memory=True)
             # shared_file_list["0"] = (train_dataloader, data_file)
-
+            cmd = ['chmod +x scripts/run_inverse_cloze.sh -i inverse_cloze_weber -g {gpu} -c {checkpoint}'.format(
+                gpu=args.gpu, checkpoint="checkpoints/bert-base.pt")]
+            subprocess.Popen(cmd, shell=True).wait()
             overflow_buf = None
             if args.allreduce_post_accumulation:
                 overflow_buf = torch.cuda.IntTensor([0])
@@ -590,7 +592,7 @@ def main():
                                             'master params': list(amp.master_params(optimizer)),
                                             'files': [f_id] + files}, output_save_file)
 
-                                cmd = ['scripts/run_inverse_cloze.sh -i inverse_cloze_weber -g {gpu} -c {checkpoint}'.format(gpu=args.gpu, checkpoint=output_save_file)]
+                                cmd = ['chmod +x scripts/run_inverse_cloze.sh -i inverse_cloze_weber -g {gpu} -c {checkpoint}'.format(gpu=args.gpu, checkpoint=output_save_file)]
                                 subprocess.Popen(cmd, shell=True).wait()
 
                                 most_recent_ckpts_paths.append(output_save_file)
