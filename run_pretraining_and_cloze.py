@@ -19,7 +19,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-
+from inverse_cloze import inverse_cloze
 # ==================
 import csv
 import os
@@ -501,10 +501,9 @@ def main():
                                           batch_size=args.train_batch_size * args.n_gpu, num_workers=4,
                                           pin_memory=True)
             # shared_file_list["0"] = (train_dataloader, data_file)
-            cmd = ["bash",'scripts/run_inverse_cloze.sh -i inverse_cloze_weber -g {gpu} -c {checkpoint}'.format(
-                gpu=args.gpu, checkpoint="checkpoints/bert-base.pt")]
-            subprocess.Popen(cmd, shell=True).wait()
 
+            cloze_results = inverse_cloze(init_checkpoint="checkpoints/bert-base.pt")
+            print(cloze_results)
             overflow_buf = None
             if args.allreduce_post_accumulation:
                 overflow_buf = torch.cuda.IntTensor([0])
@@ -593,8 +592,8 @@ def main():
                                             'master params': list(amp.master_params(optimizer)),
                                             'files': [f_id] + files}, output_save_file)
 
-                                cmd = ["bash", 'scripts/run_inverse_cloze.sh -i inverse_cloze_weber.json -g {gpu} -c {checkpoint}'.format(gpu=args.gpu, checkpoint=output_save_file)]
-                                subprocess.Popen(cmd, shell=True).wait()
+                                cloze_results = inverse_cloze(init_checkpoint="checkpoints/bert-base.pt")
+                                print(cloze_results)
 
                                 most_recent_ckpts_paths.append(output_save_file)
                                 if len(most_recent_ckpts_paths) > 3:
