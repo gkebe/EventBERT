@@ -593,7 +593,7 @@ def main():
                                             'master params': list(amp.master_params(optimizer)),
                                             'files': [f_id] + files}, output_save_file)
 
-                                cmd = ["bash", 'scripts/run_inverse_cloze.sh -i inverse_cloze_weber -g {gpu} -c {checkpoint}'.format(gpu=args.gpu, checkpoint=output_save_file)]
+                                cmd = ["bash", 'scripts/run_inverse_cloze.sh -i inverse_cloze_weber.json -g {gpu} -c {checkpoint}'.format(gpu=args.gpu, checkpoint=output_save_file)]
                                 subprocess.Popen(cmd, shell=True).wait()
 
                                 most_recent_ckpts_paths.append(output_save_file)

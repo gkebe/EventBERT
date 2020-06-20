@@ -22,7 +22,6 @@ seed=2
 vocab_file="${PWD}/data/download/google_pretrained_weights/uncased_L-12_H-768_A-12/vocab.txt"
 CONFIG_FILE="${PWD}/bert_config.json"
 input_file="inverse_cloze.json"
-DATA_DIR=${PWD}/data/inverse_cloze/$input_file
 while getopts g:p:c:i: option
 do
  case "${option}"
@@ -30,9 +29,11 @@ do
  g) gpu=${OPTARG};;
  p) master_port=${OPTARG};;
  c) init_checkpoint=${OPTARG};;
- i) DATA_DIR=${OPTARG};;
+ i) input_file=${OPTARG};;
  esac
 done
+
+DATA_DIR=${PWD}/data/inverse_cloze/$input_file
 OUT_DIR=${PWD}/results/inverse_cloze
 
 mkdir -p $OUT_DIR
