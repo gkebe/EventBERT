@@ -504,6 +504,8 @@ def main():
 
             cloze_results = inverse_cloze(init_checkpoint="checkpoints/bert-base.pt")
             print(cloze_results)
+            cloze_results = inverse_cloze(init_checkpoint="checkpoints/bert-base.pt", data_dir="data/inverse_cloze/cloze_dataset_harder.json")
+            print(cloze_results)
             overflow_buf = None
             if args.allreduce_post_accumulation:
                 overflow_buf = torch.cuda.IntTensor([0])
@@ -593,6 +595,8 @@ def main():
                                             'files': [f_id] + files}, output_save_file)
 
                                 cloze_results = inverse_cloze(init_checkpoint=output_save_file)
+                                print(cloze_results)
+                                cloze_results = inverse_cloze(init_checkpoint=output_save_file, data_dir="data/inverse_cloze/cloze_dataset_harder.json")
                                 print(cloze_results)
 
                                 most_recent_ckpts_paths.append(output_save_file)
