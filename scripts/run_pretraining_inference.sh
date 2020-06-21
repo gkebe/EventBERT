@@ -40,7 +40,7 @@ DATA_DIR=$CODEDIR/${DATASET}/
 echo $DATA_DIR
 BERT_CONFIG=bert_config.json
 RESULTS_DIR=$CODEDIR/results
-CHECKPOINTS_DIR=$CODEDIR/model
+CHECKPOINTS_DIR=$CODEDIR/model/checkpoints
 
 if [ ! -d "$DATA_DIR" ] ; then
    echo "Warning! $DATA_DIR directory missing. Inference cannot start"
