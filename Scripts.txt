@@ -1,0 +1,21 @@
+Convert XLNet model to huggingface
+    export TRANSFO_XL_CHECKPOINT_PATH=~/Nvidia-Bert/model/xlnet/200000/model.ckpt
+    export TRANSFO_XL_CONFIG_PATH=~/Nvidia-Bert/xlnet_config.json
+    export PYTORCH_DUMP_OUTPUT=~/Nvidia-Bert/model/xlnet/200000
+
+    transformers-cli convert --model_type xlnet --tf_checkpoint $TRANSFO_XL_CHECKPOINT_PATH --config $TRANSFO_XL_CONFIG_PATH --pytorch_dump_output $PYTORCH_DUMP_OUTPUT
+
+Convert GPT-2 model to huggingface
+    export OPENAI_GPT2_CHECKPOINT_PATH=~/Nvidia-Bert/model/gpt2/348000
+    export PYTORCH_DUMP_OUTPUT=~/Nvidia-Bert/model/gpt2/348000
+
+    transformers-cli convert --model_type gpt2 --tf_checkpoint OPENAI_GPT2_CHECKPOINT_PATH --pytorch_dump_output $PYTORCH_DUMP_OUTPUT
+
+Generate events with XLNet
+    python run_generation.py --model_type xlnet --model_name xlnet-base-cased --model_name_or_path model/xlnet/pytorch_model.bin --num_return_sequences 10 --no_tokenizer
+
+Generate events with GPT-2
+    python run_generation.py --model_type gpt2 --model_name gpt2 --model_name_or_path model/gpt2/348000/ --num_return_sequences 10
+
+Inverse Cloze with Bert
+    bash scripts/run_inverse_cloze.sh -c checkpoints/bert-base.pt -i cloze_dataset_weber_test.json -g "2"
