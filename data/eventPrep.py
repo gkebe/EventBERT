@@ -1,12 +1,17 @@
 import argparse
 
-def wiki70k_preprocess(filename, tuple_to_sen = False, keep_label = False):
+def wiki70k_preprocess(filename, tuple_to_sen = False, keep_label = False, add_tup=False):
   f = open(filename, "r", encoding="utf8")
   paragraphs = f.read()
   paragraphs_articles = paragraphs.split("\n")
   paragraphs_lst = [list(i.split("<PARAGRAPH>")[1:]) for i in paragraphs_articles]
   paragraphs_lst_words = [[list(j.split(" ")) for j in i] for i in paragraphs_lst][:-1]
-  paragraph_lst_sentences = '\n'.join([''.join([' '.join([' '.join(v[i:i+5][:4]) for i in range(0, len(v), 5)][:-1]) + ".\n" for v in j]) for j in paragraphs_lst_words])
+  if add_tup:
+    paragraph_lst_sentences = '\n'.join(
+          [''.join([' '.join([' '.join(v[i:i + 5][:4]) + "<TUP>" for i in range(0, len(v), 5)][:-1]) + ".\n" for v in j]) for j in
+           paragraphs_lst_words])
+  else:
+    paragraph_lst_sentences = '\n'.join([''.join([' '.join([' '.join(v[i:i+5][:4]) for i in range(0, len(v), 5)][:-1]) + ".\n" for v in j]) for j in paragraphs_lst_words])
   paragraph_lst_labels = []
   if keep_label:
     paragraph_lst_labels = '\n'.join([''.join([', '.join([' '.join(v[i:i+5][4:5]) for i in range(0, len(v), 5)][:-1]) + "\n" for v in j]) for j in paragraphs_lst_words])
@@ -44,9 +49,14 @@ def parse_arguments():
                         type=bool,
                         required=False,
                         help="Specify a output filename!")
+    parser.add_argument("--add_tup",
+                        default=False,
+                        type=bool,
+                        required=False,
+                        help="Specify a output filename!")
     return parser.parse_args()
 args = parse_arguments()
-sentences, labels = wiki70k_preprocess(args.input_file, args.tuple_to_sen, args.keep_label)
+sentences, labels = wiki70k_preprocess(args.input_file, args.tuple_to_sen, args.keep_label, args.add_tup)
 text_file = open(args.output_file, "w", encoding="utf8")
 n = text_file.write(sentences)
 text_file.close()

@@ -5,6 +5,10 @@ Convert XLNet model to huggingface
 
     transformers-cli convert --model_type xlnet --tf_checkpoint $TRANSFO_XL_CHECKPOINT_PATH --config $TRANSFO_XL_CONFIG_PATH --pytorch_dump_output $PYTORCH_DUMP_OUTPUT
 
+Pretraining GPT-2 model
+    python data_utils.py --bsz_per_host=1 --num_core_per_host=1 --seq_len=512 --reuse_len=256 --input_glob=data/wiki_70k/step3/wiki_70k_training*.txt --save_dir=output_data --num_passes=20 --bi_data=True --sp_path=spiece.model --mask_alpha=6 --mask_beta=1 --num_predict=85 --uncased=False
+    python train.py --dataset="OUT.npz" --batch_size=10
+
 Convert GPT-2 model to huggingface
     export OPENAI_GPT2_CHECKPOINT_PATH=~/Nvidia-Bert/model/gpt2/348000
     export PYTORCH_DUMP_OUTPUT=~/Nvidia-Bert/model/gpt2/348000
