@@ -600,7 +600,7 @@ def main():
                                 print(cloze_results)
 
                                 most_recent_ckpts_paths.append(output_save_file)
-                                if len(most_recent_ckpts_paths) > 3:
+                                if len(most_recent_ckpts_paths) > 1000000:
                                     ckpt_to_be_removed = most_recent_ckpts_paths.pop(0)
                                     os.remove(ckpt_to_be_removed)
 
