@@ -4,6 +4,9 @@ Convert XLNet model to huggingface
     export PYTORCH_DUMP_OUTPUT=~/Nvidia-Bert/model/xlnet/200000
 
     transformers-cli convert --model_type xlnet --tf_checkpoint $TRANSFO_XL_CHECKPOINT_PATH --config $TRANSFO_XL_CONFIG_PATH --pytorch_dump_output $PYTORCH_DUMP_OUTPUT
+GPT-2 data preocessing:
+    python data/eventPrep.py --input_file data/wiki_70k/step1/train.txt --output_file data/wiki_70k/step2/train_gpt2.txt  --add_tup True
+    awk '{filename = "data/wiki_70k/step3/wiki_70k_gpt2_training_" int((NR-1)/80000) ".txt"; print >> filename}' data/wiki_70k/step2/train_gpt2.txt
 
 Pretraining GPT-2 model
     python data_utils.py --bsz_per_host=1 --num_core_per_host=1 --seq_len=512 --reuse_len=256 --input_glob=data/wiki_70k/step3/wiki_70k_training*.txt --save_dir=output_data --num_passes=20 --bi_data=True --sp_path=spiece.model --mask_alpha=6 --mask_beta=1 --num_predict=85 --uncased=False
