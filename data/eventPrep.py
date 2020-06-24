@@ -1,8 +1,8 @@
 import argparse
 
 def tup(i, limit):
-    if i < limit:
-        return "<TUP>"
+    if i < limit-1:
+        return " <TUP>"
     return ""
 def wiki70k_preprocess(filename, tuple_to_sen = False, keep_label = False, add_tup=False):
   f = open(filename, "r", encoding="utf8")
