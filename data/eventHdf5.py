@@ -5,7 +5,7 @@ def main(args):
         hdf5_tfrecord_folder_prefix = "_lower_case_" + str(args.do_lower_case) + "_seq_len_" + str(args.max_seq_length) \
                                       + "_max_pred_" + str(args.max_predictions_per_seq) + "_masked_lm_prob_" + str(args.masked_lm_prob) \
                                       + "_random_seed_" + str(args.random_seed) + "_dupe_factor_" + str(args.dupe_factor)
-        bert_preprocessing_command = 'python /workspace/bert/create_pretraining_data.py'
+        bert_preprocessing_command = 'python ../create_pretraining_data.py'
         if args.input_dir:
             bert_preprocessing_command += ' --input_file=' + args.input_dir + filename_prefix + '_' + str(
                 shard_id) + '.txt'
