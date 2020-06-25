@@ -427,8 +427,7 @@ def main():
 
     args = parse_arguments()
 
-    if args.use_env and 'LOCAL_RANK' in os.environ:
-        args.local_rank = int(os.environ['LOCAL_RANK'])
+    args.local_rank = -1
         
     random.seed(args.seed)
     np.random.seed(args.seed)
