@@ -21,6 +21,9 @@ BERT data preprocessing:
         from step2:
             python eventHdf5.py --dataset PRES --input_dir PRES/step2/ --max_seq_length 128 --max_predictions_per_seq 20 --vocab_file download/google_pretrained_weights/uncased_L-12_H-768_A-12/vocab.txt --do_lower_case 1 --n_training_shards 1 --n_test_shards 0
 
+Pretraining BERT model:
+    bash scripts/run_pretraining.sh -n 1 -g "2" -c checkpoints/bert-base.pt -a 81920 -d PRES -z 0 -w 794
+
 GPT-2 data preprocessing:
     python data/eventPrep.py --input_file data/wiki_70k/step1/train.txt --output_file data/wiki_70k/step2/train_gpt2.txt  --add_tup True
     python encode.py ../Nvidia-Bert/data/wiki_70k/step2/train_gpt2.txt wiki_70k.npz
