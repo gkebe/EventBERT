@@ -427,8 +427,9 @@ def main():
 
     args = parse_arguments()
 
-    args.local_rank = int(os.environ['LOCAL_RANK'])
-        
+    if args.use_env and 'LOCAL_RANK' in os.environ:
+        args.local_rank = int(os.environ['LOCAL_RANK'])
+
     random.seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
