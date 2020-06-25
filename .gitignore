@@ -12,7 +12,8 @@ __pycache__/
 data/create_datasets_from_start.sh
 data/*/*.txt
 data/*/*/
-data/*/*.zip
+data/*/*/*
+data/*/*
 checkpoints/
 results
 results/*

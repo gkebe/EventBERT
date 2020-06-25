@@ -4,19 +4,32 @@ Convert XLNet model to huggingface
     export PYTORCH_DUMP_OUTPUT=~/Nvidia-Bert/model/xlnet/200000
 
     transformers-cli convert --model_type xlnet --tf_checkpoint $TRANSFO_XL_CHECKPOINT_PATH --config $TRANSFO_XL_CONFIG_PATH --pytorch_dump_output $PYTORCH_DUMP_OUTPUT
-GPT-2 data preocessing:
-    python data/eventPrep.py --input_file data/wiki_70k/step1/train.txt --output_file data/wiki_70k/step2/train_gpt2.txt  --add_tup True
-    awk '{filename = "data/wiki_70k/step3/wiki_70k_gpt2_training_" int((NR-1)/80000) ".txt"; print >> filename}' data/wiki_70k/step2/train_gpt2.txt
 
+BERT data preprocessing:
+    wiki_70k:
+        python eventPrep.py --input_file wiki_70k/step1/train.txt --output_file wiki_70k/step2/train.txt
+        with labels:
+            python eventPrep.py --input_file wiki_70k/step1/train.txt --output_file wiki_70k/step2/train.txt --keep_label True
+        tuples as sentences:
+            python eventPrep.py --input_file wiki_70k/step1/train.txt --output_file wiki_70k/step2/train.txt --tuple_to_sen True
+    PRES:
+        python eventPrep.py --input_file="PRES/step1/train.txt" --data_type PRES --output_file PRES/step2/train.txt
+GPT-2 data preprocessing:
+    python data/eventPrep.py --input_file data/wiki_70k/step1/train.txt --output_file data/wiki_70k/step2/train_gpt2.txt  --add_tup True
+    python encode.py ../Nvidia-Bert/data/wiki_70k/step2/train_gpt2.txt wiki_70k.npz
 Pretraining GPT-2 model
-    python data_utils.py --bsz_per_host=1 --num_core_per_host=1 --seq_len=512 --reuse_len=256 --input_glob=data/wiki_70k/step3/wiki_70k_training*.txt --save_dir=output_data --num_passes=20 --bi_data=True --sp_path=spiece.model --mask_alpha=6 --mask_beta=1 --num_predict=85 --uncased=False
-    python train.py --dataset="OUT.npz" --batch_size=10
+    python train.py --dataset="wiki_70k.npz" --batch_size=10 --run_name run2
+
+
 
 Convert GPT-2 model to huggingface
     export OPENAI_GPT2_CHECKPOINT_PATH=~/Nvidia-Bert/model/gpt2/348000
     export PYTORCH_DUMP_OUTPUT=~/Nvidia-Bert/model/gpt2/348000
 
     transformers-cli convert --model_type gpt2 --tf_checkpoint OPENAI_GPT2_CHECKPOINT_PATH --pytorch_dump_output $PYTORCH_DUMP_OUTPUT
+
+Generate events with BERT
+    bash scripts/run_generation.sh -c model/ckpt_794.pt -g "3" -s [CLS],build
 
 Generate events with XLNet
     python run_generation.py --model_type xlnet --model_name xlnet-base-cased --model_name_or_path model/xlnet/pytorch_model.bin --num_return_sequences 10 --no_tokenizer

@@ -30,6 +30,16 @@ def wiki70k_preprocess(filename, tuple_to_sen = False, keep_label = False, add_t
   
   return paragraph_lst_sentences, paragraph_lst_labels
 
+def PRES_preprocess(filename, tuple_to_sen = False, keep_label = False, add_tup=False):
+    f = open(filename, "r", encoding="utf8")
+    paragraphs = f.read()
+    paragraphs_articles = paragraphs.split("\n")
+    paragraphs_lst = [list(i.split(" [SEP] ")[:-1]) for i in paragraphs_articles]
+    paragraph_lst_sentences ='\n\n'.join('\n'.join(i) for i in paragraphs_lst)
+    f.close()
+    print("Articles: "+ str(len(paragraphs_lst)))
+    print("Sentences: "+ str(sum([len(i) for i in paragraphs_lst])))
+    return paragraph_lst_sentences, []
 def parse_arguments():
     parser = argparse.ArgumentParser()
     ## Required parameters
@@ -38,6 +48,11 @@ def parse_arguments():
                         type=str,
                         required=False,
                         help="Specify a input filename!")
+    parser.add_argument("--data_type",
+                        default="wiki_70k",
+                        type=str,
+                        required=False,
+                        help="Specify a data type!")
     parser.add_argument("--output_file",
                         default="valid.txt",
                         type=str,
@@ -60,7 +75,18 @@ def parse_arguments():
                         help="Specify a output filename!")
     return parser.parse_args()
 args = parse_arguments()
-sentences, labels = wiki70k_preprocess(args.input_file, args.tuple_to_sen, args.keep_label, args.add_tup)
+data_type = args.data_type.lower()
+
+preprocessors = {
+    "wiki_70k": wiki70k_preprocess,
+    "pres": PRES_preprocess
+}
+    
+if data_type not in preprocessors:
+    raise ValueError("data type not found: %s" % (data_type))
+
+preprocessor = preprocessors[data_type]
+sentences, labels = preprocessor(args.input_file, args.tuple_to_sen, args.keep_label, args.add_tup)
 text_file = open(args.output_file, "w", encoding="utf8")
 n = text_file.write(sentences)
 text_file.close()
