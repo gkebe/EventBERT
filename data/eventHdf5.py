@@ -6,7 +6,11 @@ def main(args):
                                       + "_max_pred_" + str(args.max_predictions_per_seq) + "_masked_lm_prob_" + str(args.masked_lm_prob) \
                                       + "_random_seed_" + str(args.random_seed) + "_dupe_factor_" + str(args.dupe_factor)
         bert_preprocessing_command = 'python /workspace/bert/create_pretraining_data.py'
-        bert_preprocessing_command += ' --input_file=' + "wiki_70k/step3/" + filename_prefix + '_' + str(shard_id) + '.txt'
+        if args.input_dir:
+            bert_preprocessing_command += ' --input_file=' + args.input_dir + filename_prefix + '_' + str(
+                shard_id) + '.txt'
+        else:
+            bert_preprocessing_command += ' --input_file=' + args.dataset + "/step3/" + filename_prefix + '_' + str(shard_id) + '.txt'
         bert_preprocessing_command += ' --output_file=' + 'hdf5' + hdf5_tfrecord_folder_prefix + '/' + "wiki_70k" + '/' + filename_prefix + '_' + str(shard_id) + '.' + output_format
         bert_preprocessing_command += ' --vocab_file=' + args.vocab_file
         bert_preprocessing_command += ' --do_lower_case' if args.do_lower_case else ''
@@ -24,7 +28,7 @@ def main(args):
             bert_preprocessing_process.wait()
         return last_process
 
-    output_file_prefix = "wiki_70k"
+    output_file_prefix = args.dataset
 
     for i in range(args.n_training_shards):
         last_process = create_record_worker(output_file_prefix + '_training', i)
@@ -39,7 +43,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Preprocessing Application for Everything BERT-related'
     )
-
+    parser.add_argument("--dataset",
+                        default="wiki_70k",
+                        type=str,
+                        required=False,
+                        help="Specify a dataset!")
+    parser.add_argument("--input_dir",
+                        type=str,
+                        required=False,
+                        help="Specify a dataset!")
     parser.add_argument(
         '--n_training_shards',
         type=int,

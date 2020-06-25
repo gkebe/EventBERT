@@ -11,16 +11,19 @@ BERT data preprocessing:
         with labels:
             python eventPrep.py --input_file wiki_70k/step1/train.txt --output_file wiki_70k/step2/train.txt --keep_label True
         tuples as sentences:
-            python eventPrep.py --input_file wiki_70k/step1/train.txt --output_file wiki_70k/step2/train.txt --tuple_to_sen True
+            python eventPrep.py --input_file wiki_70k/step1/train.txt --output_file wiki_70k/step2/train.txt --tuple_to_sen True\
+        awk '{filename = "wiki_70k/step3/wiki_70k_training_" int((NR-1)/80000) ".txt"; print >> filename}' wiki_70k/step2/train.txt
     PRES:
         python eventPrep.py --input_file="PRES/step1/train.txt" --data_type PRES --output_file PRES/step2/train.txt
+        awk '{filename = "PRES/step3/PRES_training_" int((NR-1)/80000) ".txt"; print >> filename}' PRES/step2/train.txt
+        python /workspace/bert/data/eventHdf5.py --max_seq_length 128 --max_predictions_per_seq 20 --vocab_file $BERT_PREP_WORKING_DIR/download/google_pretrained_weights/uncased_L-12_H-768_A-12/vocab.txt --do_lower_case 1 --n_training_shards 1 --n_test_shards 0
+
 GPT-2 data preprocessing:
     python data/eventPrep.py --input_file data/wiki_70k/step1/train.txt --output_file data/wiki_70k/step2/train_gpt2.txt  --add_tup True
     python encode.py ../Nvidia-Bert/data/wiki_70k/step2/train_gpt2.txt wiki_70k.npz
+
 Pretraining GPT-2 model
     python train.py --dataset="wiki_70k.npz" --batch_size=10 --run_name run2
-
-
 
 Convert GPT-2 model to huggingface
     export OPENAI_GPT2_CHECKPOINT_PATH=~/Nvidia-Bert/model/gpt2/348000
