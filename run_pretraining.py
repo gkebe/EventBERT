@@ -583,7 +583,7 @@ def main():
                                             'files': [f_id] + files}, output_save_file)
 
                                 most_recent_ckpts_paths.append(output_save_file)
-                                if len(most_recent_ckpts_paths) > 3:
+                                if len(most_recent_ckpts_paths) > 100:
                                     ckpt_to_be_removed = most_recent_ckpts_paths.pop(0)
                                     os.remove(ckpt_to_be_removed)
 
