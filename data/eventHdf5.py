@@ -11,7 +11,7 @@ def main(args):
                 shard_id) + '.txt'
         else:
             bert_preprocessing_command += ' --input_file=' + args.dataset + "/step3/" + filename_prefix + '_' + str(shard_id) + '.txt'
-        bert_preprocessing_command += ' --output_file=' + 'hdf5' + hdf5_tfrecord_folder_prefix + '/' + "wiki_70k" + '/' + filename_prefix + '_' + str(shard_id) + '.' + output_format
+        bert_preprocessing_command += ' --output_file=' + 'hdf5' + hdf5_tfrecord_folder_prefix + '/' + filename_prefix + '/' + filename_prefix + '_' + str(shard_id) + '.' + output_format
         bert_preprocessing_command += ' --vocab_file=' + args.vocab_file
         bert_preprocessing_command += ' --do_lower_case' if args.do_lower_case else ''
         bert_preprocessing_command += ' --max_seq_length=' + str(args.max_seq_length)
