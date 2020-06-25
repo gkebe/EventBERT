@@ -68,7 +68,6 @@ CHECKPOINTS_DIR=$RESULTS_DIR/checkpoints
 mkdir -p $CHECKPOINTS_DIR
 
 export CUDA_VISIBLE_DEVICES=$gpu
-export LOCAL_RANK=0
 
 if [ ! -d "$DATA_DIR_PHASE1" ] ; then
    echo "Warning! $DATA_DIR_PHASE1 directory missing. Training cannot start"
