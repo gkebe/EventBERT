@@ -134,7 +134,7 @@ def main():
         """
         print(out)
         print(out.shape)
-        _,logits = out[:, gen_idx]
+        logits = out[:, gen_idx]
         if temperature is not None:
             logits = logits / temperature
         if top_k > 0:
@@ -229,7 +229,7 @@ def main():
             for jj in range(batch_size):
                 batch[jj][seed_len + kk] = mask_id
             inp = torch.tensor(batch).cuda() if cuda else torch.tensor(batch)
-            out = model(inp)
+            _,out = model(inp)
             topk = top_k if (ii >= burnin) else 0
             idxs = generate_step(out, gen_idx=seed_len + kk, top_k=topk, temperature=temperature, sample=(ii < burnin))
             for jj in range(batch_size):
