@@ -132,6 +132,7 @@ def main():
             - top_k (int): if >0, only sample from the top k most probable words
             - sample (Bool): if True, sample from full distribution. Overridden by top_k
         """
+        print(out)
         print(out.shape)
         logits = out[:, gen_idx]
         if temperature is not None:
