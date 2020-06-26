@@ -104,11 +104,9 @@ def main():
     cls_id = tokenizer.convert_tokens_to_ids([CLS])[0]
 
     def tokenize_batch(batch):
-        print(batch)
 
         tokens = [[tokenizer.tokenize(i) for i in j] for j in batch]
         ids =[list(chain.from_iterable([tokenizer.convert_tokens_to_ids(i) for i in sent])) for sent in tokens]
-        print(ids)
         return ids
 
     def untokenize_batch(batch):
@@ -133,8 +131,6 @@ def main():
             - top_k (int): if >0, only sample from the top k most probable words
             - sample (Bool): if True, sample from full distribution. Overridden by top_k
         """
-        print(out)
-        print(out.shape)
         logits = out[:, gen_idx]
         if temperature is not None:
             logits = logits / temperature
