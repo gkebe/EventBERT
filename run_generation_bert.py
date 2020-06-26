@@ -106,8 +106,9 @@ def main():
         print(batch)
 
         tokens = [[tokenizer.tokenize(i) for i in j] for j in batch]
-        print(tokens)
-        return [list(chain.from_iterable([tokenizer.convert_tokens_to_ids(i) for i in sent])) for sent in tokens]
+        ids =[list(chain.from_iterable([tokenizer.convert_tokens_to_ids(i) for i in sent])) for sent in tokens]
+        print(ids)
+        return ids
 
     def untokenize_batch(batch):
         return [tokenizer.convert_ids_to_tokens(sent) for sent in batch]
