@@ -16,6 +16,8 @@ from collections import Counter
 from nltk.util import ngrams
 from nltk.translate import bleu_score as bleu
 import os
+from itertools import chain
+
 def main():
     parser = argparse.ArgumentParser()
 
@@ -105,7 +107,7 @@ def main():
 
         tokens = [[tokenizer.tokenize(i) for i in j] for j in batch]
         print(tokens)
-        return [[tokenizer.convert_tokens_to_ids(i) for i in sent] for sent in tokens]
+        return [list(chain.from_iterable([tokenizer.convert_tokens_to_ids(i) for i in sent])) for sent in tokens]
 
     def untokenize_batch(batch):
         return [tokenizer.convert_ids_to_tokens(sent) for sent in batch]
