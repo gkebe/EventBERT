@@ -194,7 +194,7 @@ def main():
 
     n_samples = 10
     batch_size = 10
-    max_len = 10
+    max_len = 20
     top_k = 100
     temperature = 1.0
     burnin = 250
