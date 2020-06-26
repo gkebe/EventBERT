@@ -134,7 +134,7 @@ def main():
         """
         print(out)
         print(out.shape)
-        logits = out[:, gen_idx]
+        _,logits = out[:, gen_idx]
         if temperature is not None:
             logits = logits / temperature
         if top_k > 0:
