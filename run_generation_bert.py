@@ -102,7 +102,7 @@ def main():
     cls_id = tokenizer.convert_tokens_to_ids([CLS])[0]
 
     def tokenize_batch(batch):
-        return [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(sent)) for sent in batch]
+        return [tokenizer.convert_tokens_to_ids(sent) for sent in batch]
 
     def untokenize_batch(batch):
         return [tokenizer.convert_ids_to_tokens(sent) for sent in batch]
