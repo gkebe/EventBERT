@@ -151,7 +151,7 @@ def main():
 
     def get_init_text(seed_text, max_len, batch_size=1, rand_init=False):
         """ Get initial sentence by padding seed_text with either masks or random words to max_len """
-        batch = [seed_text + [MASK] * max_len + [SEP] for _ in range(batch_size)]
+        batch = [seed_text + [SEP] + [MASK] * max_len for _ in range(batch_size)]
         # if rand_init:
         #    for ii in range(max_len):
         #        init_idx[seed_len+ii] = np.random.randint(0, len(tokenizer.vocab))
@@ -193,7 +193,7 @@ def main():
 
     n_samples = 10
     batch_size = 10
-    max_len = 50
+    max_len = 4
     top_k = 100
     temperature = 1.0
     burnin = 250
