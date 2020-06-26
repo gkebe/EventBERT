@@ -103,6 +103,11 @@ def main():
     sep_id = tokenizer.convert_tokens_to_ids([SEP])[0]
     cls_id = tokenizer.convert_tokens_to_ids([CLS])[0]
 
+    def tokens_len(text):
+        tokens = [tokenizer.tokenize(i) for i in text]
+        ids = list(chain.from_iterable([tokenizer.convert_tokens_to_ids(i) for i in tokens]))
+        return len(ids)
+
     def tokenize_batch(batch):
 
         tokens = [[tokenizer.tokenize(i) for i in j] for j in batch]
@@ -218,7 +223,7 @@ def main():
         args:
             - burnin: during burn-in period, sample from full distribution; afterwards take argmax
         """
-        seed_len = len(seed_text)
+        seed_len = tokens_len(seed_text)
         batch = get_init_text(seed_text, max_len, batch_size)
 
         for ii in range(max_iter):
