@@ -47,7 +47,7 @@ mkdir -p $OUT_DIR
 export CUDA_VISIBLE_DEVICES=$gpu
 
 
-CMD="python run_generation_bert.py "
+CMD="python run_generation_bert_.py "
 CMD+="--mode $mode "
 CMD+="--do_lower_case "
 CMD+="--data_dir $DATA_DIR "
