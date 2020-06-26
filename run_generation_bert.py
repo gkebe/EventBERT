@@ -106,7 +106,7 @@ def main():
     def tokens_len(text):
         tokens = [tokenizer.tokenize(i) for i in text]
         ids = list(chain.from_iterable([tokenizer.convert_tokens_to_ids(i) for i in tokens]))
-        return len(ids)
+        return len(ids)+1
 
     def tokenize_batch(batch):
 
