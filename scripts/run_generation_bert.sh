@@ -21,7 +21,7 @@ mode="sequential"
 gpu="0"
 master_port="8599"
 seed_sentence="[CLS]"
-seq_len=5
+seq_len=20
 vocab_file="${PWD}/data/download/google_pretrained_weights/uncased_L-12_H-768_A-12/vocab.txt"
 CONFIG_FILE="${PWD}/bert_config.json"
 DATA_DIR=${PWD}/data/generation
@@ -55,7 +55,7 @@ CMD+="--bert_model bert-base-uncased "
 CMD+="--seed_sentence=$seed_sentence "
 CMD+="--init_checkpoint $init_checkpoint "
 CMD+="--max_seq_length 128 "
-CMD+="--max_len 20 "
+CMD+="--max_len $seq_len "
 CMD+="--seq_len $seq_len "
 CMD+="--vocab_file=$vocab_file "
 CMD+="--config_file=$CONFIG_FILE "
