@@ -32,10 +32,10 @@ Pretraining GPT-2 model
     python train.py --dataset="wiki_70k.npz" --batch_size=10 --run_name run2
 
 Convert GPT-2 model to huggingface
-    export OPENAI_GPT2_CHECKPOINT_PATH=~/Nvidia-Bert/model/gpt2/348000
+    export OPENAI_GPT2_CHECKPOINT_PATH=~/Nvidia-Bert/model/gpt2/348000/model-348000
     export PYTORCH_DUMP_OUTPUT=~/Nvidia-Bert/model/gpt2/348000
 
-    transformers-cli convert --model_type gpt2 --tf_checkpoint OPENAI_GPT2_CHECKPOINT_PATH --pytorch_dump_output $PYTORCH_DUMP_OUTPUT
+    transformers-cli convert --model_type gpt2 --tf_checkpoint $OPENAI_GPT2_CHECKPOINT_PATH --pytorch_dump_output $PYTORCH_DUMP_OUTPUT
 
 Generate events with BERT
     bash scripts/run_generation.sh -c model/ckpt_794.pt -g "3" -s [CLS],build
@@ -53,4 +53,7 @@ Inverse Cloze with XLNet
     bash scripts/run_inverse_cloze_xlnet.sh -c model/xlnet/200000/pytorch_model.bin -i cloze_dataset_weber.json -g "2"
 
 Inverse Cloze with GPT-2
-    bash scripts/run_inverse_cloze_gpt2.sh -c model/gpt2/200000/pytorch_model.bin -i cloze_dataset_weber.json -g "2"
+    bash scripts/run_inverse_cloze_gpt2.sh -c model/gpt2/200000 -i cloze_dataset_weber.json -g "2"
+
+Frames classification with Bert
+    bash scripts/run_classification.sh -c checkpoints/bert-base.pt -g "1,2"

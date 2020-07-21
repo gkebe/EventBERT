@@ -550,6 +550,7 @@ def main():
     parser.add_argument('--server_ip', type=str, default='', help="Can be used for distant debugging.")
     parser.add_argument('--server_port', type=str, default='', help="Can be used for distant debugging.")
     parser.add_argument("--old", action='store_true', help="use old fp16 optimizer")
+    parser.add_argument("--save_model", action='store_true', help="save the model")
     parser.add_argument('--vocab_file',
                         type=str, default=None, required=True,
                         help="Vocabulary mapping/file BERT was pretrainined on")
@@ -753,6 +754,12 @@ def main():
                     optimizer.zero_grad()
                     global_step += 1
 
+    output_model = os.path.join(args.output_dir,
+                                    args.init_checkpoint.split("/")[-1].split(".")[0]+ "_frames" + ".ckpt")
+    torch.save({'model': model.state_dict(),
+                'optimizer': optimizer.state_dict(),
+                'master params': list(amp.master_params(optimizer)),
+                'files': torch.load(args.init_checkpoint, map_location='cpu')["files"]}, output_model)
     if args.do_eval and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
         eval_examples = processor.get_dev_examples(args.data_dir)
         eval_features = convert_examples_to_features(
