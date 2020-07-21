@@ -47,7 +47,7 @@ Generate events with GPT-2
     python run_generation.py --model_type gpt2 --model_name gpt2 --model_name_or_path model/gpt2/348000/ --num_return_sequences 10
 
 Inverse Cloze with Bert
-    bash scripts/run_inverse_cloze.sh -c checkpoints/bert-base.pt -i cloze_dataset_weber_test.json -g "2"
+    bash scripts/run_inverse_cloze.sh -c checkpoints/bert-base.pt -i cloze_dataset_weber.json -g "2"
 
 Inverse Cloze with XLNet
     bash scripts/run_inverse_cloze_xlnet.sh -c model/xlnet/200000/pytorch_model.bin -i cloze_dataset_weber.json -g "2"
