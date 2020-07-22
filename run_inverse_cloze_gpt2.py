@@ -204,7 +204,7 @@ def tokenize_sequence(sequence):
     seq = dict()
     seq["seed"] = sequence[0]
     seq["next"] = " ".join(sequence[1:])
-    seq["full"] = " ".join(sequence)
+    seq["full"] = " <TUP> ".join(sequence)
     return seq
 
 
