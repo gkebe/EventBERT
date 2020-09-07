@@ -756,7 +756,7 @@ def main():
     if args.save_model and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
         output_model = os.path.join(args.output_dir,
                                         args.init_checkpoint.split("/")[-1].split(".")[0]+ "_frames" + ".ckpt")
-        torch.save({'model': model.state_dict(),
+        torch.save({'model': model.module.bert.state_dict(),
                     'optimizer': optimizer.state_dict(),
                     'master params': list(amp.master_params(optimizer)),
                     'files': torch.load(args.init_checkpoint, map_location='cpu')["files"]}, output_model)
