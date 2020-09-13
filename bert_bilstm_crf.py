@@ -416,11 +416,6 @@ def main():
                         required=True,
                         help="The eval_path.jsonl file.")
 
-    parser.add_argument("--model", default="bert-base-uncased", type=str, required=True,
-                        help="Pre-trained model selected in the list: bert-base-uncased, "
-                             "bert-large-uncased, bert-base-cased, bert-large-cased, bert-base-multilingual-uncased, "
-                             "bert-base-multilingual-cased, bert-base-chinese.")
-
     # parser.add_argument("--output_dir",
     #                     default=None,
     #                     type=str,
