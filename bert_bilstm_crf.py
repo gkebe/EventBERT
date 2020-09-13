@@ -452,7 +452,7 @@ def main():
     #                     default=0.5,
     #                     type=float,
     #                     help="Probabilty threshold for multiabel classification.")
-    parser.add_argument("--max_seq_length",
+    parser.add_argument("--max_seq_len",
                         default=128,
                         type=int,
                         help="The maximum total input sequence length after WordPiece tokenization. \n"
