@@ -480,7 +480,7 @@ def main():
         for line in infile.readlines():
             tr_data.append((json.loads(line)["sentences"], json.loads(line)["labels"]))
 
-    with open(args.test_file, 'rb') as infile:
+    with open(args.eval_file, 'rb') as infile:
         for line in infile.readlines():
             te_data.append((json.loads(line)["sentences"], json.loads(line)["labels"]))
     # Make up some training data
