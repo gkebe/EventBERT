@@ -57,3 +57,5 @@ Inverse Cloze with GPT-2
 
 Frames classification with Bert
     bash scripts/run_classification.sh -c checkpoints/bert-base.pt -g "1,2"
+Sequential frames classification with BERTBiLSTMCRF
+    python bert_bilstm_crf.py --train_file=data/frames/train.jsonl --eval_file=data/frames/test.jsonl --gpu=0 --max_seq_len=64 --init_checkpoint=model/ckpt_794.pt
