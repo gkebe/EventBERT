@@ -576,6 +576,7 @@ def main():
             # calling optimizer.step()+
             loss.backward()
             optimizer.step()
+        print()
         print(loss.item())
         torch.save(model.state_dict(), "model/bert_bilstm_crf_frames_" + str(epoch) + "_epochs.pt")
         torch.save(model.model.state_dict(), "model/bert_frames_" + str(epoch) + "_epochs.pt")
@@ -594,6 +595,7 @@ def main():
             y_pred = list(chain.from_iterable(labels))
             print(sklearn.metrics.accuracy_score(y_true, y_pred))
             print(sklearn.metrics.f1_score(y_true, y_pred, average="macro"))
+            print(sklearn.metrics.f1_score(y_true, y_pred, average="micro"))
 
 if __name__ == "__main__":
     main()
