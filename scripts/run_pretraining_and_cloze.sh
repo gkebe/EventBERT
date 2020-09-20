@@ -17,8 +17,7 @@ echo "Container nvidia build = " $NVIDIA_BUILD_ID
 gpu="2,3"
 master_port="8595"
 init_checkpoint=""
-DATASET1="hdf5_lower_case_1_seq_len_128_max_pred_20_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/wiki_70k" # change this for other datasets
-DATASET2="hdf5_lower_case_1_seq_len_512_max_pred_80_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/wiki_70k" # change this for other datasets
+dataset="wiki_70k"
 train_batch_size=14336
 num_gpus=2
 train_batch_size_phase2=4096
@@ -28,7 +27,7 @@ gradient_accumulation_steps=256
 gradient_accumulation_steps_phase2=512
 resume_training="true"
 
-while getopts g:p:c:n:d:e:x:y:a:b:w:z:r: option 
+while getopts g:p:c:n:d:x:y:a:b:w:z:r: option
 do 
  case "${option}" 
  in 
@@ -37,8 +36,7 @@ do
  c) init_checkpoint=${OPTARG};;
  r) resume_training=${OPTARG};;
  n) num_gpus=${OPTARG};;
- d) DATASET1=${OPTARG};;
- e) DATASET2=${OPTARG};;
+ d) dataset=${OPTARG};;
  a) train_batch_size=${OPTARG};;
  b) train_batch_size_phase2=${OPTARG};;
  x) gradient_accumulation_steps=${OPTARG};;
@@ -47,11 +45,12 @@ do
  z) train_steps_phase2=${OPTARG};;
  esac 
 done 
-
+DATASET1="hdf5_lower_case_1_seq_len_128_max_pred_20_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/$dataset"
+DATASET2="hdf5_lower_case_1_seq_len_512_max_pred_80_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/$dataset"
 learning_rate="6e-3"
 precision="fp16"
 warmup_proportion="0.2843"
-save_checkpoint_steps=200
+save_checkpoint_steps=10
 create_logfile="true"
 accumulate_gradients="true"
 seed=$RANDOM
