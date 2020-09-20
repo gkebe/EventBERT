@@ -23,6 +23,7 @@ BERT data preprocessing:
 
 Pretraining BERT model:
     bash scripts/run_pretraining.sh -n 1 -g "2" -c checkpoints/bert-base.pt -a 81920 -d wiki_70k -z 0 -w 794
+    bash scripts/run_pretraining_and_cloze.sh -n 1 -g "2" -a 81920 -d wiki_70k -z 0 -w 311 -r "false"
 
 GPT-2 data preprocessing:
     python data/eventPrep.py --input_file data/wiki_70k/step1/train.txt --output_file data/wiki_70k/step2/train_gpt2.txt  --add_tup True
