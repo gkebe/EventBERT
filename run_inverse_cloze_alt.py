@@ -453,8 +453,8 @@ def main():
             probs = [i[0] for i in probs]
             probs_seq = [probs[x:x + (num_events-1)] for x in range(0, len(probs), (num_events-1))]
             probs_prod = [np.sum(np.log(i)) for i in probs_seq]
-            pred = np.argmax(probs_prod)
-            rank = sorted(probs_prod, reverse=True).index(probs_prod[0]) + 1
+            pred = (np.flatnonzero(probs_prod == np.max(probs_prod)))
+            rank = sorted(probs_prod, key=lambda v: (v, random.random()), reverse=True).index(probs_prod[0]) + 1
 
             ranks.append(rank)
             preds.append(pred)
