@@ -38,8 +38,7 @@ from tokenization import BertTokenizer
 from optimization import BertAdam, warmup_linear
 from schedulers import LinearWarmUpScheduler
 from apex import amp
-from sklearn.metrics import matthews_corrcoef, f1_score, recall_score, precision_score, classification_report, \
-    confusion_matrix
+from sklearn.metrics import matthews_corrcoef, f1_score, recall_score, precision_score, classification_report, confusion_matrix, accuracy_score
 from utils import is_main_process
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
@@ -469,7 +468,7 @@ def main():
 
     eval_loss = eval_loss / nb_eval_steps
 
-    accuracy = simple_accuracy(np.array(preds), np.array([0]*len(preds)))
+    accuracy = accuracy_score(np.array(preds), np.array([0]*len(preds)))
     mrr = simple_mrr(ranks)
     eval_loss = eval_loss / nb_eval_steps
 
