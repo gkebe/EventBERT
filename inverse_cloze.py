@@ -38,8 +38,7 @@ from tokenization import BertTokenizer
 from optimization import BertAdam, warmup_linear
 from schedulers import LinearWarmUpScheduler
 from apex import amp
-from sklearn.metrics import matthews_corrcoef, f1_score, recall_score, precision_score, classification_report, \
-    confusion_matrix
+from sklearn.metrics import matthews_corrcoef, f1_score, recall_score, precision_score, classification_report, confusion_matrix, accuracy_score
 from utils import is_main_process
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
@@ -394,9 +393,12 @@ def inverse_cloze(data_dir="data/inverse_cloze/cloze_dataset_weber.json", bert_m
             probs = [i[0] for i in probs]
             probs_seq = [probs[x:x + (num_events-1)] for x in range(0, len(probs), (num_events-1))]
             probs_prod = [np.sum(np.log(i)) for i in probs_seq]
-            pred = np.argmax(probs_prod)
-            rank = sorted(probs_prod, reverse=True).index(probs_prod[0]) + 1
 
+            label_indices = [i+1 for i, x in enumerate(sorted(probs_prod, reverse=True)) if x == probs_prod[0]]
+            rank = random.choice(label_indices)
+            pred = 1
+            if rank == 1:
+                pred = 0
             ranks.append(rank)
             preds.append(pred)
             probs_.append(probs_seq)
