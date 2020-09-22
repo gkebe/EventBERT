@@ -63,7 +63,7 @@ DATA_DIR_PHASE1=${PWD}/data/${DATASET1}/
 BERT_CONFIG=bert_config.json
 CODEDIR="${PWD}"
 RESULTS_DIR=$CODEDIR/results
-CHECKPOINTS_DIR=$RESULTS_DIR/checkpoints
+CHECKPOINTS_DIR=$RESULTS_DIR/$dataset
 
 mkdir -p $CHECKPOINTS_DIR
 
@@ -152,7 +152,7 @@ if [ "$create_logfile" = "true" ] ; then
   export GBS=$(expr $train_batch_size \* $num_gpus)
   printf -v TAG "pyt_bert_pretraining_phase1_%s_gbs%d" "$precision" $GBS
   DATESTAMP=`date +'%y%m%d%H%M%S'`
-  LOGFILE=$RESULTS_DIR/$job_name.$TAG.$DATESTAMP.log
+  LOGFILE=$CHECKPOINTS_DIR/$job_name.$TAG.$DATESTAMP.log
   printf "Logs written to %s\n" "$LOGFILE"
 fi
 
