@@ -26,8 +26,9 @@ train_steps_phase2=1563
 gradient_accumulation_steps=256
 gradient_accumulation_steps_phase2=512
 resume_training="true"
+task="midtuning"
 
-while getopts g:p:c:n:d:x:y:a:b:w:z:r: option
+while getopts g:p:c:n:d:x:y:a:b:w:z:r:t: option
 do 
  case "${option}" 
  in 
@@ -43,6 +44,7 @@ do
  y) gradient_accumulation_steps_phase2=${OPTARG};;
  w) train_steps=${OPTARG};;
  z) train_steps_phase2=${OPTARG};;
+ t) task=${OPTARG};;
  esac 
 done 
 DATASET1="hdf5_lower_case_1_seq_len_128_max_pred_20_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5/$dataset"
@@ -63,7 +65,7 @@ DATA_DIR_PHASE1=${PWD}/data/${DATASET1}/
 BERT_CONFIG=bert_config.json
 CODEDIR="${PWD}"
 RESULTS_DIR=$CODEDIR/results
-CHECKPOINTS_DIR=$RESULTS_DIR/$dataset
+CHECKPOINTS_DIR=$RESULTS_DIR/${dataset}_$task
 
 mkdir -p $CHECKPOINTS_DIR
 
@@ -152,7 +154,7 @@ if [ "$create_logfile" = "true" ] ; then
   export GBS=$(expr $train_batch_size \* $num_gpus)
   printf -v TAG "pyt_bert_pretraining_phase1_%s_gbs%d" "$precision" $GBS
   DATESTAMP=`date +'%y%m%d%H%M%S'`
-  LOGFILE=$CHECKPOINTS_DIR/$job_name.$TAG.$DATESTAMP.log
+  LOGFILE=$CHECKPOINTS_DIR/${dataset}_$task.log
   printf "Logs written to %s\n" "$LOGFILE"
 fi
 
