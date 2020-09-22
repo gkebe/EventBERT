@@ -502,9 +502,9 @@ def main():
                                           pin_memory=True)
             # shared_file_list["0"] = (train_dataloader, data_file)
 
-            cloze_results = inverse_cloze(init_checkpoint="checkpoints/bert-base.pt")
+            cloze_results = inverse_cloze(init_checkpoint="checkpoints/bert-base.pt", output_dir=args.output_dir)
             print(cloze_results)
-            cloze_results = inverse_cloze(init_checkpoint="checkpoints/bert-base.pt", data_dir="data/inverse_cloze/cloze_dataset_harder.json")
+            cloze_results = inverse_cloze(init_checkpoint="checkpoints/bert-base.pt", data_dir="data/inverse_cloze/cloze_dataset_harder.json", output_dir=args.output_dir)
             print(cloze_results)
             overflow_buf = None
             if args.allreduce_post_accumulation:
@@ -594,9 +594,9 @@ def main():
                                             'master params': list(amp.master_params(optimizer)),
                                             'files': [f_id] + files}, output_save_file)
 
-                                cloze_results = inverse_cloze(init_checkpoint=output_save_file)
+                                cloze_results = inverse_cloze(init_checkpoint=output_save_file, output_dir=args.output_dir)
                                 print(cloze_results)
-                                cloze_results = inverse_cloze(init_checkpoint=output_save_file, data_dir="data/inverse_cloze/cloze_dataset_harder.json")
+                                cloze_results = inverse_cloze(init_checkpoint=output_save_file, data_dir="data/inverse_cloze/cloze_dataset_harder.json", output_dir=args.output_dir)
                                 print(cloze_results)
 
                                 most_recent_ckpts_paths.append(output_save_file)
