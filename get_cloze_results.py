@@ -38,12 +38,12 @@ def main():
     args = parser.parse_args()
     results =dict()
     for file in list(glob.glob('results/'+args.dataset+'/eval_results_alt_ckpt_*_cloze_dataset_weber.txt')):
-        epoch = int(re.findall("\d+", file)[0])
+        instances = int(re.findall("\d+", file)[0])*81920
         with open(file, "r") as f:
             text = f.read()
         accuracy = float(re.findall("\d+\.\d+",re.findall("accuracy = \d+\.\d+", text)[0])[0])
         mrr = float(re.findall("\d+\.\d+", re.findall("MRR = \d+\.\d+", text)[0])[0])
-        results[epoch] = (accuracy, mrr)
+        results[instances] = (accuracy, mrr)
     for i in sorted(results.items()):
         print(str(i[0])+","+str(i[1][0])+","+str(i[1][1]))
 
