@@ -44,6 +44,6 @@ def main():
         accuracy = float(re.findall("\d+\.\d+",re.findall("accuracy = \d+\.\d+", text)[0])[0])
         mrr = float(re.findall("\d+\.\d+", re.findall("MRR = \d+\.\d+", text)[0])[0])
         results[epoch] = (accuracy, mrr)
-    print(results)
+    print(sorted(results.items()))
 if __name__ == "__main__":
     main()
