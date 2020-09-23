@@ -36,12 +36,14 @@ def main():
                         required=True,
                         help="The input data dir. Should contain the .tsv files (or other data files) for the task.")
     args = parser.parse_args()
+    results =dict()
     for file in list(glob.glob('results/'+args.dataset+'/eval_results_alt_ckpt_*_cloze_dataset_weber.txt')):
         epoch = int(re.findall("\d+", file)[0])
         with open(file, "r") as f:
             text = f.read()
         accuracy = float(re.findall("\d+\.\d+",re.findall("accuracy = \d+\.\d+", text)[0])[0])
         mrr = float(re.findall("\d+\.\d+", re.findall("MRR = \d+\.\d+", text)[0])[0])
-        print(epoch, accuracy, mrr)
+        results[epoch] = (accuracy, mrr)
+    print(results)
 if __name__ == "__main__":
     main()
