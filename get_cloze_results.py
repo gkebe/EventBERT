@@ -40,8 +40,8 @@ def main():
         epoch = float(re.findall("\d+", file)[0])
         with open(file, "r") as f:
             text = f.read()
-        accuracy = float(re.findall("\d+",re.findall("accuracy = \d+", file)[0])[0])
-        MRR = float(re.findall("\d+", re.findall("accuracy = \d+", file)[0])[0])
+        accuracy = float(re.findall("\d+",re.findall("accuracy = \d+", text)[0])[0])
+        mrr = float(re.findall("\d+", re.findall("MRR = \d+", text)[0])[0])
         print(epoch, accuracy, mrr)
 if __name__ == "__main__":
     main()
