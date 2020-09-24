@@ -37,10 +37,8 @@ def main():
                         help="The input data dir. Should contain the .tsv files (or other data files) for the task.")
     args = parser.parse_args()
     results =dict()
-    print(list(glob.glob('results/'+args.dataset+'/eval_results_alt_ckpt_*_cloze_dataset_weber.txt')))
     for file in list(glob.glob('results/'+args.dataset+'/eval_results_alt_ckpt_*_cloze_dataset_weber.txt')):
         instances = int(re.findall("\d+",re.findall("ckpt_\d+", file)[0])[0])*81920
-        print(instances)
         with open(file, "r") as f:
             text = f.read()
         accuracy = float(re.findall("\d+\.\d+",re.findall("accuracy = \d+\.\d+", text)[0])[0])
