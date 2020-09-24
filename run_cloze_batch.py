@@ -36,7 +36,7 @@ def main():
                         help="The input data dir. Should contain the .tsv files (or other data files) for the task.")
     args = parser.parse_args()
     for file in list(glob.glob('results/'+args.dataset+'/*.pt')):
-        #inverse_cloze(init_checkpoint=file, output_dir='results/'+args.dataset)
+        inverse_cloze(init_checkpoint=file, output_dir='results/'+args.dataset)
         inverse_cloze(init_checkpoint=file, output_dir='results/'+args.dataset, data_dir="data/inverse_cloze/cloze_dataset_harder.json")
 if __name__ == "__main__":
     main()
