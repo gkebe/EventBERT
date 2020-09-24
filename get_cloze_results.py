@@ -39,7 +39,7 @@ def main():
     results =dict()
     print(list(glob.glob('results/'+args.dataset+'/eval_results_alt_ckpt_*_cloze_dataset_weber.txt')))
     for file in list(glob.glob('results/'+args.dataset+'/eval_results_alt_ckpt_*_cloze_dataset_weber.txt')):
-        instances = int(re.findall("\d+", file)[0])*81920
+        instances = int(re.findall("\d+",re.findall("ckpt_\d+", text)[0])[0])*81920
         print(instances)
         with open(file, "r") as f:
             text = f.read()
