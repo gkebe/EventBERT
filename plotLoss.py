@@ -23,7 +23,7 @@ def main(args):
         losses = re.findall("average_loss: [\d\.]+",text)+re.findall("final_loss: [\d\.]+",text)[1:]
         losses = [float(re.findall("[\d\.]+", i)[0]) for i in losses]
         for i in range(len(iterations)):
-            print(iterations[i]+","+losses[i])
+            print(str(iterations[i])+","+str(losses[i]))
         plt.plot(epochs,losses)
         plt.xlabel('Epochs')
         plt.ylabel('Loss')
