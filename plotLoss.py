@@ -20,7 +20,7 @@ def main(args):
         epochs = re.findall("Training Epoch: [\d]+",text)
         epochs = [int(re.findall("[\d]+", i)[0]) for i in epochs]
         
-        losses = re.findall("average_loss : [\d\.]+",text)+re.findall("final_loss : [\d\.]+",text)[1:]
+        losses = re.findall("average_loss: [\d\.]+",text)+re.findall("final_loss : [\d\.]+",text)[1:]
         losses = [float(re.findall("[\d\.]+", i)[0]) for i in losses]
         
         plt.plot(epochs,losses)
