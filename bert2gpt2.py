@@ -161,3 +161,5 @@ trainer = Trainer(
 
 # start training
 trainer.train()
+
+torch.save(model, 'model/bert2gpt2.pt')
