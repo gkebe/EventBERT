@@ -154,9 +154,7 @@ print(train_dataset[100])
 trainer = Trainer(
     model=model,
     args=training_args,
-    compute_metrics=compute_metrics,
     train_dataset=train_dataset,
-    eval_dataset=val_dataset,
 )
 
 # start training
