@@ -118,7 +118,7 @@ val_dataset = map_to_encoder_decoder_inputs(X_test, y_test)
 
 # set training arguments - these params are not really tuned, feel free to change
 training_args = TrainingArguments(
-    output_dir="./",
+    output_dir="./model/",
     per_device_train_batch_size=batch_size,
     per_device_eval_batch_size=batch_size,
 #    predict_from_generate=True,
