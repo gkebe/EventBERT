@@ -10,7 +10,7 @@ import pandas as pd
 logging.basicConfig(level=logging.INFO)
 
 model = EncoderDecoderModel.from_encoder_decoder_pretrained("bert-base-cased", "gpt2")
-checkpoint = torch.load("model/ckpt_294.pt", map_location="cpu")
+checkpoint = torch.load("model/ckpt_113.pt", map_location="cpu")
 checkpoint_gpt = torch.load("model/gpt.bin", map_location="cpu")
 model.encoder.load_state_dict(checkpoint['model'], strict=False)
 model.decoder.load_state_dict(checkpoint_gpt, strict=False)
