@@ -123,10 +123,10 @@ training_args = TrainingArguments(
     per_device_eval_batch_size=batch_size,
 #    predict_from_generate=True,
     do_train=True,
-    logging_steps=1000,
+    logging_steps=100,
     save_steps=100,
     overwrite_output_dir=True,
-    warmup_steps=2000,
+    warmup_steps=200,
     save_total_limit=10,
     fp16=True,
 )
