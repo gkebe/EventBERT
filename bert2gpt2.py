@@ -70,7 +70,7 @@ class GenDataset(Dataset):
         self.data = data
 
     def __len__(self):
-        return len(self.data)
+        return len(self.data["input_ids"])
 
     def __getitem__(self, index):
         # load image as ndarray type (Height * Width * Channels)
