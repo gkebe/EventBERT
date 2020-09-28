@@ -149,7 +149,7 @@ def compute_metrics(pred):
         "rouge2_fmeasure": round(rouge_output.fmeasure, 4),
     }
 
-print(train_dataset[0])
+print(len(train_dataset))
 # instantiate trainer
 trainer = Trainer(
     model=model,
