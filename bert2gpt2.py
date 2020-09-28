@@ -84,7 +84,7 @@ class GenDataset(Dataset):
         decoder_attention_mask = self.data["decoder_attention_mask"][index]
 
 
-        return input_ids, attention_mask, decoder_input_ids, labels, decoder_attention_mask
+        return {"input_ids" : input_ids, "attention_mask" : attention_mask, "decoder_input_ids" : decoder_input_ids, "labels" : labels, "decoder_attention_mask" : decoder_attention_mask}
 
 # map data correctly
 def map_to_encoder_decoder_inputs(articles, highlights):    # Tokenizer will automatically set [BOS] <text> [EOS]
