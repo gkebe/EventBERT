@@ -61,7 +61,7 @@ rouge = nlp.load_metric("rouge", experiment_id=1)
 
 encoder_length = 512
 decoder_length = 128
-batch_size = 8
+batch_size = 1
 
 
 class GenDataset(Dataset):
