@@ -11,7 +11,9 @@ logging.basicConfig(level=logging.INFO)
 
 model = EncoderDecoderModel.from_encoder_decoder_pretrained("bert-base-cased", "gpt2")
 checkpoint = torch.load("model/ckpt_294.pt", map_location="cpu")
+checkpoint_gpt = torch.load("model/gpt.pt", map_location="cpu")
 model.encoder.load_state_dict(checkpoint['model'], strict=False)
+model.decoder.load_state_dict(checkpoint_gpt, strict=False)
 
 # cache is currently not supported by EncoderDecoder framework
 model.decoder.config.use_cache = False
@@ -49,7 +51,7 @@ model.num_beams = 4
 # load train and validation data
 # train_dataset = nlp.load_dataset("cnn_dailymail", "3.0.0", split="train")
 # val_dataset = nlp.load_dataset("cnn_dailymail", "3.0.0", split="validation[:5%]")
-with open("model/gen_data.pkl",'rb') as f:
+with open("model/gen_data_wiki.pkl",'rb') as f:
     dataset = pickle.load(f)
 X = [i[0] for i in dataset]
 y = [i[1] for i in dataset]
@@ -61,7 +63,7 @@ rouge = nlp.load_metric("rouge", experiment_id=1)
 
 encoder_length = 512
 decoder_length = 128
-batch_size = 1
+batch_size = 6
 
 
 class GenDataset(Dataset):
