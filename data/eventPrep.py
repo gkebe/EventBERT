@@ -11,9 +11,8 @@ def wiki70k_preprocess(filename, tuple_to_sen = False, keep_label = False, add_t
   paragraphs_lst = [list(i.split("<PARAGRAPH>")[1:]) for i in paragraphs_articles]
   paragraphs_lst_words = [[list(j.split(" ")) for j in i] for i in paragraphs_lst][:-1]
   if add_tup:
-    print(paragraphs_lst_words[0][0])
     paragraphs_lst_words = [list(chain.from_iterable([[i[j * 30:(j + 1) * 30] for j in range((len(i) + 30 - 1) // 30)] for i in k])) for k in paragraphs_lst_words]
-    print(paragraphs_lst_words[0][0])
+    print(max([len(i) for i in paragraphs_lst_words[0]]))
     paragraph_lst_sentences = ''.join(
           [''.join([' '.join([' '.join(v[i:i + 5][:4]) + tup(i,len(v)-5) for i in range(0, len(v), 5)][:-1]) + "\n" for v in j]) for j in
            paragraphs_lst_words])
