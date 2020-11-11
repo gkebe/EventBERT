@@ -6,7 +6,7 @@ def tup(i, limit):
     return ""
 def wiki70k_preprocess(filename, tuple_to_sen = False, keep_label = False, add_tup=False):
   f = open(filename, "r", encoding="utf8")
-  paragraphs = f.read()
+  paragraphs = f.read().lower()
   paragraphs_articles = paragraphs.split("\n")
   paragraphs_lst = [list(i.split("<PARAGRAPH>")[1:]) for i in paragraphs_articles]
   paragraphs_lst_words = [[list(j.split(" ")) for j in i] for i in paragraphs_lst][:-1]
